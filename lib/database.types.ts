@@ -1,0 +1,1618 @@
+/**
+ * Campus360 — Supabase Database Type Definitions
+ *
+ * These types represent the database schema for type-safe Supabase client usage.
+ * In production, regenerate with: npx supabase gen types typescript --local
+ */
+
+// ─── Enum Types ──────────────────────────────────────────────────────────
+
+export type SchoolStatus = 'pending' | 'trial' | 'active' | 'suspended' | 'closed';
+export type MembershipStatus = 'active' | 'inactive' | 'suspended' | 'revoked';
+export type StudentStatus = 'active' | 'graduated' | 'transferred' | 'withdrawn' | 'archived' | 'suspended';
+export type AdmissionStatus = 'draft' | 'submitted' | 'under_review' | 'accepted' | 'rejected' | 'waitlisted' | 'enrolled' | 'withdrawn';
+export type EnrollmentStatus = 'active' | 'completed' | 'transferred' | 'withdrawn' | 'repeated';
+export type AttendanceValue = 'present' | 'absent' | 'late' | 'excused';
+export type AssessmentState = 'draft' | 'submitted' | 'approved' | 'published';
+export type InvoiceStatus = 'draft' | 'issued' | 'partially_paid' | 'paid' | 'overdue' | 'cancelled' | 'refunded';
+export type PaymentStatus = 'pending' | 'successful' | 'failed' | 'reversed' | 'refunded';
+export type RefundStatus = 'pending' | 'processed' | 'failed';
+export type WebhookEventStatus = 'pending' | 'processing' | 'processed' | 'failed' | 'ignored';
+export type AnnouncementTarget = 'school' | 'class' | 'staff' | 'parents' | 'students' | 'individual';
+export type NotificationStatus = 'pending' | 'sent' | 'delivered' | 'failed' | 'bounced';
+export type SubscriptionStatus = 'trialing' | 'active' | 'past_due' | 'cancelled' | 'expired';
+export type BillingEventType = 'invoice_created' | 'payment_succeeded' | 'payment_failed' | 'subscription_updated' | 'subscription_cancelled' | 'refund_issued' | 'trial_started' | 'trial_ended';
+export type GenderType = 'male' | 'female' | 'other' | 'prefer_not_to_say';
+export type GuardianRelationship = 'father' | 'mother' | 'guardian' | 'sibling' | 'uncle' | 'aunt' | 'grandparent' | 'other';
+export type StaffEmploymentStatus = 'active' | 'on_leave' | 'suspended' | 'terminated' | 'resigned' | 'retired';
+export type DayOfWeek = 'monday' | 'tuesday' | 'wednesday' | 'thursday' | 'friday' | 'saturday' | 'sunday';
+export type ReportCardStatus = 'draft' | 'generated' | 'approved' | 'published';
+
+// ─── Database Interface ──────────────────────────────────────────────────
+
+export interface RawTables {
+      profiles: {
+        Row: {
+          id: string;
+          email: string;
+          full_name: string;
+          avatar_url: string | null;
+          phone: string | null;
+          is_platform_admin: boolean;
+          is_active: boolean;
+          created_at: string;
+          updated_at: string;
+        };
+        Insert: {
+          id: string;
+          email: string;
+          full_name?: string;
+          avatar_url?: string | null;
+          phone?: string | null;
+          is_platform_admin?: boolean;
+          is_active?: boolean;
+          created_at?: string;
+          updated_at?: string;
+        };
+        Update: {
+          id?: string;
+          email?: string;
+          full_name?: string;
+          avatar_url?: string | null;
+          phone?: string | null;
+          is_platform_admin?: boolean;
+          is_active?: boolean;
+          updated_at?: string;
+        };
+      };
+
+      schools: {
+        Row: {
+          id: string;
+          name: string;
+          slug: string;
+          code: string | null;
+          logo_url: string | null;
+          email: string | null;
+          phone: string | null;
+          website: string | null;
+          address: string | null;
+          city: string | null;
+          state_province: string | null;
+          country: string;
+          timezone: string;
+          locale: string;
+          currency: string;
+          status: SchoolStatus;
+          settings: Record<string, unknown>;
+          motto: string | null;
+          established_year: number | null;
+          created_at: string;
+          updated_at: string;
+        };
+        Insert: {
+          id?: string;
+          name: string;
+          slug: string;
+          code?: string | null;
+          logo_url?: string | null;
+          email?: string | null;
+          phone?: string | null;
+          website?: string | null;
+          address?: string | null;
+          city?: string | null;
+          state_province?: string | null;
+          country?: string;
+          timezone?: string;
+          locale?: string;
+          currency?: string;
+          status?: SchoolStatus;
+          settings?: Record<string, unknown>;
+          motto?: string | null;
+          established_year?: number | null;
+        };
+        Update: {
+          name?: string;
+          slug?: string;
+          code?: string | null;
+          logo_url?: string | null;
+          email?: string | null;
+          phone?: string | null;
+          website?: string | null;
+          address?: string | null;
+          city?: string | null;
+          state_province?: string | null;
+          country?: string;
+          timezone?: string;
+          locale?: string;
+          currency?: string;
+          status?: SchoolStatus;
+          settings?: Record<string, unknown>;
+          motto?: string | null;
+          established_year?: number | null;
+          updated_at?: string;
+        };
+      };
+
+      permissions: {
+        Row: {
+          id: string;
+          code: string;
+          name: string;
+          description: string | null;
+          module: string;
+          created_at: string;
+        };
+        Insert: {
+          id?: string;
+          code: string;
+          name: string;
+          description?: string | null;
+          module: string;
+        };
+        Update: {
+          code?: string;
+          name?: string;
+          description?: string | null;
+          module?: string;
+        };
+      };
+
+      roles: {
+        Row: {
+          id: string;
+          school_id: string | null;
+          name: string;
+          description: string | null;
+          is_system: boolean;
+          created_at: string;
+          updated_at: string;
+        };
+        Insert: {
+          id?: string;
+          school_id?: string | null;
+          name: string;
+          description?: string | null;
+          is_system?: boolean;
+        };
+        Update: {
+          name?: string;
+          description?: string | null;
+          is_system?: boolean;
+          updated_at?: string;
+        };
+      };
+
+      role_permissions: {
+        Row: {
+          id: string;
+          role_id: string;
+          permission_id: string;
+          created_at: string;
+        };
+        Insert: {
+          id?: string;
+          role_id: string;
+          permission_id: string;
+        };
+        Update: {
+          role_id?: string;
+          permission_id?: string;
+        };
+      };
+
+      school_memberships: {
+        Row: {
+          id: string;
+          school_id: string;
+          user_id: string;
+          status: MembershipStatus;
+          joined_at: string;
+          updated_at: string;
+        };
+        Insert: {
+          id?: string;
+          school_id: string;
+          user_id: string;
+          status?: MembershipStatus;
+          joined_at?: string;
+        };
+        Update: {
+          status?: MembershipStatus;
+          updated_at?: string;
+        };
+      };
+
+      membership_roles: {
+        Row: {
+          id: string;
+          membership_id: string;
+          role_id: string;
+          assigned_at: string;
+          assigned_by: string | null;
+        };
+        Insert: {
+          id?: string;
+          membership_id: string;
+          role_id: string;
+          assigned_by?: string | null;
+        };
+        Update: {
+          membership_id?: string;
+          role_id?: string;
+          assigned_by?: string | null;
+        };
+      };
+
+      academic_years: {
+        Row: {
+          id: string;
+          school_id: string;
+          name: string;
+          start_date: string;
+          end_date: string;
+          is_current: boolean;
+          created_at: string;
+          updated_at: string;
+        };
+        Insert: {
+          id?: string;
+          school_id: string;
+          name: string;
+          start_date: string;
+          end_date: string;
+          is_current?: boolean;
+        };
+        Update: {
+          name?: string;
+          start_date?: string;
+          end_date?: string;
+          is_current?: boolean;
+          updated_at?: string;
+        };
+      };
+
+      terms: {
+        Row: {
+          id: string;
+          school_id: string;
+          academic_year_id: string;
+          name: string;
+          start_date: string;
+          end_date: string;
+          is_current: boolean;
+          sequence: number;
+          created_at: string;
+          updated_at: string;
+        };
+        Insert: {
+          id?: string;
+          school_id: string;
+          academic_year_id: string;
+          name: string;
+          start_date: string;
+          end_date: string;
+          is_current?: boolean;
+          sequence?: number;
+        };
+        Update: {
+          name?: string;
+          start_date?: string;
+          end_date?: string;
+          is_current?: boolean;
+          sequence?: number;
+          updated_at?: string;
+        };
+      };
+
+      class_groups: {
+        Row: {
+          id: string;
+          school_id: string;
+          name: string;
+          level: number | null;
+          stream: string | null;
+          capacity: number | null;
+          class_teacher_id: string | null;
+          academic_year_id: string | null;
+          room: string | null;
+          is_active: boolean;
+          created_at: string;
+          updated_at: string;
+        };
+        Insert: {
+          id?: string;
+          school_id: string;
+          name: string;
+          level?: number | null;
+          stream?: string | null;
+          capacity?: number | null;
+          class_teacher_id?: string | null;
+          academic_year_id?: string | null;
+          room?: string | null;
+          is_active?: boolean;
+        };
+        Update: {
+          name?: string;
+          level?: number | null;
+          stream?: string | null;
+          capacity?: number | null;
+          class_teacher_id?: string | null;
+          academic_year_id?: string | null;
+          room?: string | null;
+          is_active?: boolean;
+          updated_at?: string;
+        };
+      };
+
+      subjects: {
+        Row: {
+          id: string;
+          school_id: string;
+          name: string;
+          code: string | null;
+          description: string | null;
+          is_elective: boolean;
+          is_active: boolean;
+          created_at: string;
+          updated_at: string;
+        };
+        Insert: {
+          id?: string;
+          school_id: string;
+          name: string;
+          code?: string | null;
+          description?: string | null;
+          is_elective?: boolean;
+          is_active?: boolean;
+        };
+        Update: {
+          name?: string;
+          code?: string | null;
+          description?: string | null;
+          is_elective?: boolean;
+          is_active?: boolean;
+          updated_at?: string;
+        };
+      };
+
+      teaching_assignments: {
+        Row: {
+          id: string;
+          school_id: string;
+          teacher_id: string;
+          class_group_id: string;
+          subject_id: string;
+          academic_year_id: string | null;
+          term_id: string | null;
+          is_active: boolean;
+          created_at: string;
+        };
+        Insert: {
+          id?: string;
+          school_id: string;
+          teacher_id: string;
+          class_group_id: string;
+          subject_id: string;
+          academic_year_id?: string | null;
+          term_id?: string | null;
+          is_active?: boolean;
+        };
+        Update: {
+          is_active?: boolean;
+        };
+      };
+
+      timetable_periods: {
+        Row: {
+          id: string;
+          school_id: string;
+          name: string;
+          start_time: string;
+          end_time: string;
+          sequence: number;
+          is_break: boolean;
+          created_at: string;
+        };
+        Insert: {
+          id?: string;
+          school_id: string;
+          name: string;
+          start_time: string;
+          end_time: string;
+          sequence: number;
+          is_break?: boolean;
+        };
+        Update: {
+          name?: string;
+          start_time?: string;
+          end_time?: string;
+          sequence?: number;
+          is_break?: boolean;
+        };
+      };
+
+      timetable_slots: {
+        Row: {
+          id: string;
+          school_id: string;
+          class_group_id: string;
+          subject_id: string | null;
+          teacher_id: string | null;
+          period_id: string;
+          day_of_week: DayOfWeek;
+          room: string | null;
+          academic_year_id: string | null;
+          term_id: string | null;
+          created_at: string;
+        };
+        Insert: {
+          id?: string;
+          school_id: string;
+          class_group_id: string;
+          subject_id?: string | null;
+          teacher_id?: string | null;
+          period_id: string;
+          day_of_week: DayOfWeek;
+          room?: string | null;
+          academic_year_id?: string | null;
+          term_id?: string | null;
+        };
+        Update: {
+          subject_id?: string | null;
+          teacher_id?: string | null;
+          room?: string | null;
+        };
+      };
+
+      students: {
+        Row: {
+          id: string;
+          school_id: string;
+          user_id: string | null;
+          student_number: string;
+          first_name: string;
+          last_name: string;
+          other_names: string | null;
+          date_of_birth: string | null;
+          gender: GenderType | null;
+          blood_group: string | null;
+          nationality: string | null;
+          state_of_origin: string | null;
+          address: string | null;
+          photo_url: string | null;
+          status: StudentStatus;
+          admission_date: string | null;
+          current_class_id: string | null;
+          medical_info: Record<string, unknown>;
+          emergency_contact: Record<string, unknown>;
+          created_at: string;
+          updated_at: string;
+        };
+        Insert: {
+          id?: string;
+          school_id: string;
+          user_id?: string | null;
+          student_number: string;
+          first_name: string;
+          last_name: string;
+          other_names?: string | null;
+          date_of_birth?: string | null;
+          gender?: GenderType | null;
+          blood_group?: string | null;
+          nationality?: string | null;
+          state_of_origin?: string | null;
+          address?: string | null;
+          photo_url?: string | null;
+          status?: StudentStatus;
+          admission_date?: string | null;
+          current_class_id?: string | null;
+          medical_info?: Record<string, unknown>;
+          emergency_contact?: Record<string, unknown>;
+        };
+        Update: {
+          user_id?: string | null;
+          student_number?: string;
+          first_name?: string;
+          last_name?: string;
+          other_names?: string | null;
+          date_of_birth?: string | null;
+          gender?: GenderType | null;
+          blood_group?: string | null;
+          nationality?: string | null;
+          state_of_origin?: string | null;
+          address?: string | null;
+          photo_url?: string | null;
+          status?: StudentStatus;
+          admission_date?: string | null;
+          current_class_id?: string | null;
+          medical_info?: Record<string, unknown>;
+          emergency_contact?: Record<string, unknown>;
+          updated_at?: string;
+        };
+      };
+
+      guardians: {
+        Row: {
+          id: string;
+          school_id: string;
+          user_id: string | null;
+          first_name: string;
+          last_name: string;
+          email: string | null;
+          phone: string;
+          phone_alt: string | null;
+          address: string | null;
+          occupation: string | null;
+          employer: string | null;
+          photo_url: string | null;
+          created_at: string;
+          updated_at: string;
+        };
+        Insert: {
+          id?: string;
+          school_id: string;
+          user_id?: string | null;
+          first_name: string;
+          last_name: string;
+          email?: string | null;
+          phone: string;
+          phone_alt?: string | null;
+          address?: string | null;
+          occupation?: string | null;
+          employer?: string | null;
+          photo_url?: string | null;
+        };
+        Update: {
+          first_name?: string;
+          last_name?: string;
+          email?: string | null;
+          phone?: string;
+          phone_alt?: string | null;
+          address?: string | null;
+          occupation?: string | null;
+          employer?: string | null;
+          photo_url?: string | null;
+          updated_at?: string;
+        };
+      };
+
+      student_guardians: {
+        Row: {
+          id: string;
+          student_id: string;
+          guardian_id: string;
+          relationship: GuardianRelationship;
+          is_primary: boolean;
+          is_emergency: boolean;
+          can_pickup: boolean;
+          created_at: string;
+        };
+        Insert: {
+          id?: string;
+          student_id: string;
+          guardian_id: string;
+          relationship?: GuardianRelationship;
+          is_primary?: boolean;
+          is_emergency?: boolean;
+          can_pickup?: boolean;
+        };
+        Update: {
+          relationship?: GuardianRelationship;
+          is_primary?: boolean;
+          is_emergency?: boolean;
+          can_pickup?: boolean;
+        };
+      };
+
+      admission_applications: {
+        Row: {
+          id: string;
+          school_id: string;
+          academic_year_id: string;
+          application_number: string;
+          first_name: string;
+          last_name: string;
+          other_names: string | null;
+          date_of_birth: string | null;
+          gender: GenderType | null;
+          previous_school: string | null;
+          class_applied: string | null;
+          guardian_name: string;
+          guardian_email: string | null;
+          guardian_phone: string;
+          guardian_relationship: GuardianRelationship | null;
+          guardian_address: string | null;
+          status: AdmissionStatus;
+          documents: unknown[];
+          notes: string | null;
+          reviewed_by: string | null;
+          reviewed_at: string | null;
+          converted_student_id: string | null;
+          created_at: string;
+          updated_at: string;
+        };
+        Insert: {
+          id?: string;
+          school_id: string;
+          academic_year_id: string;
+          application_number: string;
+          first_name: string;
+          last_name: string;
+          other_names?: string | null;
+          date_of_birth?: string | null;
+          gender?: GenderType | null;
+          previous_school?: string | null;
+          class_applied?: string | null;
+          guardian_name: string;
+          guardian_email?: string | null;
+          guardian_phone: string;
+          guardian_relationship?: GuardianRelationship | null;
+          guardian_address?: string | null;
+          status?: AdmissionStatus;
+          documents?: unknown[];
+          notes?: string | null;
+        };
+        Update: {
+          first_name?: string;
+          last_name?: string;
+          other_names?: string | null;
+          date_of_birth?: string | null;
+          gender?: GenderType | null;
+          previous_school?: string | null;
+          class_applied?: string | null;
+          guardian_name?: string;
+          guardian_email?: string | null;
+          guardian_phone?: string;
+          guardian_relationship?: GuardianRelationship | null;
+          guardian_address?: string | null;
+          status?: AdmissionStatus;
+          documents?: unknown[];
+          notes?: string | null;
+          reviewed_by?: string | null;
+          reviewed_at?: string | null;
+          converted_student_id?: string | null;
+          updated_at?: string;
+        };
+      };
+
+      enrollments: {
+        Row: {
+          id: string;
+          school_id: string;
+          student_id: string;
+          academic_year_id: string;
+          class_group_id: string;
+          term_id: string | null;
+          status: EnrollmentStatus;
+          enrolled_at: string;
+          completed_at: string | null;
+          notes: string | null;
+          created_at: string;
+          updated_at: string;
+        };
+        Insert: {
+          id?: string;
+          school_id: string;
+          student_id: string;
+          academic_year_id: string;
+          class_group_id: string;
+          term_id?: string | null;
+          status?: EnrollmentStatus;
+          notes?: string | null;
+        };
+        Update: {
+          class_group_id?: string;
+          status?: EnrollmentStatus;
+          completed_at?: string | null;
+          notes?: string | null;
+          updated_at?: string;
+        };
+      };
+
+      staff_profiles: {
+        Row: {
+          id: string;
+          school_id: string;
+          user_id: string;
+          staff_number: string;
+          department: string | null;
+          designation: string | null;
+          qualification: string | null;
+          date_of_hire: string | null;
+          employment_status: StaffEmploymentStatus;
+          salary_grade: string | null;
+          bank_name: string | null;
+          bank_account: string | null;
+          tax_id: string | null;
+          emergency_contact: Record<string, unknown>;
+          created_at: string;
+          updated_at: string;
+        };
+        Insert: {
+          id?: string;
+          school_id: string;
+          user_id: string;
+          staff_number: string;
+          department?: string | null;
+          designation?: string | null;
+          qualification?: string | null;
+          date_of_hire?: string | null;
+          employment_status?: StaffEmploymentStatus;
+          salary_grade?: string | null;
+          bank_name?: string | null;
+          bank_account?: string | null;
+          tax_id?: string | null;
+          emergency_contact?: Record<string, unknown>;
+        };
+        Update: {
+          staff_number?: string;
+          department?: string | null;
+          designation?: string | null;
+          qualification?: string | null;
+          date_of_hire?: string | null;
+          employment_status?: StaffEmploymentStatus;
+          salary_grade?: string | null;
+          bank_name?: string | null;
+          bank_account?: string | null;
+          tax_id?: string | null;
+          emergency_contact?: Record<string, unknown>;
+          updated_at?: string;
+        };
+      };
+
+      attendance_sessions: {
+        Row: {
+          id: string;
+          school_id: string;
+          class_group_id: string;
+          term_id: string;
+          date: string;
+          session_name: string;
+          taken_by: string;
+          is_locked: boolean;
+          notes: string | null;
+          created_at: string;
+          updated_at: string;
+        };
+        Insert: {
+          id?: string;
+          school_id: string;
+          class_group_id: string;
+          term_id: string;
+          date: string;
+          session_name?: string;
+          taken_by: string;
+          is_locked?: boolean;
+          notes?: string | null;
+        };
+        Update: {
+          is_locked?: boolean;
+          notes?: string | null;
+          updated_at?: string;
+        };
+      };
+
+      attendance_records: {
+        Row: {
+          id: string;
+          session_id: string;
+          student_id: string;
+          status: AttendanceValue;
+          remarks: string | null;
+          recorded_by: string;
+          corrected_by: string | null;
+          correction_reason: string | null;
+          previous_status: AttendanceValue | null;
+          created_at: string;
+          updated_at: string;
+        };
+        Insert: {
+          id?: string;
+          session_id: string;
+          student_id: string;
+          status?: AttendanceValue;
+          remarks?: string | null;
+          recorded_by: string;
+        };
+        Update: {
+          status?: AttendanceValue;
+          remarks?: string | null;
+          corrected_by?: string | null;
+          correction_reason?: string | null;
+          previous_status?: AttendanceValue | null;
+          updated_at?: string;
+        };
+      };
+
+      grade_scales: {
+        Row: {
+          id: string;
+          school_id: string;
+          name: string;
+          is_default: boolean;
+          bands: unknown[];
+          created_at: string;
+          updated_at: string;
+        };
+        Insert: {
+          id?: string;
+          school_id: string;
+          name: string;
+          is_default?: boolean;
+          bands?: unknown[];
+        };
+        Update: {
+          name?: string;
+          is_default?: boolean;
+          bands?: unknown[];
+          updated_at?: string;
+        };
+      };
+
+      assessments: {
+        Row: {
+          id: string;
+          school_id: string;
+          class_group_id: string;
+          subject_id: string;
+          term_id: string;
+          academic_year_id: string;
+          name: string;
+          category: string;
+          max_score: number;
+          weight: number;
+          state: AssessmentState;
+          grade_scale_id: string | null;
+          due_date: string | null;
+          submitted_by: string | null;
+          submitted_at: string | null;
+          approved_by: string | null;
+          approved_at: string | null;
+          published_by: string | null;
+          published_at: string | null;
+          created_at: string;
+          updated_at: string;
+        };
+        Insert: {
+          id?: string;
+          school_id: string;
+          class_group_id: string;
+          subject_id: string;
+          term_id: string;
+          academic_year_id: string;
+          name: string;
+          category: string;
+          max_score: number;
+          weight?: number;
+          state?: AssessmentState;
+          grade_scale_id?: string | null;
+          due_date?: string | null;
+        };
+        Update: {
+          name?: string;
+          category?: string;
+          max_score?: number;
+          weight?: number;
+          state?: AssessmentState;
+          grade_scale_id?: string | null;
+          due_date?: string | null;
+          submitted_by?: string | null;
+          submitted_at?: string | null;
+          approved_by?: string | null;
+          approved_at?: string | null;
+          published_by?: string | null;
+          published_at?: string | null;
+          updated_at?: string;
+        };
+      };
+
+      assessment_scores: {
+        Row: {
+          id: string;
+          assessment_id: string;
+          student_id: string;
+          score: number | null;
+          is_absent: boolean;
+          is_exempt: boolean;
+          remarks: string | null;
+          entered_by: string;
+          created_at: string;
+          updated_at: string;
+        };
+        Insert: {
+          id?: string;
+          assessment_id: string;
+          student_id: string;
+          score?: number | null;
+          is_absent?: boolean;
+          is_exempt?: boolean;
+          remarks?: string | null;
+          entered_by: string;
+        };
+        Update: {
+          score?: number | null;
+          is_absent?: boolean;
+          is_exempt?: boolean;
+          remarks?: string | null;
+          updated_at?: string;
+        };
+      };
+
+      report_cards: {
+        Row: {
+          id: string;
+          school_id: string;
+          student_id: string;
+          academic_year_id: string;
+          term_id: string;
+          class_group_id: string;
+          status: ReportCardStatus;
+          data: Record<string, unknown>;
+          file_url: string | null;
+          class_teacher_remarks: string | null;
+          principal_remarks: string | null;
+          generated_at: string | null;
+          approved_by: string | null;
+          approved_at: string | null;
+          published_by: string | null;
+          published_at: string | null;
+          created_at: string;
+          updated_at: string;
+        };
+        Insert: {
+          id?: string;
+          school_id: string;
+          student_id: string;
+          academic_year_id: string;
+          term_id: string;
+          class_group_id: string;
+          status?: ReportCardStatus;
+          data?: Record<string, unknown>;
+          file_url?: string | null;
+          class_teacher_remarks?: string | null;
+          principal_remarks?: string | null;
+        };
+        Update: {
+          status?: ReportCardStatus;
+          data?: Record<string, unknown>;
+          file_url?: string | null;
+          class_teacher_remarks?: string | null;
+          principal_remarks?: string | null;
+          generated_at?: string | null;
+          approved_by?: string | null;
+          approved_at?: string | null;
+          published_by?: string | null;
+          published_at?: string | null;
+          updated_at?: string;
+        };
+      };
+
+      report_card_publications: {
+        Row: {
+          id: string;
+          report_card_id: string;
+          published_by: string;
+          published_at: string;
+          file_url: string | null;
+          version: number;
+          notes: string | null;
+        };
+        Insert: {
+          id?: string;
+          report_card_id: string;
+          published_by: string;
+          file_url?: string | null;
+          version?: number;
+          notes?: string | null;
+        };
+        Update: {
+          file_url?: string | null;
+          notes?: string | null;
+        };
+      };
+
+      fee_structures: {
+        Row: {
+          id: string;
+          school_id: string;
+          academic_year_id: string;
+          term_id: string | null;
+          name: string;
+          description: string | null;
+          class_group_id: string | null;
+          amount: number;
+          currency: string;
+          category: string;
+          is_mandatory: boolean;
+          is_active: boolean;
+          created_at: string;
+          updated_at: string;
+        };
+        Insert: {
+          id?: string;
+          school_id: string;
+          academic_year_id: string;
+          term_id?: string | null;
+          name: string;
+          description?: string | null;
+          class_group_id?: string | null;
+          amount: number;
+          currency?: string;
+          category?: string;
+          is_mandatory?: boolean;
+          is_active?: boolean;
+        };
+        Update: {
+          name?: string;
+          description?: string | null;
+          class_group_id?: string | null;
+          amount?: number;
+          currency?: string;
+          category?: string;
+          is_mandatory?: boolean;
+          is_active?: boolean;
+          updated_at?: string;
+        };
+      };
+
+      invoices: {
+        Row: {
+          id: string;
+          school_id: string;
+          student_id: string;
+          academic_year_id: string;
+          term_id: string | null;
+          invoice_number: string;
+          total_amount: number;
+          discount_amount: number;
+          paid_amount: number;
+          balance: number;
+          currency: string;
+          status: InvoiceStatus;
+          due_date: string | null;
+          notes: string | null;
+          issued_by: string | null;
+          issued_at: string | null;
+          created_at: string;
+          updated_at: string;
+        };
+        Insert: {
+          id?: string;
+          school_id: string;
+          student_id: string;
+          academic_year_id: string;
+          term_id?: string | null;
+          invoice_number: string;
+          total_amount: number;
+          discount_amount?: number;
+          paid_amount?: number;
+          balance: number;
+          currency?: string;
+          status?: InvoiceStatus;
+          due_date?: string | null;
+          notes?: string | null;
+          issued_by?: string | null;
+          issued_at?: string | null;
+        };
+        Update: {
+          total_amount?: number;
+          discount_amount?: number;
+          paid_amount?: number;
+          balance?: number;
+          status?: InvoiceStatus;
+          due_date?: string | null;
+          notes?: string | null;
+          issued_by?: string | null;
+          issued_at?: string | null;
+          updated_at?: string;
+        };
+      };
+
+      invoice_lines: {
+        Row: {
+          id: string;
+          invoice_id: string;
+          fee_structure_id: string | null;
+          description: string;
+          amount: number;
+          currency: string;
+          quantity: number;
+          discount: number;
+          total: number;
+          created_at: string;
+        };
+        Insert: {
+          id?: string;
+          invoice_id: string;
+          fee_structure_id?: string | null;
+          description: string;
+          amount: number;
+          currency?: string;
+          quantity?: number;
+          discount?: number;
+          total: number;
+        };
+        Update: {
+          description?: string;
+          amount?: number;
+          quantity?: number;
+          discount?: number;
+          total?: number;
+        };
+      };
+
+      payments: {
+        Row: {
+          id: string;
+          school_id: string;
+          invoice_id: string | null;
+          student_id: string;
+          amount: number;
+          currency: string;
+          status: PaymentStatus;
+          payment_method: string | null;
+          provider: string | null;
+          provider_reference: string | null;
+          internal_reference: string;
+          provider_metadata: Record<string, unknown>;
+          paid_at: string | null;
+          verified_at: string | null;
+          verified_by: string | null;
+          receipt_number: string | null;
+          notes: string | null;
+          created_at: string;
+          updated_at: string;
+        };
+        Insert: {
+          id?: string;
+          school_id: string;
+          invoice_id?: string | null;
+          student_id: string;
+          amount: number;
+          currency?: string;
+          status?: PaymentStatus;
+          payment_method?: string | null;
+          provider?: string | null;
+          provider_reference?: string | null;
+          internal_reference: string;
+          provider_metadata?: Record<string, unknown>;
+          notes?: string | null;
+        };
+        Update: {
+          status?: PaymentStatus;
+          payment_method?: string | null;
+          provider_reference?: string | null;
+          provider_metadata?: Record<string, unknown>;
+          paid_at?: string | null;
+          verified_at?: string | null;
+          verified_by?: string | null;
+          receipt_number?: string | null;
+          notes?: string | null;
+          updated_at?: string;
+        };
+      };
+
+      payment_allocations: {
+        Row: {
+          id: string;
+          payment_id: string;
+          invoice_id: string;
+          amount: number;
+          currency: string;
+          created_at: string;
+        };
+        Insert: {
+          id?: string;
+          payment_id: string;
+          invoice_id: string;
+          amount: number;
+          currency?: string;
+        };
+        Update: {
+          amount?: number;
+        };
+      };
+
+      refunds: {
+        Row: {
+          id: string;
+          school_id: string;
+          payment_id: string;
+          amount: number;
+          currency: string;
+          reason: string;
+          status: RefundStatus;
+          provider_reference: string | null;
+          processed_by: string | null;
+          processed_at: string | null;
+          created_at: string;
+          updated_at: string;
+        };
+        Insert: {
+          id?: string;
+          school_id: string;
+          payment_id: string;
+          amount: number;
+          currency?: string;
+          reason: string;
+          status?: RefundStatus;
+        };
+        Update: {
+          status?: RefundStatus;
+          provider_reference?: string | null;
+          processed_by?: string | null;
+          processed_at?: string | null;
+          updated_at?: string;
+        };
+      };
+
+      webhook_events: {
+        Row: {
+          id: string;
+          provider: string;
+          provider_event_id: string;
+          event_type: string;
+          payload: Record<string, unknown>;
+          status: WebhookEventStatus;
+          attempts: number;
+          last_error: string | null;
+          processed_at: string | null;
+          created_at: string;
+        };
+        Insert: {
+          id?: string;
+          provider: string;
+          provider_event_id: string;
+          event_type: string;
+          payload?: Record<string, unknown>;
+          status?: WebhookEventStatus;
+        };
+        Update: {
+          status?: WebhookEventStatus;
+          attempts?: number;
+          last_error?: string | null;
+          processed_at?: string | null;
+        };
+      };
+
+      announcements: {
+        Row: {
+          id: string;
+          school_id: string;
+          title: string;
+          content: string;
+          target: AnnouncementTarget;
+          target_id: string | null;
+          priority: string;
+          is_pinned: boolean;
+          published_at: string | null;
+          expires_at: string | null;
+          author_id: string;
+          created_at: string;
+          updated_at: string;
+        };
+        Insert: {
+          id?: string;
+          school_id: string;
+          title: string;
+          content: string;
+          target?: AnnouncementTarget;
+          target_id?: string | null;
+          priority?: string;
+          is_pinned?: boolean;
+          published_at?: string | null;
+          expires_at?: string | null;
+          author_id: string;
+        };
+        Update: {
+          title?: string;
+          content?: string;
+          target?: AnnouncementTarget;
+          target_id?: string | null;
+          priority?: string;
+          is_pinned?: boolean;
+          published_at?: string | null;
+          expires_at?: string | null;
+          updated_at?: string;
+        };
+      };
+
+      notification_deliveries: {
+        Row: {
+          id: string;
+          announcement_id: string | null;
+          recipient_id: string;
+          channel: string;
+          status: NotificationStatus;
+          sent_at: string | null;
+          read_at: string | null;
+          error_message: string | null;
+          attempts: number;
+          created_at: string;
+          updated_at: string;
+        };
+        Insert: {
+          id?: string;
+          announcement_id?: string | null;
+          recipient_id: string;
+          channel?: string;
+          status?: NotificationStatus;
+        };
+        Update: {
+          status?: NotificationStatus;
+          sent_at?: string | null;
+          read_at?: string | null;
+          error_message?: string | null;
+          attempts?: number;
+          updated_at?: string;
+        };
+      };
+
+      stored_files: {
+        Row: {
+          id: string;
+          school_id: string;
+          bucket: string;
+          storage_path: string;
+          original_name: string;
+          mime_type: string;
+          size_bytes: number;
+          uploaded_by: string;
+          entity_type: string | null;
+          entity_id: string | null;
+          is_public: boolean;
+          metadata: Record<string, unknown>;
+          created_at: string;
+        };
+        Insert: {
+          id?: string;
+          school_id: string;
+          bucket: string;
+          storage_path: string;
+          original_name: string;
+          mime_type: string;
+          size_bytes: number;
+          uploaded_by: string;
+          entity_type?: string | null;
+          entity_id?: string | null;
+          is_public?: boolean;
+          metadata?: Record<string, unknown>;
+        };
+        Update: {
+          entity_type?: string | null;
+          entity_id?: string | null;
+          is_public?: boolean;
+          metadata?: Record<string, unknown>;
+        };
+      };
+
+      audit_logs: {
+        Row: {
+          id: string;
+          school_id: string | null;
+          actor_id: string | null;
+          action: string;
+          resource_type: string;
+          resource_id: string | null;
+          metadata: Record<string, unknown>;
+          ip_address: string | null;
+          user_agent: string | null;
+          reason: string | null;
+          created_at: string;
+        };
+        Insert: {
+          id?: string;
+          school_id?: string | null;
+          actor_id?: string | null;
+          action: string;
+          resource_type: string;
+          resource_id?: string | null;
+          metadata?: Record<string, unknown>;
+          ip_address?: string | null;
+          user_agent?: string | null;
+          reason?: string | null;
+        };
+        Update: Record<string, never>;
+      };
+
+      plans: {
+        Row: {
+          id: string;
+          name: string;
+          description: string | null;
+          price_monthly: number;
+          price_yearly: number;
+          currency: string;
+          max_students: number | null;
+          max_staff: number | null;
+          max_storage_mb: number | null;
+          features: Record<string, unknown>;
+          is_active: boolean;
+          sort_order: number;
+          created_at: string;
+          updated_at: string;
+        };
+        Insert: {
+          id?: string;
+          name: string;
+          description?: string | null;
+          price_monthly?: number;
+          price_yearly?: number;
+          currency?: string;
+          max_students?: number | null;
+          max_staff?: number | null;
+          max_storage_mb?: number | null;
+          features?: Record<string, unknown>;
+          is_active?: boolean;
+          sort_order?: number;
+        };
+        Update: {
+          name?: string;
+          description?: string | null;
+          price_monthly?: number;
+          price_yearly?: number;
+          currency?: string;
+          max_students?: number | null;
+          max_staff?: number | null;
+          max_storage_mb?: number | null;
+          features?: Record<string, unknown>;
+          is_active?: boolean;
+          sort_order?: number;
+          updated_at?: string;
+        };
+      };
+
+      subscriptions: {
+        Row: {
+          id: string;
+          school_id: string;
+          plan_id: string;
+          status: SubscriptionStatus;
+          billing_cycle: string;
+          current_period_start: string;
+          current_period_end: string;
+          trial_end: string | null;
+          cancelled_at: string | null;
+          provider: string | null;
+          provider_subscription_id: string | null;
+          provider_customer_id: string | null;
+          created_at: string;
+          updated_at: string;
+        };
+        Insert: {
+          id?: string;
+          school_id: string;
+          plan_id: string;
+          status?: SubscriptionStatus;
+          billing_cycle?: string;
+          current_period_start: string;
+          current_period_end: string;
+          trial_end?: string | null;
+          provider?: string | null;
+          provider_subscription_id?: string | null;
+          provider_customer_id?: string | null;
+        };
+        Update: {
+          plan_id?: string;
+          status?: SubscriptionStatus;
+          billing_cycle?: string;
+          current_period_start?: string;
+          current_period_end?: string;
+          trial_end?: string | null;
+          cancelled_at?: string | null;
+          provider?: string | null;
+          provider_subscription_id?: string | null;
+          provider_customer_id?: string | null;
+          updated_at?: string;
+        };
+      };
+
+      billing_events: {
+        Row: {
+          id: string;
+          subscription_id: string;
+          event_type: BillingEventType;
+          amount: number | null;
+          currency: string | null;
+          provider_reference: string | null;
+          metadata: Record<string, unknown>;
+          created_at: string;
+        };
+        Insert: {
+          id?: string;
+          subscription_id: string;
+          event_type: BillingEventType;
+          amount?: number | null;
+          currency?: string | null;
+          provider_reference?: string | null;
+          metadata?: Record<string, unknown>;
+        };
+        Update: {
+          amount?: number | null;
+          currency?: string | null;
+          metadata?: Record<string, unknown>;
+        };
+      };
+}
+
+export type TablesRecord = {
+  [K in keyof RawTables]: RawTables[K] & {
+    Relationships: [];
+  };
+};
+
+export interface Database {
+  public: {
+    Tables: TablesRecord;
+    Views: Record<string, never>;
+
+    Functions: {
+      has_school_membership: {
+        Args: { p_school_id: string };
+        Returns: boolean;
+      };
+      is_platform_admin: {
+        Args: Record<string, never>;
+        Returns: boolean;
+      };
+    };
+
+    Enums: {
+      school_status: SchoolStatus;
+      membership_status: MembershipStatus;
+      student_status: StudentStatus;
+      admission_status: AdmissionStatus;
+      enrollment_status: EnrollmentStatus;
+      attendance_value: AttendanceValue;
+      assessment_state: AssessmentState;
+      invoice_status: InvoiceStatus;
+      payment_status: PaymentStatus;
+      refund_status: RefundStatus;
+      webhook_event_status: WebhookEventStatus;
+      announcement_target: AnnouncementTarget;
+      notification_status: NotificationStatus;
+      subscription_status: SubscriptionStatus;
+      billing_event_type: BillingEventType;
+      gender_type: GenderType;
+      guardian_relationship: GuardianRelationship;
+      staff_employment_status: StaffEmploymentStatus;
+      day_of_week: DayOfWeek;
+      report_card_status: ReportCardStatus;
+    };
+    CompositeTypes: Record<string, never>;
+  };
+}
+
+// ─── Convenience type helpers ────────────────────────────────────────────
+
+export type Tables<T extends keyof Database['public']['Tables']> = Database['public']['Tables'][T]['Row'];
+export type InsertTables<T extends keyof Database['public']['Tables']> = Database['public']['Tables'][T]['Insert'];
+export type UpdateTables<T extends keyof Database['public']['Tables']> = Database['public']['Tables'][T]['Update'];
+
+// Common entity shortcuts
+export type Profile = Tables<'profiles'>;
+export type School = Tables<'schools'>;
+export type SchoolMembership = Tables<'school_memberships'>;
+export type Role = Tables<'roles'>;
+export type Permission = Tables<'permissions'>;
+export type AcademicYear = Tables<'academic_years'>;
+export type Term = Tables<'terms'>;
+export type ClassGroup = Tables<'class_groups'>;
+export type Subject = Tables<'subjects'>;
+export type Student = Tables<'students'>;
+export type Guardian = Tables<'guardians'>;
+export type StaffProfile = Tables<'staff_profiles'>;
+export type Assessment = Tables<'assessments'>;
+export type AssessmentScore = Tables<'assessment_scores'>;
+export type Enrollment = Tables<'enrollments'>;
+export type AttendanceSession = Tables<'attendance_sessions'>;
+export type AttendanceRecord = Tables<'attendance_records'>;
+export type Invoice = Tables<'invoices'>;
+export type Payment = Tables<'payments'>;
+export type Announcement = Tables<'announcements'>;
+export type AuditLog = Tables<'audit_logs'>;
+export type Plan = Tables<'plans'>;
+export type Subscription = Tables<'subscriptions'>;
+export type ReportCard = Tables<'report_cards'>;
+export type StoredFile = Tables<'stored_files'>;

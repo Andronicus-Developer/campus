@@ -1,0 +1,169 @@
+@import "tailwindcss";
+
+@theme {
+  /* ── Core surfaces ─────────────────────────────────────────────── */
+  --color-canvas:   #f0f4ff;      /* page background — cool off-white */
+  --color-surface:  #ffffff;      /* cards, sheets */
+  --color-surface-raised: #f8faff; /* subtly raised panels */
+
+  /* ── Primary — bright indigo-blue ──────────────────────────────── */
+  --color-primary:        #4f6ef7; /* main brand blue */
+  --color-primary-hover:  #3a57e8;
+  --color-primary-light:  #eef1ff; /* tinted backgrounds */
+  --color-primary-deep:   #2d43c9;
+
+  /* ── Accent — vivid violet ──────────────────────────────────────── */
+  --color-accent:       #7c3aed; /* violet for highlights */
+  --color-accent-light: #f3eeff;
+
+  /* ── Success — bright emerald ───────────────────────────────────── */
+  --color-success:       #10b981;
+  --color-success-light: #ecfdf5;
+  --color-success-deep:  #059669;
+
+  /* ── Warning — amber ────────────────────────────────────────────── */
+  --color-warning:       #f59e0b;
+  --color-warning-light: #fffbeb;
+
+  /* ── Danger — bright red ────────────────────────────────────────── */
+  --color-danger:       #ef4444;
+  --color-danger-light: #fef2f2;
+  --color-danger-deep:  #dc2626;
+
+  /* ── Orange — energetic highlight ──────────────────────────────── */
+  --color-orange:       #f97316;
+  --color-orange-light: #fff7ed;
+
+  /* ── Neutral ink scale ──────────────────────────────────────────── */
+  --color-ink:       #0f172a; /* near-black slate */
+  --color-ink-soft:  #334155;
+  --color-ink-muted: #64748b;
+  --color-ink-faint: #94a3b8;
+  --color-line:      #e2e8f0; /* borders */
+  --color-line-soft: #f1f5f9; /* subtler dividers */
+
+  /* ── Typography ─────────────────────────────────────────────────── */
+  --font-display: var(--font-jakarta), ui-sans-serif, system-ui, sans-serif;
+  --font-sans:    var(--font-jakarta), ui-sans-serif, system-ui, sans-serif;
+  --font-mono:    var(--font-jetbrains), ui-monospace, SFMono-Regular, monospace;
+}
+
+@layer base {
+  html {
+    scroll-behavior: smooth;
+  }
+
+  body {
+    background-color: var(--color-canvas);
+    color: var(--color-ink);
+    font-family: var(--font-sans);
+  }
+
+  ::selection {
+    background-color: var(--color-primary);
+    color: #ffffff;
+  }
+
+  :focus-visible {
+    outline: 2px solid var(--color-primary);
+    outline-offset: 2px;
+    border-radius: 4px;
+  }
+}
+
+@layer utilities {
+  /* Grid-dot background for landing hero */
+  .bg-dot-grid {
+    background-image: radial-gradient(circle, rgba(79, 110, 247, 0.18) 1px, transparent 1px);
+    background-size: 28px 28px;
+  }
+
+  /* Subtle line grid for the dark sidebar */
+  .bg-grid-dark {
+    background-image:
+      linear-gradient(to right, rgba(255, 255, 255, 0.05) 1px, transparent 1px),
+      linear-gradient(to bottom, rgba(255, 255, 255, 0.05) 1px, transparent 1px);
+    background-size: 56px 56px;
+  }
+
+  /* Gradient mesh blobs */
+  .gradient-blob-blue {
+    background: radial-gradient(ellipse at 50% 50%, rgba(79, 110, 247, 0.22) 0%, transparent 72%);
+  }
+
+  .gradient-blob-violet {
+    background: radial-gradient(ellipse at 50% 50%, rgba(124, 58, 237, 0.18) 0%, transparent 72%);
+  }
+
+  .gradient-blob-teal {
+    background: radial-gradient(ellipse at 50% 50%, rgba(16, 185, 129, 0.15) 0%, transparent 72%);
+  }
+
+  .hide-scrollbar {
+    scrollbar-width: none;
+  }
+
+  .hide-scrollbar::-webkit-scrollbar {
+    display: none;
+  }
+
+  /* Gradient text utility */
+  .text-gradient {
+    background: linear-gradient(135deg, #4f6ef7 0%, #7c3aed 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+  }
+
+  /* Card hover lift */
+  .card-lift {
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+  }
+  .card-lift:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 20px 48px -16px rgba(79, 110, 247, 0.22);
+  }
+}
+
+@keyframes load-rise {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+.load-rise {
+  animation: load-rise 0.7s cubic-bezier(0.22, 1, 0.36, 1) both;
+}
+
+.reveal {
+  opacity: 0;
+  transform: translateY(20px);
+  transition:
+    opacity 0.7s cubic-bezier(0.22, 1, 0.36, 1),
+    transform 0.7s cubic-bezier(0.22, 1, 0.36, 1);
+  will-change: opacity, transform;
+}
+
+.reveal[data-shown="true"] {
+  opacity: 1;
+  transform: none;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  html {
+    scroll-behavior: auto;
+  }
+
+  .load-rise,
+  .reveal {
+    animation: none !important;
+    opacity: 1 !important;
+    transform: none !important;
+    transition: none !important;
+  }
+}

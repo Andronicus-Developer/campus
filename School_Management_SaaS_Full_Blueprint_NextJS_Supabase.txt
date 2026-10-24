@@ -1,0 +1,384 @@
+SCHOOL MANAGEMENT
+SAAS PLATFORM
+Product Requirements • Architecture • Data Model • Security • Roadmap • Master AI Build Prompt
+Next.js App Router · TypeScript · Supabase Database · Supabase JS · Supabase Auth
+Version 2.0  |  17 October 2026
+Implementation-ready blueprint for a secure, multi-tenant school SaaS
+
+
+Document guide
+* 1. Executive summary and goals
+* 2. Selected technology stack
+Supabase architecture note: Supabase is a managed backend platform. Its database is PostgreSQL under the hood, but this blueprint uses Supabase Database, Supabase Auth, Supabase Storage and the Supabase JavaScript client rather than self-managing a separate database server or using Prisma as the primary data-access layer.
+Use @supabase/supabase-js and @supabase/ssr for client/server integration with Next.js. Keep the service-role key server-only; use user-scoped clients for normal requests so Row-Level Security policies remain effective.
+* 3. Product scope and user portals
+* 4. Functional requirements
+* 5. Architecture and source structure
+* 6. Authentication, authorization and security
+* 7. Database model
+* 8. Core workflows
+* 9. Integrations
+* 10. UI/UX standards
+* 11. Testing and acceptance criteria
+* 12. Deployment and operations
+* 13. Delivery roadmap
+* 14. Launch checklist
+* 15. Master AI build prompt
+* 16. Environment and commands
+* 17. Risks and decisions
+1. Executive summary and goals
+Build a production-minded, multi-tenant School Management SaaS platform for multiple independent schools. It should manage academic, administrative, communication and financial operations while keeping each school's data isolated. The initial architecture should be a modular monolith: one Next.js application, one Supabase Database database, clearly separated domain modules, and background jobs for work that should not run inside a web request.
+Product goals
+* Give each school its own secure workspace, academic calendar, grading configuration, classes, branding and fee settings.
+* Provide role-specific experiences for platform operators, school leadership, teachers, finance staff, parents/guardians and students.
+* Reduce manual work in admissions, attendance, grading, report cards, fee collection and communication.
+* Support SaaS plans, school onboarding, usage limits, audit trails, backups and a path to scale.
+MVP non-goals
+* Do not begin with microservices, Kubernetes or unnecessary infrastructure.
+* Do not implement every optional module before core student, academic and finance workflows are dependable.
+* Do not treat hidden UI buttons or payment redirects as security controls.
+* Do not claim legal compliance without qualified review.
+2. Selected technology stack
+LayerTechnologyPurpose / guidanceFrameworkNext.js App RouterLayouts, Server Components, Server Actions and Route Handlers.Language/UIReact + strict TypeScriptReusable UI and safer contracts.Styling/componentsTailwind CSS + shadcn/uiResponsive, accessible design system.IconsLucide ReactConsistent iconography.Forms/validationReact Hook Form + ZodClient usability and authoritative server-side validation.Database/backend platformSupabase Database + Supabase JSRelational integrity, typed access, schema and migrations.AuthenticationSupabase AuthSign-in and session integration; select a currently supported configuration/adapter.AuthorizationCustom RBACPermissions scoped by tenant, membership, resource and record state.File storageSupabase StoragePrivate documents, exports and generated report artifacts.EmailResendTransactional email and notifications.Background jobsInngestScheduled reminders, bulk tasks, report generation and retries.PaymentsPaystackSchool fees and/or SaaS billing where account, country and use case are supported.Client server-stateTanStack QueryUse where client caching/mutations add value.ChartsRechartsAuthorized aggregate dashboards.TestsVitest + PlaywrightUnit/integration and browser end-to-end tests.MonitoringSentryExceptions and performance traces with PII scrubbing.AnalyticsPostHogPrivacy-conscious usage analytics; avoid student PII.HostingVercelNext.js deployment and preview environments.Database and backend platformNeon or managed Supabase DatabaseChoose based on backups, pooling, regions, cost and restore capability.
+Confirm current compatibility, pricing and provider support before implementation. Keep the application portable across managed Supabase Database providers. Supabase Database is the source of truth; Supabase JS is the data-access layer.
+Dependency policy
+* Commit a lockfile and use stable compatible releases.
+* Keep packages minimal and document major dependency choices.
+* Keep Supabase JS, payment secrets, AWS credentials and privileged logic in server-only modules.
+* Never expose private secrets through NEXT_PUBLIC_ environment variables.
+* Prefer Server Components for read-heavy screens and Client Components only for interaction.
+3. Product scope and user portals
+Portal / roleCore responsibilitiesPlatform Super AdminTenant lifecycle, plans, subscriptions, onboarding, platform configuration, support access with audit trail.School Owner / AdminSchool profile, branding, academic calendar, classes, subjects, staff, roles, settings and subscription.Principal / HeadteacherAttendance, staff activity, result approval, school reports and academic oversight.RegistrarAdmissions, student records, guardians, enrollment, class placement, transfers and archives.TeacherAssigned classes/subjects, attendance, assessments, marks and permitted parent communication.Bursar / AccountantFee structures, invoices, payments, allocations, receipts, refunds and reconciliation.Parent / GuardianLinked children, attendance, results, announcements, balances and receipts.StudentPersonal timetable, attendance, published results, announcements and resources.
+Optional later modules
+* Library: catalog, loans, returns and overdue notices.
+* Transport: routes, vehicles, stops and transport fees.
+* Boarding/hostel: rooms, beds and occupancy.
+* Health office: tightly restricted records and incident management.
+* Inventory/procurement and learning-management features.
+4. Functional requirements
+4.1 Tenant onboarding and school settings
+* Create a tenant with unique slug/code, contacts, timezone, locale, currency, logo and branding.
+* Track pending, trial, active, suspended and closed states; enforce access rules for each state.
+* Configure academic years, terms, grading scales, attendance rules, fee categories and receipt numbering.
+* Require a reason and audit entry for platform suspension/reactivation.
+4.2 Admissions and student information
+* Capture applications, guardians, documents and admission status.
+* Convert accepted applications to student/enrollment records transactionally without duplicate conversion.
+* Track student IDs, status, enrollment history, class placement, emergency contacts and documents.
+* Use transfer/withdrawal/archive states without deleting academic or financial history.
+4.3 Staff and access
+* Create staff profiles and explicit school memberships.
+* Assign roles/permissions; revoke access and invalidate sessions when needed.
+* Separate employment information from login identity and authorization claims.
+4.4 Classes, subjects and timetable
+* Manage class groups, streams, subjects, teaching assignments, rooms and periods.
+* Detect schedule conflicts and restrict teachers to assigned classes unless separately authorized.
+4.5 Attendance
+* Record attendance by class/date/session with present, absent, late and excused statuses.
+* Prevent duplicate records with constraints and idempotent save logic.
+* Require permission and a reason for corrections; preserve before/after audit data.
+* Provide summaries and optional guardian notifications.
+4.6 Assessments and report cards
+* Configure assessment categories, weights, grading bands, terms and publication rules.
+* Validate score ranges and define missing, exempt and absent score handling.
+* Support draft, submitted, approved and published states.
+* Generate downloadable/printable report cards with publication history.
+4.7 Fees and payments
+* Create fee schedules, invoices, line items, balances, discounts and waivers.
+* Track payment attempts, allocations, receipts, reversals, refunds and reconciliation.
+* Verify provider webhooks server-side, validate signatures, deduplicate events and reconcile amount/currency/reference.
+* Never trust client-supplied amount or payment status.
+4.8 Communication
+* Target announcements to school, class, staff, parents or individual recipients by permission.
+* Use Resend for email and Inngest for scheduled/retryable jobs.
+* Track delivery attempts and failures; avoid sensitive information in email subjects.
+4.9 Files and exports
+* Keep Supabase Storage objects private and serve short-lived signed URLs after authorization.
+* Validate file type, size, ownership and safe filenames.
+* Run large exports asynchronously and apply tenant filters identical to the UI.
+4.10 SaaS subscriptions
+* Manage plan catalog, trials, entitlements, provider references and lifecycle.
+* Enforce feature/usage limits server-side.
+* Keep platform subscription billing separate from school fee collection.
+5. Architecture and source structure
+Use a modular monolith. Separate domain modules at the code boundary, share one deployment and Supabase Database database, and extract services only when workload or team boundaries justify it.
+Tenant isolation requirements
+Supabase Row-Level Security (RLS) is a core requirement. Enable RLS on every exposed tenant-owned table. Policies should use auth.uid() and verify an active SchoolMembership for the row's schoolId. Never trust a schoolId supplied by the browser on its own.
+The service-role key bypasses RLS. Use it only in tightly controlled server-side administrative jobs and never expose it to the browser. Prefer user-scoped Supabase clients so policies are enforced by the database.
+* Model School/Tenant and SchoolMembership explicitly.
+* Every tenant-owned entity carries schoolId/tenantId or has a verified parent relation.
+* Resolve active school on the server from a verified membership; never trust a browser-supplied tenant ID alone.
+* Centralize tenant-aware data access and permission checks.
+* Use compound unique constraints for school-scoped identifiers, e.g. (schoolId, studentNumber).
+* Test cross-tenant denial for reads, writes, exports, file access, jobs and webhooks.
+* Consider Supabase Database Row-Level Security only as defense in depth with carefully tested session context.
+Suggested source tree
+src/
+  app/
+    (public)/
+    (auth)/
+    (platform)/super-admin/
+    (school)/[schoolSlug]/
+      dashboard/ students/ admissions/ staff/
+      academics/ attendance/ assessments/ fees/
+      reports/ settings/
+    api/webhooks/paystack/
+  components/ui/ layout/ data-table/ forms/
+  features/tenants/ admissions/ students/ staff/
+    academics/ attendance/ assessments/ finance/
+    notifications/ subscriptions/
+  lib/auth/ authorization/ db/ env/ storage/
+    payments/ email/ validation/ audit/
+  server/services/ repositories/ jobs/
+  prisma/schema.prisma
+  tests/unit/ integration/ e2e/
+Server-side request flow
+1. Authenticate the user with Supabase Auth.
+2. Resolve the requested school and verify active membership.
+3. Authorize the action using RBAC and resource-level policy.
+4. Validate input with Zod on the server.
+5. Execute domain logic; use transactions for coupled state changes.
+6. Write audit events for sensitive actions.
+7. Return only permitted fields and safe error messages.
+6. Authentication, authorization and security
+Supabase Auth strategy
+Supabase Auth establishes sign-in/session integration but does not implement the complete school permission model. Select a currently supported adapter/configuration after checking version and deployment compatibility. OAuth providers are optional. For password login, use reputable password hashing, rate limits, safe recovery and session invalidation. For magic links, protect expiry and replay.
+* Use HTTPS and secure HttpOnly/SameSite cookies in production.
+* Keep session claims minimal and re-check fresh membership/permissions for sensitive actions.
+* Rate-limit login, recovery, invitation and public endpoints.
+* Protect recovery and invitation flows against enumeration and token reuse.
+* Consider re-authentication or stronger controls for highly privileged operations.
+Custom RBAC
+students.read          students.create       students.update
+attendance.take        attendance.correct
+assessments.enter      results.approve       results.publish
+fees.invoice           payments.reconcile    reports.export
+staff.manage           school.settings.manage
+platform.tenants.manage
+Authorization decision = authenticated identity + active school membership + permission + resource scope + record-state policy. A teacher may enter marks only for assigned classes/subjects and within the permitted grading window.
+Security baseline
+* Validate all external input on the server; use parameterized database access.
+* Apply appropriate CSRF/origin protections and safe security headers for the chosen request/session pattern.
+* Verify webhook signatures using the provider's documented raw-body requirements.
+* Keep secrets server-side; use least-privilege IAM and private Supabase Storage buckets.
+* Scrub PII, tokens and payment data from logs, Sentry and analytics.
+* Audit grade publication, attendance corrections, financial adjustments, role changes, exports and privileged support access.
+* Define retention, deletion, backups, restore tests and incident response for target markets.
+* Run dependency/secret scans and periodically review access.
+7. Database model
+This is a logical model; refine types, nullability, deletion behavior, indexes and constraints in Supabase JS. Use opaque IDs, explicit timestamps and database constraints for important invariants.
+EntityPurpose / relationshipsUserGlobal identity and account status; not the only source of tenant role.SchoolTenant profile, slug, locale, timezone, currency, status and configuration.SchoolMembershipUser-to-school link, membership status and metadata.Role / Permission / RolePermission / MembershipRoleReusable permission catalog and role assignment.AcademicYear / TermSchool-scoped calendar.ClassGroup / Subject / TeachingAssignmentAcademic structures and teacher assignment.Student / Guardian / StudentGuardianStudent profile and many-to-many guardian relationships.AdmissionApplication / EnrollmentApplication lifecycle and enrollment history.StaffProfileSchool-specific employment/profile details.AttendanceSession / AttendanceRecordClass/date/session attendance; uniqueness prevents duplicates.Assessment / AssessmentScore / GradeScaleAssessment setup, scores, grading rules and publication state.ReportCard / ReportCardPublicationGenerated artifact and publication history.FeeStructure / Invoice / InvoiceLineFee schedules and charges.Payment / PaymentAllocation / RefundProvider references, status, amount, currency, allocations and reversals.WebhookEventProvider event ID, processing status and idempotency tracking.Announcement / NotificationDeliveryCommunication content, recipients and delivery attempts.StoredFilePrivate Supabase Storage key, tenant, owner and content metadata.AuditLogActor, tenant, action, resource, timestamp, reason and safe metadata.Plan / Subscription / BillingEventSaaS entitlements and billing lifecycle.
+Database rules
+Supabase-specific migration workflow: keep tables, constraints, indexes, triggers, functions and RLS policies in version-controlled SQL migrations under supabase/migrations. Use the Supabase CLI for local development and separate Supabase projects for development, staging and production.
+Generate TypeScript database types from the Supabase schema and use them with the client. Use SQL functions/RPC for multi-step operations that must be atomic; make payment webhook handling and attendance writes idempotent.
+* Use foreign keys and deliberate onDelete rules; preserve financial/academic history.
+* Index common tenant and reporting filters (schoolId, studentId, classGroupId, status, createdAt) as appropriate.
+* Use database functions/RPC for coupled workflows such as invoice creation and allocations so related changes are atomic.
+* Use integer minor units or Decimal for money, never binary floating point.
+* Store timestamps in UTC and render in the school's configured timezone.
+* Use archive/status fields when records must remain auditable.
+* Version migrations in source control and test them before production.
+8. Core workflows
+Admissions to enrollment
+8. Registrar creates an application and adds required documents.
+9. Application is reviewed and status changes are recorded with actor/time.
+10. On acceptance, create student and enrollment in a transaction; prevent duplicate conversion.
+11. Assign academic year, class and school-unique student number.
+12. Notify guardians without exposing sensitive documents.
+Attendance
+13. Teacher opens an assigned class and selects an allowed session/date.
+14. System loads roster and existing attendance.
+15. Server verifies assignment, date rules and valid statuses.
+16. Constraint/idempotency prevents duplicate session records.
+17. Corrections require permission and reason; audit old/new values.
+18. Optional background summary/guardian notification runs safely.
+Assessments and report cards
+19. Admin configures grading scale and weights.
+20. Teacher enters scores; server validates range, assignment and grading window.
+21. Teacher submits marks for review; authorized approver approves.
+22. Authorized user publishes results; parent/student access follows publication policy.
+23. Generate large report-card batches asynchronously and record artifact/version metadata.
+Fee payment
+24. Create invoice and line items with server-calculated amounts.
+25. Create pending payment attempt with internal reference and provider metadata.
+26. Initiate provider payment from the server.
+27. Receive webhook; verify signature, deduplicate event and validate reference/amount/currency.
+28. Update payment/allocation transactionally; browser redirect is not proof of payment.
+29. Reconcile settlements and handle failures, reversals and refunds explicitly.
+30. Generate a receipt only when the configured success state is confirmed.
+9. Integrations
+ServiceUsageControlsSupabase StoragePrivate files, reports and exportsPrivate bucket, least privilege, signed URLs, upload validation and retention.ResendTransactional emailVerified domain, safe templates, retry and delivery tracking.InngestScheduled reminders, exports and report generationIdempotent handlers, retry-safe side effects and tenant context.PaystackFees and possible SaaS subscriptionsConfirm eligibility, fees and use-case support; verify webhooks and reconcile.SentryErrors and tracesPII/token scrubbing and controlled access.PostHogProduct usage analyticsNo student PII; configure consent and retention.RechartsAggregate dashboardsAuthorized aggregates only; no cross-tenant data leakage.
+Keep school fee transactions separate from SaaS subscription charges in models, references, reports and webhook handlers. Confirm current provider capabilities, fees, settlement, refunds and local compliance before launch.
+10. UI/UX and accessibility
+* Use consistent role-based navigation and a clear active-school indicator.
+* Build mobile-first layouts; provide usable alternatives for wide data tables.
+* Include loading, empty, error, success and permission-denied states.
+* Use semantic headings, labels, keyboard navigation, visible focus and adequate contrast.
+* Confirm sensitive/destructive actions and request reasons when appropriate.
+* Support search, filters, sorting, server pagination and bulk actions for large lists.
+* Provide printable receipts and report cards.
+* Avoid fetching every student into the browser; paginate on the server.
+* Use optimistic updates only with clear rollback behavior.
+* Configure language, currency, date format and timezone per school.
+11. Testing and acceptance criteria
+LayerToolCoverageUnitVitestZod schemas, grading/fee calculations, permissions and state transitions.IntegrationVitest + test databaseTenant-scoped services, Supabase JS queries, transactions and webhook idempotency.End-to-endPlaywrightOnboarding, admissions, attendance, grading, invoice/payment lifecycle and parent/student views.Security regressionAutomated + manualCross-tenant access, privilege escalation, file/export access and webhook spoofing.OperationsCI and stagingMigration validation, backup/restore, env validation, error reporting and job retries.
+Release acceptance criteria
+* School A cannot read, edit, export or download School B records, even using guessed IDs or manipulated URLs.
+* Every privileged server action verifies identity, membership, permission and resource scope.
+* Enrollment and finance preserve integrity and audit history.
+* Webhook processing is verified, idempotent and reconciled against amount, currency and reference.
+* All forms validate on the server and errors do not leak internals.
+* Core happy paths and denial paths are covered by automated tests.
+* Lint, typecheck, tests, migration checks and production build pass in CI.
+* Logs/analytics contain no passwords, tokens, full payment credentials or unnecessary student PII.
+12. Deployment and operations
+Environments
+* Local: fake seed data and test payment credentials.
+* Preview/staging: separate database and bucket; no production student data by default.
+* Production: protected secrets, limited access, alerts, backups and documented release process.
+CI/CD pipeline
+31. Install from lockfile.
+32. Run lint/format checks, TypeScript checks and unit tests.
+33. Run integration tests against an isolated database.
+34. Validate Supabase SQL schema and migration status.
+35. Build the Next.js app.
+36. Run Playwright smoke tests against preview/staging.
+37. Promote after checks; use reviewed migrations and a rollback/forward-fix plan.
+Observability and reliability
+* Use Sentry with PII scrubbing and useful performance traces.
+* Monitor job failures, email delivery, payment webhook failures, database connections, latency and storage errors.
+* Configure database backups and test restores on a schedule.
+* Define incident response, severity levels and customer communications.
+* Set retention for logs, audit records, files and analytics events.
+13. Phased roadmap
+PhaseScopeExit criteria0. DiscoveryConfirm school workflows, grading, fees, currencies, privacy, hosting and payment requirements.Approved scope and decision log.1. FoundationApp shell, env validation, Supabase, Supabase Auth, tenant membership, RBAC, audit and CI.Tenant context and permission checks tested.2. School setupTenant onboarding, calendar, classes, subjects, staff and guardians.School admin can configure a school.3. Student operationsAdmissions, profiles, enrollment, guardian links and documents.Registrar workflow passes tests.4. AcademicsAttendance, assessments, grading, approvals and reports.Teacher-to-publication workflow is secure.5. FinanceFees, invoices, payments, receipts, reconciliation and refunds.Sandbox payment lifecycle and duplicate-event tests pass.6. CommunicationResend, Inngest reminders, delivery tracking.Retries and tenant targeting are reliable.7. SaaS operationsPlans, trials, entitlements, platform admin and usage reporting.Limits enforced server-side.8. HardeningAccessibility, security review, backups, restore test, monitoring and pilot.Launch checklist approved.
+Estimate delivery only after discovery. Timelines depend on team size, existing code, integrations and school-specific business rules.
+14. Launch checklist
+* ? Tenant-aware authorization covers every page, action, endpoint, export, job and file.
+* ? Supabase SQL schema and migrations, indexes and seed data are version controlled.
+* ? Environment variables are documented and validated.
+* ? Core workflows and denial paths have automated tests.
+* ? Payment webhook verification, idempotency and reconciliation have an owner.
+* ? Supabase Storage objects are private and access is authorized.
+* ? Audit logs cover sensitive actions and privileged support access.
+* ? Backups are configured and a restore drill has passed.
+* ? Sentry and operational alerts are active; analytics avoid student PII.
+* ? Privacy notice, terms, retention and data-processing responsibilities are reviewed for target markets.
+* ? A pilot school has tested workflows and signed off.
+15. Master AI build prompt
+Copy the following prompt into your coding agent. Work incrementally; do not generate the entire platform in one unreviewed pass.
+ROLE
+Act as a senior full-stack SaaS architect and implementation engineer. Build a secure, maintainable, multi-tenant School Management SaaS platform. Inspect the existing repository first. Never claim tests ran or code works unless you actually ran the checks.
+
+MANDATORY STACK
+Next.js App Router; React; strict TypeScript; Tailwind CSS; shadcn/ui; Lucide React; React Hook Form; Zod; Supabase Database; Supabase JS; Supabase Auth; custom RBAC; Supabase Storage; Resend; Inngest; Paystack where supported for the target account/country/use case; TanStack Query where client-side server-state caching adds value; Recharts; Vitest; Playwright; Sentry; PostHog; Vercel; Neon or another managed Supabase Database provider.
+
+Do not silently substitute a primary technology. If compatibility or availability requires a change, explain the specific issue and ask approval. Do not add microservices, Kubernetes, Redis or other infrastructure without a demonstrated requirement.
+
+PRODUCT AND ROLES
+Build a multi-tenant SaaS with portals for Platform Super Admin, School Owner/Admin, Principal/Headteacher, Registrar, Teacher, Bursar/Accountant, Parent/Guardian and Student. Optional future modules: library, transport, boarding/hostel, health office, inventory and LMS.
+
+CORE MODULES
+Tenant onboarding and settings; academic years/terms; classes/subjects/staff; admissions/student profiles/guardians/enrollment; attendance; assessments/grading/approval/publication/report cards; fee structures/invoices/payments/allocations/receipts/refunds/reconciliation; announcements/email; private files/exports; plans/trials/entitlements; audit logs and platform reporting.
+
+ARCHITECTURE
+Use a modular monolith. Prefer Server Components for read-oriented pages and Client Components only for interaction. Use Server Actions and Route Handlers appropriately. Put domain logic in server-side services; keep data access tenant-aware. Do not expose database clients, secrets or privileged service logic to the browser.
+
+MULTI-TENANCY IS NON-NEGOTIABLE
+- Model School/Tenant and SchoolMembership explicitly.
+- Every tenant-owned record must include schoolId/tenantId or have a verified tenant-owned parent.
+- Never trust a school ID, role, permission, amount or status supplied by the browser without server verification.
+- Resolve active school from verified membership and route/context.
+- Centralize tenant-aware authorization for every server action, endpoint, export, file access and background job.
+- Use compound unique constraints for school-scoped identifiers.
+- Test that School A cannot read, edit, delete, export or download School B data through manipulated IDs, routes, filters or APIs.
+- Consider Supabase Database Row-Level Security only as defense in depth after designing and testing safe session context. Application authorization is still mandatory.
+
+AUTHENTICATION AND RBAC
+Use a currently supported Supabase Auth configuration/adapter. OAuth providers are optional; do not require OAuth just to support login. If passwords are used, implement reputable password hashing, rate limits, safe recovery and session invalidation. If magic links are used, protect expiry and replay. Use secure HttpOnly/SameSite cookies and HTTPS in production.
+Implement permissions such as students.read, students.create, students.update, attendance.take, attendance.correct, assessments.enter, results.approve, results.publish, fees.invoice, payments.reconcile, reports.export, staff.manage, school.settings.manage and platform.tenants.manage.
+Every sensitive action checks identity, active membership, permission, resource scope and record-state policy. Hiding a button is not authorization.
+
+DATA MODEL
+Create Supabase JS models with relations, constraints, indexes, deletion rules and timestamps. Include at minimum User, School, SchoolMembership, Role, Permission, RolePermission, MembershipRole, AcademicYear, Term, ClassGroup, Subject, TeachingAssignment, Student, Guardian, StudentGuardian, AdmissionApplication, Enrollment, StaffProfile, AttendanceSession, AttendanceRecord, Assessment, AssessmentScore, GradeScale, ReportCard, ReportCardPublication, FeeStructure, Invoice, InvoiceLine, Payment, PaymentAllocation, Refund, WebhookEvent, Announcement, NotificationDelivery, StoredFile, AuditLog, Plan, Subscription and BillingEvent.
+Use PostgreSQL functions/RPC or carefully designed server-side transaction boundaries for coupled changes; separate Supabase client calls are not automatically atomic. Store money as integer minor units or Decimal with explicit currency. Never use floating-point money calculations. Preserve financial and academic history.
+
+PAYMENTS
+Use Paystack only after confirming current account/country/product support. Separate school fees from SaaS subscription billing. Generate amounts/references on the server. Verify provider webhook signatures as documented, deduplicate events, and validate reference, amount and currency before confirming payment. Browser redirects are informational, not authoritative. Handle pending, successful, failed, reversed, refunded and reconciliation states. Never log payment secrets.
+
+Supabase Storage, EMAIL AND JOBS
+Keep Supabase Storage private; validate file size/type and use short-lived signed URLs after authorization. Use Resend for transactional email. Use Inngest for scheduled reminders, large exports and report generation. Jobs must be tenant-aware, idempotent, retry-safe and observable. Do not include unnecessary student PII in emails, logs or analytics.
+
+UI/UX
+Build a polished, accessible, responsive interface with role-based navigation, active school context, dashboards, search/filter/pagination, useful loading/empty/error states, accessible forms, confirmation for sensitive changes, printable receipts and report cards. Use Recharts for authorized aggregate data and TanStack Query only where useful.
+
+SECURITY AND PRIVACY
+Validate all inputs with Zod on the server. Use least privilege, rate limits, secure headers, suitable CSRF/origin protections and safe error messages. Keep secrets server-side. Parameterize database access. Audit grade publication, attendance corrections, financial adjustments, role changes, exports and platform support access. Scrub Sentry logs and never send student PII to PostHog. Document retention, deletion, backup, restore and incident response. Do not claim legal compliance without professional review.
+
+TESTING AND DELIVERY
+Use Vitest for unit/integration tests and Playwright for end-to-end tests. Test both success and denial paths. Required flows: school onboarding, staff membership, admission-to-enrollment, attendance, grading approval/publication, invoice creation, webhook processing, receipts, parent/student visibility and tenant isolation.
+CI must run lint/format, TypeScript checks, tests, Supabase JS validation/migration checks and production build. Document env variables, setup, migrations, seed data, deployment, backup and recovery. Do not mark a task complete until checks have actually run or clearly state what could not be run.
+
+WORKING METHOD
+1. Inspect the repository and summarize current state before editing.
+2. List assumptions and ask only essential blocking questions; document non-blocking assumptions.
+3. Propose milestones and a file tree.
+4. Implement foundation first: app shell, env validation, Supabase, Supabase Auth strategy, tenant membership, RBAC, audit log and CI.
+5. Add one domain module at a time, including schema/migration, service logic, UI, authorization and tests.
+6. After each milestone, run checks, fix failures and report changed files, commands/results, migration impact and remaining risks.
+7. Never fabricate credentials, test output, provider support or deployment success.
+8. Keep README, architecture notes, data model and acceptance checklist updated.
+
+INITIAL TASK
+Do not build everything at once. Inspect the repository, identify missing foundations, and propose the phased plan and initial file tree. Then implement only the first milestone: a working Next.js + TypeScript app, Tailwind/shadcn/ui baseline, Supabase configuration, environment validation, Supabase Auth integration strategy, tenant membership/RBAC foundation, audit-log model and automated quality checks. Include tests proving unauthorized and cross-tenant access is denied.
+16. Example environment variables and commands
+Names below are illustrative; exact variables depend on selected versions and configuration. Never commit real secrets.
+NODE_ENV=development
+NEXT_PUBLIC_APP_URL=http://localhost:3000
+NEXT_PUBLIC_SUPABASE_URL=https://YOUR_PROJECT.supabase.co
+NEXT_PUBLIC_SUPABASE_ANON_KEY=your-anon-key
+SUPABASE_SERVICE_ROLE_KEY=server-only-service-role-key
+AUTH_SECRET=replace-with-generated-secret
+AWS_REGION=eu-west-1
+AWS_Supabase Storage_BUCKET=your-private-bucket
+AWS_ACCESS_KEY_ID=server-only-access-key
+AWS_SECRET_ACCESS_KEY=server-only-secret
+RESEND_API_KEY=re_...
+EMAIL_FROM=School Platform <no-reply@example.com>
+PAYSTACK_SECRET_KEY=sk_test_...
+PAYSTACK_PUBLIC_KEY=pk_test_...
+INNGEST_EVENT_KEY=...
+INNGEST_SIGNING_KEY=...
+SENTRY_DSN=...
+NEXT_PUBLIC_POSTHOG_KEY=...
+NEXT_PUBLIC_POSTHOG_HOST=https://app.posthog.com
+Typical setup commands
+npx create-next-app@latest school-management-saas
+cd school-management-saas
+
+npm install @prisma/client prisma zod react-hook-form @hookform/resolvers
+npm install next-auth @tanstack/react-query recharts lucide-react
+npm install resend inngest @aws-sdk/client-s3 @aws-sdk/s3-request-presigner
+npm install @sentry/nextjs posthog-js
+npm install -D vitest @playwright/test
+
+npx supabase init
+# After defining the Supabase SQL schema:
+npx supabase migration new init
+npx supabase gen types typescript --local > src/lib/database.types.ts
+
+npm run lint
+npm run typecheck
+npm run test
+npm run build
+Treat these as a starting point, not a guaranteed copy/paste script. Install compatible versions, initialize shadcn/ui using its current CLI, and configure Supabase Auth/Supabase JS for the exact installed versions.
+17. Risks and decisions to confirm
+Decision / riskWhy it mattersRecommended actionTarget markets/data protectionStudent records are sensitive; duties vary.Confirm markets, contracts, retention, hosting and legal review.Supabase Auth strategyAdapter and provider compatibility changes.Choose credentials, magic link or optional social login deliberately.Tenant enforcementCross-school data exposure is high impact.Centralize context, test denial paths and consider RLS as defense in depth.Payment supportAvailability, fees, settlement, refunds and recurring billing vary.Confirm Paystack eligibility and whether billing flows need separation.Database providerPooling, backups, restore and pricing vary.Evaluate Neon or alternatives against workload and recovery needs.NotificationsSchools may need SMS beyond email.Start with email; add providers after requirements/consent are defined.Large exportsWeb requests may time out.Use Inngest and private Supabase Storage artifacts with access checks.Data imports/offline useLegacy data and poor connectivity affect rollout.Plan dry-run imports; scope offline sync separately.Delivery scheduleSchool-specific grading/fee rules expand scope.Validate with pilot schools before committing to a timeline.
+Closing recommendation
+Build secure tenancy and identity first, then school setup and student records, then academic workflows, then finance and integrations, and finally SaaS operations and optional modules. Treat tenant isolation, auditability and payment integrity as architectural requirements from day one.
+Revision record
+VersionDateChange2.017 October 2026Updated complete documentation and master AI build prompt to the selected Next.js, Supabase, Supabase Auth/RBAC, Supabase Storage, Resend, Inngest, Paystack, testing, monitoring and hosting stack.
+SCHOOL MANAGEMENT SaaS  |  TECHNICAL BLUEPRINT
+
+Implementation blueprint • Next.js + Supabase  |  1
+
