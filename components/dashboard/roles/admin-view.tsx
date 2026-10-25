@@ -23,6 +23,16 @@ import {
   ArrowRight,
   GraduationCap,
   Layers,
+  ClipboardCheck,
+  DollarSign,
+  Megaphone,
+  FileText,
+  BarChart3,
+  Bus,
+  History,
+  Sliders,
+  AlertTriangle,
+  TrendingUp,
 } from "lucide-react";
 
 interface AdmissionApp {
@@ -98,7 +108,7 @@ export function AdminDashboardView() {
 
   return (
     <div className="space-y-6">
-      {/* Admin Header & Authority Station */}
+      {/* SECTION A: Admin Header & Daily Administrative Command Pulse */}
       <div className="rounded-3xl border border-line bg-surface p-6 shadow-sm space-y-6">
         <div className="flex flex-wrap items-center justify-between gap-4">
           <div>
@@ -110,7 +120,7 @@ export function AdminDashboardView() {
             </div>
             <h2 className="mt-2 text-2xl font-black text-ink">Administrative Command Center</h2>
             <p className="text-xs text-ink-muted">
-              Centralized authority to create students, staff (teachers &amp; bursars), parents, classes, and subjects, and manage assignments.
+              Centralized governance of students, faculty, daily registers, fee billing, parent communications, document vaults, and campus operations.
             </p>
           </div>
 
@@ -132,88 +142,251 @@ export function AdminDashboardView() {
             </Link>
 
             <Link
-              href="/dashboard/admin/classes"
+              href="/dashboard/admin/reports"
               className="inline-flex items-center gap-1.5 rounded-xl border border-line bg-surface-raised px-3.5 py-2 text-xs font-bold text-ink shadow-sm hover:border-emerald-600 hover:text-emerald-700 active:scale-95 transition-all"
             >
-              <DoorOpen className="size-4 text-emerald-600" />
-              <span>+ Create Class</span>
-            </Link>
-
-            <Link
-              href="/dashboard/admin/subjects"
-              className="inline-flex items-center gap-1.5 rounded-xl border border-line bg-surface-raised px-3.5 py-2 text-xs font-bold text-ink shadow-sm hover:border-emerald-600 hover:text-emerald-700 active:scale-95 transition-all"
-            >
-              <BookMarked className="size-4 text-emerald-600" />
-              <span>+ Create Subject</span>
+              <BarChart3 className="size-4 text-teal-600" />
+              <span>Bulk Import &amp; Reports</span>
             </Link>
           </div>
         </div>
 
-        {/* 4 Operations Quick Stations */}
-        <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-4 border-t border-line pt-4">
+        {/* SECTION A.1: Daily User Totals & Institutional Metrics */}
+        <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 pt-4 border-t border-line">
           <Link
             href="/dashboard/admin/students"
-            className="group rounded-2xl border border-line bg-surface-raised p-4 transition-all hover:border-emerald-500 hover:bg-surface hover:shadow-sm"
+            className="p-3.5 rounded-2xl bg-surface-raised border border-line-soft hover:border-emerald-500 transition-all group"
           >
             <div className="flex items-center justify-between">
-              <span className="flex size-8 items-center justify-center rounded-xl bg-emerald-100 text-emerald-800 font-bold">
-                <Users className="size-4" />
+              <span className="text-[11px] text-ink-muted block font-medium group-hover:text-emerald-700">
+                Total Enrolled Students
               </span>
-              <ArrowRight className="size-4 text-ink-muted group-hover:text-emerald-600 transition-colors" />
+              <Users className="size-3.5 text-emerald-600" />
             </div>
-            <h4 className="mt-2.5 font-bold text-xs text-ink">Students &amp; Guardians</h4>
-            <p className="mt-1 text-[11px] text-ink-muted">
-              Add students, register parents, assign students to classes, and link guardian custody.
-            </p>
+            <div className="flex items-baseline gap-2 mt-1">
+              <span className="text-2xl font-black text-ink">842</span>
+              <span className="text-[10px] text-emerald-600 font-bold font-mono">+38 new term</span>
+            </div>
           </Link>
 
           <Link
             href="/dashboard/admin/staff"
-            className="group rounded-2xl border border-line bg-surface-raised p-4 transition-all hover:border-emerald-500 hover:bg-surface hover:shadow-sm"
+            className="p-3.5 rounded-2xl bg-surface-raised border border-line-soft hover:border-emerald-500 transition-all group"
           >
             <div className="flex items-center justify-between">
-              <span className="flex size-8 items-center justify-center rounded-xl bg-blue-100 text-blue-800 font-bold">
-                <GraduationCap className="size-4" />
+              <span className="text-[11px] text-ink-muted block font-medium group-hover:text-emerald-700">
+                Teaching Faculty
               </span>
-              <ArrowRight className="size-4 text-ink-muted group-hover:text-emerald-600 transition-colors" />
+              <GraduationCap className="size-3.5 text-blue-600" />
             </div>
-            <h4 className="mt-2.5 font-bold text-xs text-ink">Staff &amp; Bursar Onboarding</h4>
-            <p className="mt-1 text-[11px] text-ink-muted">
-              Onboard Teachers, Bursars, and Admins; appoint Form Masters; assign teaching loads.
-            </p>
+            <div className="flex items-baseline gap-2 mt-1">
+              <span className="text-2xl font-black text-ink">64</span>
+              <span className="text-[10px] text-blue-600 font-bold font-mono">100% confirmed</span>
+            </div>
           </Link>
 
           <Link
-            href="/dashboard/admin/classes"
-            className="group rounded-2xl border border-line bg-surface-raised p-4 transition-all hover:border-emerald-500 hover:bg-surface hover:shadow-sm"
+            href="/dashboard/admin/staff"
+            className="p-3.5 rounded-2xl bg-surface-raised border border-line-soft hover:border-emerald-500 transition-all group"
           >
             <div className="flex items-center justify-between">
-              <span className="flex size-8 items-center justify-center rounded-xl bg-amber-100 text-amber-800 font-bold">
-                <DoorOpen className="size-4" />
+              <span className="text-[11px] text-ink-muted block font-medium group-hover:text-emerald-700">
+                Non-Teaching Staff
               </span>
-              <ArrowRight className="size-4 text-ink-muted group-hover:text-emerald-600 transition-colors" />
+              <HeartHandshake className="size-3.5 text-amber-600" />
             </div>
-            <h4 className="mt-2.5 font-bold text-xs text-ink">Class Streams &amp; Quotas</h4>
-            <p className="mt-1 text-[11px] text-ink-muted">
-              Create class arms, set capacity quotas, assign room facilities, and appoint Form Masters.
-            </p>
+            <div className="flex items-baseline gap-2 mt-1">
+              <span className="text-2xl font-black text-ink">28</span>
+              <span className="text-[10px] text-ink-muted font-mono">Bursary, Clinic, Ops</span>
+            </div>
           </Link>
 
           <Link
-            href="/dashboard/admin/subjects"
-            className="group rounded-2xl border border-line bg-surface-raised p-4 transition-all hover:border-emerald-500 hover:bg-surface hover:shadow-sm"
+            href="/dashboard/admin/students"
+            className="p-3.5 rounded-2xl bg-surface-raised border border-line-soft hover:border-emerald-500 transition-all group"
           >
             <div className="flex items-center justify-between">
-              <span className="flex size-8 items-center justify-center rounded-xl bg-purple-100 text-purple-800 font-bold">
-                <BookMarked className="size-4" />
+              <span className="text-[11px] text-ink-muted block font-medium group-hover:text-emerald-700">
+                Registered Parents / Guardians
               </span>
-              <ArrowRight className="size-4 text-ink-muted group-hover:text-emerald-600 transition-colors" />
+              <Contact className="size-3.5 text-purple-600" />
             </div>
-            <h4 className="mt-2.5 font-bold text-xs text-ink">Subjects &amp; Allocations</h4>
-            <p className="mt-1 text-[11px] text-ink-muted">
-              Create subjects, allocate teachers to subject arms, and assign student electives.
-            </p>
+            <div className="flex items-baseline gap-2 mt-1">
+              <span className="text-2xl font-black text-ink">615</span>
+              <span className="text-[10px] text-emerald-600 font-bold font-mono">100% linked</span>
+            </div>
           </Link>
+        </div>
+
+        {/* SECTION A.2: Daily Administration Alerts & Incomplete Records Radar */}
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
+          <Link
+            href="/dashboard/admin/reports"
+            className="p-3.5 rounded-2xl border border-amber-500/30 bg-amber-500/5 hover:bg-amber-500/10 transition-colors flex items-center justify-between"
+          >
+            <div className="flex items-center gap-2.5">
+              <AlertTriangle className="size-4 text-amber-600 shrink-0" />
+              <div>
+                <span className="font-bold text-xs text-ink block">3 Incomplete Records</span>
+                <span className="text-[11px] text-ink-muted">Missing guardian link or NIN slip</span>
+              </div>
+            </div>
+            <span className="font-mono text-xs text-amber-700 font-bold">Fix →</span>
+          </Link>
+
+          <Link
+            href="/dashboard/admin/attendance"
+            className="p-3.5 rounded-2xl border border-rose-500/30 bg-rose-500/5 hover:bg-rose-500/10 transition-colors flex items-center justify-between"
+          >
+            <div className="flex items-center gap-2.5">
+              <ClipboardCheck className="size-4 text-rose-600 shrink-0" />
+              <div>
+                <span className="font-bold text-xs text-ink block">2 Overdue Registers</span>
+                <span className="text-[11px] text-ink-muted">JSS 3 Gold &amp; SSS 3 Arts</span>
+              </div>
+            </div>
+            <span className="font-mono text-xs text-rose-700 font-bold">Inspect →</span>
+          </Link>
+
+          <Link
+            href="/dashboard/admin/audit"
+            className="p-3.5 rounded-2xl border border-emerald-500/30 bg-emerald-500/5 hover:bg-emerald-500/10 transition-colors flex items-center justify-between"
+          >
+            <div className="flex items-center gap-2.5">
+              <ShieldCheck className="size-4 text-emerald-600 shrink-0" />
+              <div>
+                <span className="font-bold text-xs text-ink block">94.2% Activation Rate</span>
+                <span className="text-[11px] text-ink-muted">795 students &amp; 608 parents active</span>
+              </div>
+            </div>
+            <span className="font-mono text-xs text-emerald-700 font-bold">Audit →</span>
+          </Link>
+        </div>
+
+        {/* SECTION A.3: Comprehensive Administrative Command Modules Grid */}
+        <div className="border-t border-line pt-4 space-y-3">
+          <div className="flex items-center justify-between">
+            <span className="font-mono text-[10px] font-bold uppercase tracking-wider text-ink-muted">
+              Administrative Modules &amp; Subsystems
+            </span>
+            <span className="text-[11px] text-ink-muted">12 Core Administrative Portals</span>
+          </div>
+
+          <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
+            <Link
+              href="/dashboard/admin/students"
+              className="group rounded-2xl border border-line bg-surface-raised p-3.5 transition-all hover:border-emerald-500 hover:bg-surface hover:shadow-sm"
+            >
+              <div className="flex items-center justify-between">
+                <span className="flex size-7 items-center justify-center rounded-xl bg-emerald-100 text-emerald-800 font-bold">
+                  <Users className="size-3.5" />
+                </span>
+                <ArrowRight className="size-3.5 text-ink-muted group-hover:text-emerald-600 transition-colors" />
+              </div>
+              <h4 className="mt-2 font-bold text-xs text-ink">Students &amp; Guardians</h4>
+              <p className="text-[11px] text-ink-muted">Biodata, credentials, admissions, and guardian custody.</p>
+            </Link>
+
+            <Link
+              href="/dashboard/admin/staff"
+              className="group rounded-2xl border border-line bg-surface-raised p-3.5 transition-all hover:border-blue-500 hover:bg-surface hover:shadow-sm"
+            >
+              <div className="flex items-center justify-between">
+                <span className="flex size-7 items-center justify-center rounded-xl bg-blue-100 text-blue-800 font-bold">
+                  <GraduationCap className="size-3.5" />
+                </span>
+                <ArrowRight className="size-3.5 text-ink-muted group-hover:text-blue-600 transition-colors" />
+              </div>
+              <h4 className="mt-2 font-bold text-xs text-ink">Staff Administration</h4>
+              <p className="text-[11px] text-ink-muted">Teachers, bursars, logins, and teaching period quotas.</p>
+            </Link>
+
+            <Link
+              href="/dashboard/admin/attendance"
+              className="group rounded-2xl border border-line bg-surface-raised p-3.5 transition-all hover:border-emerald-500 hover:bg-surface hover:shadow-sm"
+            >
+              <div className="flex items-center justify-between">
+                <span className="flex size-7 items-center justify-center rounded-xl bg-emerald-100 text-emerald-800 font-bold">
+                  <ClipboardCheck className="size-3.5" />
+                </span>
+                <span className="font-mono text-[9px] font-bold px-1.5 py-0.5 rounded bg-emerald-500/10 text-emerald-700">
+                  Daily
+                </span>
+              </div>
+              <h4 className="mt-2 font-bold text-xs text-ink">Attendance Radar</h4>
+              <p className="text-[11px] text-ink-muted">Class registers, submission cutoffs, and corrections.</p>
+            </Link>
+
+            <Link
+              href="/dashboard/admin/finance"
+              className="group rounded-2xl border border-line bg-surface-raised p-3.5 transition-all hover:border-amber-500 hover:bg-surface hover:shadow-sm"
+            >
+              <div className="flex items-center justify-between">
+                <span className="flex size-7 items-center justify-center rounded-xl bg-amber-100 text-amber-800 font-bold">
+                  <DollarSign className="size-3.5" />
+                </span>
+                <ArrowRight className="size-3.5 text-ink-muted group-hover:text-amber-600 transition-colors" />
+              </div>
+              <h4 className="mt-2 font-bold text-xs text-ink">Finance Support</h4>
+              <p className="text-[11px] text-ink-muted">Fee categories, student billing, and dispute escalation.</p>
+            </Link>
+
+            <Link
+              href="/dashboard/admin/communications"
+              className="group rounded-2xl border border-line bg-surface-raised p-3.5 transition-all hover:border-blue-500 hover:bg-surface hover:shadow-sm"
+            >
+              <div className="flex items-center justify-between">
+                <span className="flex size-7 items-center justify-center rounded-xl bg-blue-100 text-blue-800 font-bold">
+                  <Megaphone className="size-3.5" />
+                </span>
+                <ArrowRight className="size-3.5 text-ink-muted group-hover:text-blue-600 transition-colors" />
+              </div>
+              <h4 className="mt-2 font-bold text-xs text-ink">Parent Communications</h4>
+              <p className="text-[11px] text-ink-muted">Broadcast notices, SMS/WhatsApp alerts, and inquiry routing.</p>
+            </Link>
+
+            <Link
+              href="/dashboard/admin/documents"
+              className="group rounded-2xl border border-line bg-surface-raised p-3.5 transition-all hover:border-indigo-500 hover:bg-surface hover:shadow-sm"
+            >
+              <div className="flex items-center justify-between">
+                <span className="flex size-7 items-center justify-center rounded-xl bg-indigo-100 text-indigo-800 font-bold">
+                  <FileText className="size-3.5" />
+                </span>
+                <ArrowRight className="size-3.5 text-ink-muted group-hover:text-indigo-600 transition-colors" />
+              </div>
+              <h4 className="mt-2 font-bold text-xs text-ink">Documents &amp; Student IDs</h4>
+              <p className="text-[11px] text-ink-muted">Vault archives, printable Student IDs, and class rolls.</p>
+            </Link>
+
+            <Link
+              href="/dashboard/admin/reports"
+              className="group rounded-2xl border border-line bg-surface-raised p-3.5 transition-all hover:border-teal-500 hover:bg-surface hover:shadow-sm"
+            >
+              <div className="flex items-center justify-between">
+                <span className="flex size-7 items-center justify-center rounded-xl bg-teal-100 text-teal-800 font-bold">
+                  <BarChart3 className="size-3.5" />
+                </span>
+                <ArrowRight className="size-3.5 text-ink-muted group-hover:text-teal-600 transition-colors" />
+              </div>
+              <h4 className="mt-2 font-bold text-xs text-ink">Reports &amp; Data Integrity</h4>
+              <p className="text-[11px] text-ink-muted">Demographic stats, anomaly scanner, and bulk spreadsheet import.</p>
+            </Link>
+
+            <Link
+              href="/dashboard/admin/operations"
+              className="group rounded-2xl border border-line bg-surface-raised p-3.5 transition-all hover:border-orange-500 hover:bg-surface hover:shadow-sm"
+            >
+              <div className="flex items-center justify-between">
+                <span className="flex size-7 items-center justify-center rounded-xl bg-orange-100 text-orange-800 font-bold">
+                  <Bus className="size-3.5" />
+                </span>
+                <ArrowRight className="size-3.5 text-ink-muted group-hover:text-orange-600 transition-colors" />
+              </div>
+              <h4 className="mt-2 font-bold text-xs text-ink">School Operations</h4>
+              <p className="text-[11px] text-ink-muted">Bus transit routes, resident boarding, and facility repair orders.</p>
+            </Link>
+          </div>
         </div>
       </div>
 

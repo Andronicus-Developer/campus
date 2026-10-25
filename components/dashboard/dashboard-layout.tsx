@@ -42,6 +42,13 @@ import {
   Calendar,
   Crown,
   Globe,
+  FileText,
+  BarChart3,
+  Bus,
+  History,
+  DollarSign,
+  ClipboardCheck,
+  FolderOpen,
 } from "lucide-react";
 import { RoleConfig, RoleKey, ROLES_CONFIG } from "@/lib/rbac";
 import { RolePrivilegeModal } from "./role-privilege-modal";
@@ -123,6 +130,13 @@ const iconMap: Record<string, React.ElementType> = {
   Activity,
   MessageSquareText,
   Calendar,
+  FileText,
+  BarChart3,
+  Bus,
+  History,
+  DollarSign,
+  ClipboardCheck,
+  FolderOpen,
 };
 
 export function DashboardLayout({ currentRole, children }: DashboardLayoutProps) {
