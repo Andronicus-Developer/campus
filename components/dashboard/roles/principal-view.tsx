@@ -1,6 +1,7 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
+import Link from "next/link";
 import {
   Activity,
   AlertTriangle,
@@ -15,6 +16,7 @@ import {
   DollarSign,
   FileSpreadsheet,
   GraduationCap,
+  Landmark,
   Megaphone,
   Percent,
   Send,
@@ -26,8 +28,31 @@ import {
   XCircle,
 } from "lucide-react";
 import { ROLES_CONFIG } from "@/lib/rbac";
+import {
+  StaffMember,
+  getStoredStaff,
+  confirmStaffInStorage,
+} from "@/lib/staff-data";
 
 export function PrincipalDashboardView() {
+  const [staffList, setStaffList] = useState<StaffMember[]>([]);
+
+  useEffect(() => {
+    const loadStaff = () => {
+      setStaffList(getStoredStaff());
+    };
+    loadStaff();
+    window.addEventListener("campus360:staff-updated", loadStaff);
+    return () => window.removeEventListener("campus360:staff-updated", loadStaff);
+  }, []);
+
+  const pendingStaff = staffList.filter((s) => s.confirmationStatus === "pending");
+
+  const handleConfirmStaffMember = (id: string) => {
+    const updated = confirmStaffInStorage(id, "Dr. Evelyn Peters (Principal)");
+    setStaffList(updated);
+  };
+
   const [approvals, setApprovals] = useState([
     {
       id: "app-1",
@@ -197,15 +222,62 @@ export function PrincipalDashboardView() {
               <div>
                 <h3 className="text-base font-extrabold text-ink">Executive Sign-Off &amp; Approvals</h3>
                 <p className="text-xs text-ink-muted">
-                  Requires Tier-1 Principal authorization before publication or dispatch.
+                  Requires Tier-1 Principal authorization before publication, appointment, or dispatch.
                 </p>
               </div>
               <span className="rounded-full bg-danger-light px-2.5 py-1 font-mono text-xs font-bold text-danger">
-                {approvals.filter((a) => a.status === "pending").length} Pending
+                {approvals.filter((a) => a.status === "pending").length + pendingStaff.length} Pending
               </span>
             </div>
 
             <div className="mt-4 space-y-3">
+              {/* PENDING TEACHER & BURSAR APPOINTMENTS FROM SCHOOL ADMIN */}
+              {pendingStaff.map((staffMember) => (
+                <div
+                  key={staffMember.id}
+                  className="rounded-2xl border-2 border-amber-300 bg-amber-50/50 p-4 transition-all hover:border-amber-400"
+                >
+                  <div className="flex items-start justify-between gap-3">
+                    <div>
+                      <div className="flex items-center gap-2">
+                        <span className="rounded bg-amber-100 px-2 py-0.5 font-mono text-[10px] font-bold text-amber-800 border border-amber-200">
+                          {staffMember.role === "bursar" ? "Bursar Appointment" : "Teacher Appointment"}
+                        </span>
+                        <span className="font-mono text-[10px] text-amber-700 font-semibold animate-pulse">
+                          Awaiting Confirmation
+                        </span>
+                        <span className="font-mono text-[10px] text-ink-muted">
+                          {staffMember.onboardedAt || "Today"}
+                        </span>
+                      </div>
+                      <h4 className="mt-1 text-sm font-bold text-ink">
+                        Confirm Appointment: {staffMember.name} ({staffMember.staffId})
+                      </h4>
+                      <p className="mt-1 text-xs text-ink-muted">
+                        {staffMember.designation} · {staffMember.department}
+                        {staffMember.role === "teacher" && staffMember.formClass
+                          ? ` · Form Master: ${staffMember.formClass}`
+                          : ""}
+                      </p>
+                      <span className="mt-2 block text-[11px] font-medium text-ink-soft">
+                        Submitted by: <strong className="text-ink">{staffMember.onboardedBy || "Engr. Patrick Bassey (School Admin)"}</strong>
+                      </span>
+                    </div>
+
+                    <div className="shrink-0 text-right">
+                      <button
+                        type="button"
+                        onClick={() => handleConfirmStaffMember(staffMember.id)}
+                        className="inline-flex items-center gap-1.5 rounded-xl bg-emerald-600 px-3.5 py-1.5 text-xs font-bold text-white shadow-sm transition-all hover:bg-emerald-700 active:scale-95"
+                      >
+                        <CheckCircle2 className="size-3.5" />
+                        <span>Confirm Appointment</span>
+                      </button>
+                    </div>
+                  </div>
+                </div>
+              ))}
+
               {approvals.map((app) => (
                 <div
                   key={app.id}
@@ -246,6 +318,17 @@ export function PrincipalDashboardView() {
                   </div>
                 </div>
               ))}
+            </div>
+
+            <div className="mt-4 border-t border-line pt-3 flex items-center justify-between text-xs">
+              <span className="text-ink-muted">Need full broadsheet and faculty dossier audit?</span>
+              <Link
+                href="/dashboard/principal/approvals"
+                className="inline-flex items-center gap-1 font-bold text-primary hover:underline"
+              >
+                <span>Open Approvals Cockpit</span>
+                <ArrowRight className="size-3.5" />
+              </Link>
             </div>
           </div>
 

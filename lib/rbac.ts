@@ -20,6 +20,7 @@ export type PermissionCode =
   | 'staff.create'
   | 'staff.update'
   | 'staff.manage'
+  | 'staff.confirm'
   | 'teachers.assign'
   // Attendance
   | 'attendance.read'
@@ -119,6 +120,7 @@ export const ROLES_CONFIG: Record<RoleKey, RoleConfig> = {
       'students.read',
       'staff.read',
       'staff.manage',
+      'staff.confirm',
       'attendance.read',
       'assessments.read',
       'results.approve',
@@ -137,6 +139,7 @@ export const ROLES_CONFIG: Record<RoleKey, RoleConfig> = {
       {
         category: 'Executive Approvals',
         items: [
+          { action: 'Confirm & Authorize Teachers & Bursars', allowed: true, description: 'Final executive appointment sign-off confirming newly onboarded teachers and bursars registered by the School Administrator' },
           { action: 'Publish Term Report Cards', allowed: true, description: 'Final sign-off authorizing release of results to parents' },
           { action: 'Fee Waiver / Scholarship Approvals', allowed: true, description: 'Authorize bursar discounts or student bursary allocations' },
           { action: 'Staff Duty & Leave Authorizations', allowed: true, description: 'Approve teacher emergency leaves and substitution schedules' },

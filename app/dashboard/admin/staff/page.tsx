@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { DashboardLayout } from "@/components/dashboard/dashboard-layout";
 import {
   Briefcase,
@@ -26,28 +26,18 @@ import {
   Copy,
   Check,
   Lock,
+  Clock,
+  XCircle,
 } from "lucide-react";
 import { provisionUserCredentials } from "@/lib/actions/user-credentials";
-
-type StaffRole = "teacher" | "bursar" | "admin";
-
-interface StaffMember {
-  id: string;
-  name: string;
-  firstName: string;
-  lastName: string;
-  staffId: string;
-  role: StaffRole;
-  designation: string;
-  department: string;
-  email: string;
-  phone: string;
-  formClass: string;
-  teachingSubjects: { subject: string; classArm: string; periodsPerWeek: number }[];
-  status: "Active" | "On Leave";
-  loginPassword?: string;
-  portalAccess?: boolean;
-}
+import {
+  StaffMember,
+  StaffRole,
+  ConfirmationStatus,
+  INITIAL_STAFF,
+  getStoredStaff,
+  saveStoredStaff,
+} from "@/lib/staff-data";
 
 const INITIAL_CLASSES = [
   "SSS 3 Science A",
@@ -73,165 +63,20 @@ const INITIAL_SUBJECTS = [
   "Technical Drawing",
 ];
 
-const INITIAL_STAFF: StaffMember[] = [
-  {
-    id: "stf-01",
-    name: "Mr. David Alabi",
-    firstName: "David",
-    lastName: "Alabi",
-    staffId: "TCH-084",
-    role: "teacher",
-    designation: "Senior Mathematics Master",
-    department: "STEM & Mathematics",
-    email: "d.alabi@riverside.edu",
-    phone: "+234 803 119 4432",
-    formClass: "SSS 2A (Pure Science)",
-    teachingSubjects: [
-      { subject: "Mathematics", classArm: "SSS 2A (Pure Science)", periodsPerWeek: 5 },
-      { subject: "Mathematics", classArm: "SSS 1 Science", periodsPerWeek: 5 },
-    ],
-    status: "Active",
-    loginPassword: "Alabi#2026!",
-    portalAccess: true,
-  },
-  {
-    id: "stf-02",
-    name: "Mrs. Grace Okon",
-    firstName: "Grace",
-    lastName: "Okon",
-    staffId: "TCH-092",
-    role: "teacher",
-    designation: "Biology Senior Faculty",
-    department: "Pure Sciences",
-    email: "g.okon@riverside.edu",
-    phone: "+234 802 331 8844",
-    formClass: "SSS 1 Science",
-    teachingSubjects: [
-      { subject: "Biology", classArm: "SSS 1 Science", periodsPerWeek: 4 },
-      { subject: "Biology", classArm: "SSS 2A (Pure Science)", periodsPerWeek: 4 },
-    ],
-    status: "Active",
-    loginPassword: "Okon#2026!",
-    portalAccess: true,
-  },
-  {
-    id: "stf-03",
-    name: "Ms. Chioma Okon",
-    firstName: "Chioma",
-    lastName: "Okon",
-    staffId: "TCH-104",
-    role: "teacher",
-    designation: "Basic Science Faculty Lead",
-    department: "Junior Secondary",
-    email: "c.okon@riverside.edu",
-    phone: "+234 818 902 3310",
-    formClass: "JSS 2 Gold",
-    teachingSubjects: [
-      { subject: "Basic Science & Tech", classArm: "JSS 2 Gold", periodsPerWeek: 4 },
-      { subject: "Basic Science & Tech", classArm: "JSS 1 Alpha", periodsPerWeek: 4 },
-    ],
-    status: "Active",
-    loginPassword: "Chioma#2026!",
-    portalAccess: true,
-  },
-  {
-    id: "stf-04",
-    name: "Mr. Francis Eze",
-    firstName: "Francis",
-    lastName: "Eze",
-    staffId: "TCH-078",
-    role: "teacher",
-    designation: "Physics & Technical Drawing Lead",
-    department: "Applied Sciences",
-    email: "f.eze@riverside.edu",
-    phone: "+234 703 112 9901",
-    formClass: "SSS 3 Science A",
-    teachingSubjects: [
-      { subject: "Physics", classArm: "SSS 3 Science A", periodsPerWeek: 5 },
-      { subject: "Physics", classArm: "SSS 2A (Pure Science)", periodsPerWeek: 5 },
-      { subject: "Technical Drawing", classArm: "SSS 2A (Pure Science)", periodsPerWeek: 3 },
-    ],
-    status: "Active",
-    loginPassword: "Eze#2026!",
-    portalAccess: true,
-  },
-  {
-    id: "stf-05",
-    name: "Mrs. Nneka Udoh",
-    firstName: "Nneka",
-    lastName: "Udoh",
-    staffId: "TCH-110",
-    role: "teacher",
-    designation: "English & Literature Faculty",
-    department: "Humanities & Languages",
-    email: "n.udoh@riverside.edu",
-    phone: "+234 809 445 1120",
-    formClass: "SSS 3 Arts",
-    teachingSubjects: [
-      { subject: "English Language & Literature", classArm: "SSS 3 Arts", periodsPerWeek: 5 },
-      { subject: "English Language & Literature", classArm: "SSS 2A (Pure Science)", periodsPerWeek: 5 },
-    ],
-    status: "Active",
-    loginPassword: "Udoh#2026!",
-    portalAccess: true,
-  },
-  {
-    id: "stf-06",
-    name: "Mrs. Angela Nnamdi, FCA",
-    firstName: "Angela",
-    lastName: "Nnamdi",
-    staffId: "BUR-005",
-    role: "bursar",
-    designation: "Bursar & Head of Financial Accounts",
-    department: "Bursary & Treasury Division",
-    email: "a.nnamdi@riverside.edu",
-    phone: "+234 802 555 7711",
-    formClass: "None (Bursary Division)",
-    teachingSubjects: [],
-    status: "Active",
-    loginPassword: "Bursar#2026!",
-    portalAccess: true,
-  },
-  {
-    id: "stf-07",
-    name: "Mr. Samuel Oladipo",
-    firstName: "Samuel",
-    lastName: "Oladipo",
-    staffId: "BUR-006",
-    role: "bursar",
-    designation: "Deputy Bursar & Student Billings",
-    department: "Bursary & Treasury Division",
-    email: "s.oladipo@riverside.edu",
-    phone: "+234 803 881 2290",
-    formClass: "None (Bursary Division)",
-    teachingSubjects: [],
-    status: "Active",
-    loginPassword: "Bursar#2026!",
-    portalAccess: true,
-  },
-  {
-    id: "stf-08",
-    name: "Engr. Patrick Bassey",
-    firstName: "Patrick",
-    lastName: "Bassey",
-    staffId: "ADM-012",
-    role: "admin",
-    designation: "Director of Registry & Operations",
-    department: "Admissions & Records",
-    email: "p.bassey@riverside.edu",
-    phone: "+234 803 999 1100",
-    formClass: "None (School Administration)",
-    teachingSubjects: [],
-    status: "Active",
-    loginPassword: "Admin#2026!",
-    portalAccess: true,
-  },
-];
-
 export default function AdminStaffPage() {
   const [staff, setStaff] = useState<StaffMember[]>(INITIAL_STAFF);
   const [search, setSearch] = useState("");
-  const [roleFilter, setRoleFilter] = useState<"all" | StaffRole>("all");
+  const [roleFilter, setRoleFilter] = useState<"all" | "pending" | StaffRole>("all");
+
+  // Sync with persistent store and cross-tab/cross-page events
+  useEffect(() => {
+    const loadStaff = () => {
+      setStaff(getStoredStaff());
+    };
+    loadStaff();
+    window.addEventListener("campus360:staff-updated", loadStaff);
+    return () => window.removeEventListener("campus360:staff-updated", loadStaff);
+  }, []);
 
   // Modals state
   const [showOnboardModal, setShowOnboardModal] = useState(false);
@@ -286,16 +131,22 @@ export default function AdminStaffPage() {
       s.department.toLowerCase().includes(search.toLowerCase()) ||
       s.designation.toLowerCase().includes(search.toLowerCase()) ||
       s.email.toLowerCase().includes(search.toLowerCase());
+
+    if (roleFilter === "pending") {
+      return matchesSearch && s.confirmationStatus === "pending";
+    }
     const matchesRole = roleFilter === "all" || s.role === roleFilter;
     return matchesSearch && matchesRole;
   });
 
-  // Handler: Onboard Staff with Login Credentials
+  // Handler: Onboard Staff with Login Credentials & Executive Confirmation Workflow
   const handleOnboardStaff = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!onboardForm.firstName || !onboardForm.lastName || !onboardForm.email) return;
 
     const fullName = `${onboardForm.role === "bursar" ? "Mrs. " : "Mr. "}${onboardForm.firstName} ${onboardForm.lastName}`;
+    const requiresPrincipalConfirmation = onboardForm.role === "teacher" || onboardForm.role === "bursar";
+
     const newStaff: StaffMember = {
       id: `stf-${Date.now()}`,
       name: fullName,
@@ -309,12 +160,19 @@ export default function AdminStaffPage() {
       phone: onboardForm.phone,
       formClass: onboardForm.role === "teacher" ? onboardForm.formClass : "None (Office)",
       teachingSubjects: [],
-      status: "Active",
+      status: requiresPrincipalConfirmation ? "Pending Confirmation" : "Active",
+      confirmationStatus: requiresPrincipalConfirmation ? "pending" : "confirmed",
+      onboardedBy: "Engr. Patrick Bassey (School Admin)",
+      onboardedAt: new Date().toLocaleDateString("en-US", { month: "short", day: "numeric", year: "numeric" }),
+      confirmedBy: requiresPrincipalConfirmation ? undefined : "Executive Registry",
+      confirmedAt: requiresPrincipalConfirmation ? undefined : new Date().toLocaleDateString("en-US", { month: "short", day: "numeric", year: "numeric" }),
       loginPassword: onboardForm.password,
       portalAccess: onboardForm.grantPortalAccess,
     };
 
-    setStaff([newStaff, ...staff]);
+    const updatedList = [newStaff, ...staff];
+    setStaff(updatedList);
+    saveStoredStaff(updatedList);
     setShowOnboardModal(false);
 
     // Call server action to provision credentials
@@ -330,16 +188,22 @@ export default function AdminStaffPage() {
       // Local fallback continues smoothly
     }
 
-    showToast(
-      `New ${onboardForm.role.toUpperCase()} ${fullName} created with portal login: ${onboardForm.email}`
-    );
+    if (requiresPrincipalConfirmation) {
+      showToast(
+        `New ${onboardForm.role.toUpperCase()} ${fullName} onboarded. Appointment submitted for Principal confirmation.`
+      );
+    } else {
+      showToast(
+        `New Administrator ${fullName} onboarded with portal login: ${onboardForm.email}`
+      );
+    }
 
     // Reset form
     setOnboardForm({
       firstName: "",
       lastName: "",
       role: "teacher",
-      staffId: `TCH-${116 + staff.length}`,
+      staffId: `TCH-${116 + updatedList.length}`,
       designation: "Subject Teacher",
       department: "STEM & Mathematics",
       email: "",
@@ -356,18 +220,18 @@ export default function AdminStaffPage() {
     e.preventDefault();
     if (!manageCredentialsStaff) return;
 
-    setStaff((prev) =>
-      prev.map((s) =>
-        s.id === manageCredentialsStaff.id
-          ? {
-              ...s,
-              email: staffCredentialForm.email,
-              loginPassword: staffCredentialForm.password,
-              portalAccess: staffCredentialForm.portalAccess,
-            }
-          : s
-      )
+    const updated = staff.map((s) =>
+      s.id === manageCredentialsStaff.id
+        ? {
+            ...s,
+            email: staffCredentialForm.email,
+            loginPassword: staffCredentialForm.password,
+            portalAccess: staffCredentialForm.portalAccess,
+          }
+        : s
     );
+    setStaff(updated);
+    saveStoredStaff(updated);
 
     try {
       await provisionUserCredentials({
@@ -400,49 +264,48 @@ export default function AdminStaffPage() {
 
   // Handler: Assign Form Master
   const handleUpdateFormClass = (staffId: string, formClass: string) => {
-    setStaff((prev) =>
-      prev.map((s) => (s.id === staffId ? { ...s, formClass } : s))
-    );
+    const updated = staff.map((s) => (s.id === staffId ? { ...s, formClass } : s));
+    setStaff(updated);
+    saveStoredStaff(updated);
     setAssignFormMasterStaff(null);
     showToast(`Form Master duty set to ${formClass}`);
   };
 
   // Handler: Add Teaching Subject Assignment
   const handleAddTeachingSubject = (staffId: string) => {
-    setStaff((prev) =>
-      prev.map((s) => {
-        if (s.id === staffId) {
-          return {
-            ...s,
-            teachingSubjects: [
-              ...s.teachingSubjects,
-              {
-                subject: newAssignment.subject,
-                classArm: newAssignment.classArm,
-                periodsPerWeek: Number(newAssignment.periodsPerWeek),
-              },
-            ],
-          };
-        }
-        return s;
-      })
-    );
-
+    const updated = staff.map((s) => {
+      if (s.id === staffId) {
+        return {
+          ...s,
+          teachingSubjects: [
+            ...s.teachingSubjects,
+            {
+              subject: newAssignment.subject,
+              classArm: newAssignment.classArm,
+              periodsPerWeek: Number(newAssignment.periodsPerWeek),
+            },
+          ],
+        };
+      }
+      return s;
+    });
+    setStaff(updated);
+    saveStoredStaff(updated);
     showToast(`Teaching assignment for ${newAssignment.subject} (${newAssignment.classArm}) added!`);
   };
 
   // Handler: Remove Teaching Subject Assignment
   const handleRemoveTeachingSubject = (staffId: string, index: number) => {
-    setStaff((prev) =>
-      prev.map((s) => {
-        if (s.id === staffId) {
-          const updated = [...s.teachingSubjects];
-          updated.splice(index, 1);
-          return { ...s, teachingSubjects: updated };
-        }
-        return s;
-      })
-    );
+    const updated = staff.map((s) => {
+      if (s.id === staffId) {
+        const nextSubs = [...s.teachingSubjects];
+        nextSubs.splice(index, 1);
+        return { ...s, teachingSubjects: nextSubs };
+      }
+      return s;
+    });
+    setStaff(updated);
+    saveStoredStaff(updated);
     showToast("Teaching allocation removed.");
   };
 
@@ -507,6 +370,18 @@ export default function AdminStaffPage() {
               </button>
 
               <button
+                onClick={() => setRoleFilter("pending")}
+                className={`flex items-center gap-1.5 rounded-xl px-3 py-1.5 text-xs font-bold transition-all ${
+                  roleFilter === "pending"
+                    ? "bg-amber-600 text-white shadow-sm"
+                    : "bg-amber-50 text-amber-800 border border-amber-200 hover:bg-amber-100"
+                }`}
+              >
+                <Clock className="size-3.5 text-amber-600 animate-pulse" />
+                <span>Pending Principal ({staff.filter((s) => s.confirmationStatus === "pending").length})</span>
+              </button>
+
+              <button
                 onClick={() => setRoleFilter("teacher")}
                 className={`flex items-center gap-1.5 rounded-xl px-3 py-1.5 text-xs font-bold transition-all ${
                   roleFilter === "teacher"
@@ -567,6 +442,7 @@ export default function AdminStaffPage() {
                   <th className="pb-3 font-bold uppercase">Department &amp; Title</th>
                   <th className="pb-3 font-bold uppercase">Form Class Arm</th>
                   <th className="pb-3 font-bold uppercase">Teaching Subjects</th>
+                  <th className="pb-3 font-bold uppercase">Principal Approval</th>
                   <th className="pb-3 font-bold uppercase">Email &amp; Contact</th>
                   <th className="pb-3 font-bold uppercase text-right">Admin Actions</th>
                 </tr>
@@ -639,6 +515,39 @@ export default function AdminStaffPage() {
                         <span className="font-mono text-[10px] text-ink-muted">N/A (Non-Teaching)</span>
                       )}
                     </td>
+                    <td className="py-3.5">
+                      {s.confirmationStatus === "pending" ? (
+                        <div className="space-y-1">
+                          <span className="inline-flex items-center gap-1 rounded-full bg-amber-50 px-2.5 py-0.5 font-mono text-[10px] font-bold text-amber-700 border border-amber-200">
+                            <Clock className="size-3 text-amber-600 animate-pulse" />
+                            Pending Principal
+                          </span>
+                          <span className="block text-[10px] text-ink-muted">
+                            Awaiting Sign-off
+                          </span>
+                        </div>
+                      ) : s.confirmationStatus === "rejected" ? (
+                        <div className="space-y-1">
+                          <span className="inline-flex items-center gap-1 rounded-full bg-rose-50 px-2.5 py-0.5 font-mono text-[10px] font-bold text-rose-700 border border-rose-200">
+                            <XCircle className="size-3 text-rose-600" />
+                            Declined
+                          </span>
+                          <span className="block text-[10px] text-rose-600 truncate max-w-[120px]" title={s.rejectionReason}>
+                            {s.rejectionReason || "Needs revision"}
+                          </span>
+                        </div>
+                      ) : (
+                        <div className="space-y-1">
+                          <span className="inline-flex items-center gap-1 rounded-full bg-emerald-50 px-2.5 py-0.5 font-mono text-[10px] font-bold text-emerald-700 border border-emerald-200">
+                            <CheckCircle2 className="size-3 text-emerald-600" />
+                            Confirmed
+                          </span>
+                          <span className="block text-[10px] text-ink-muted">
+                            {s.confirmedBy ? s.confirmedBy.replace(" (Principal)", "") : "Dr. Peters"}
+                          </span>
+                        </div>
+                      )}
+                    </td>
                     <td className="py-3.5 font-mono text-ink-muted text-[11px]">
                       <div className="flex items-center gap-1.5 font-sans font-medium text-ink">
                         <Mail className="size-3 text-ink-muted" />
@@ -705,7 +614,7 @@ export default function AdminStaffPage() {
                 ))}
                 {filteredStaff.length === 0 && (
                   <tr>
-                    <td colSpan={7} className="py-8 text-center text-xs text-ink-muted">
+                    <td colSpan={8} className="py-8 text-center text-xs text-ink-muted">
                       No staff members match the chosen search or role filter.
                     </td>
                   </tr>
@@ -809,6 +718,19 @@ export default function AdminStaffPage() {
                     </button>
                   </div>
                 </div>
+
+                {/* Executive Tier-1 Confirmation Callout */}
+                {(onboardForm.role === "teacher" || onboardForm.role === "bursar") && (
+                  <div className="rounded-2xl border border-amber-200 bg-amber-50/80 p-3 text-xs text-amber-950 flex items-start gap-2.5">
+                    <ShieldCheck className="size-4.5 text-amber-700 shrink-0 mt-0.5" />
+                    <div>
+                      <span className="font-bold block">Principal Executive Sign-Off Required</span>
+                      <span className="text-[11px] text-amber-800 leading-relaxed block mt-0.5">
+                        New {onboardForm.role === "teacher" ? "Teachers" : "Bursars"} added by School Admin will enter the Principal&apos;s Tier-1 Approvals Queue for executive appointment confirmation before being confirmed.
+                      </span>
+                    </div>
+                  </div>
+                )}
 
                 <div className="grid gap-3 sm:grid-cols-2">
                   <div>
