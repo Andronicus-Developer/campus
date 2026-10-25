@@ -325,6 +325,20 @@ export function DashboardLayout({ currentRole, children }: DashboardLayoutProps)
               <ChevronDown className="size-3.5 text-ink-muted -rotate-90" />
             </button>
 
+            <div className="flex items-center justify-between pb-1.5 border-b border-line-soft text-[11px]">
+              <Link
+                href={`/dashboard/${currentRole}/settings`}
+                className="flex items-center gap-1.5 text-ink-muted hover:text-ink font-semibold transition-colors"
+                title="Manage your account profile, password, and preferences"
+              >
+                <Sliders className="size-3.5 text-primary" />
+                <span>Account Settings</span>
+              </Link>
+              <span className="font-mono text-[10px] text-emerald-600 font-bold bg-emerald-500/10 px-1.5 py-0.5 rounded">
+                Active
+              </span>
+            </div>
+
             <div className="flex items-center justify-between pt-1 text-[11px] text-ink-muted font-medium">
               <Link href="/" className="hover:text-ink">
                 Public Website
@@ -376,6 +390,16 @@ export function DashboardLayout({ currentRole, children }: DashboardLayoutProps)
                 <span className="hidden md:inline">Inspect Privileges</span>
               </button>
 
+              {/* Account Settings Header Link */}
+              <Link
+                href={`/dashboard/${currentRole}/settings`}
+                className="p-2 rounded-xl border border-line bg-surface text-ink hover:bg-surface-raised transition-colors"
+                title="Account Settings"
+                aria-label="Account Settings"
+              >
+                <Sliders className="size-4.5 text-ink-muted hover:text-ink" />
+              </Link>
+
               {/* Notifications */}
               <div className="relative">
                 <button
@@ -409,7 +433,11 @@ export function DashboardLayout({ currentRole, children }: DashboardLayoutProps)
               </div>
 
               {/* Persona Quick Pill */}
-              <div className="flex items-center gap-2 pl-2 border-l border-line">
+              <Link
+                href={`/dashboard/${currentRole}/settings`}
+                className="flex items-center gap-2 pl-2 border-l border-line hover:opacity-85 transition-opacity"
+                title="My Account Settings"
+              >
                 <div className={`size-8 rounded-full bg-gradient-to-tr ${roleConfig.gradient} text-white flex items-center justify-center font-bold text-xs shadow-sm`}>
                   {roleConfig.persona.name.charAt(0)}
                 </div>
@@ -417,7 +445,7 @@ export function DashboardLayout({ currentRole, children }: DashboardLayoutProps)
                   <span className="block font-bold text-ink">{roleConfig.persona.name}</span>
                   <span className="block font-mono text-[10px] text-ink-muted">{roleConfig.persona.idCode}</span>
                 </div>
-              </div>
+              </Link>
             </div>
           </header>
 

@@ -168,6 +168,7 @@ export const ROLES_CONFIG: Record<RoleKey, RoleConfig> = {
       { label: 'Attendance Pulse', href: '/dashboard/principal/attendance', icon: 'Users' },
       { label: 'Staff Roster', href: '/dashboard/principal/staff', icon: 'Briefcase' },
       { label: 'Announcements', href: '/dashboard/principal/announcements', icon: 'Megaphone' },
+      { label: 'Account Settings', href: '/dashboard/principal/settings', icon: 'Sliders' },
     ],
   },
 
@@ -227,6 +228,7 @@ export const ROLES_CONFIG: Record<RoleKey, RoleConfig> = {
       { label: 'My Timetable', href: '/dashboard/teacher/schedule', icon: 'CalendarDays' },
       { label: 'Student Roster', href: '/dashboard/teacher/roster', icon: 'Users' },
       { label: 'Curriculum & Notes', href: '/dashboard/teacher/curriculum', icon: 'BookOpen' },
+      { label: 'Account Settings', href: '/dashboard/teacher/settings', icon: 'Sliders' },
     ],
   },
 
@@ -363,6 +365,7 @@ export const ROLES_CONFIG: Record<RoleKey, RoleConfig> = {
       { label: 'Fee Structures', href: '/dashboard/bursar/fees', icon: 'Layers' },
       { label: 'Debt Recovery Aging', href: '/dashboard/bursar/debt', icon: 'ClockAlert', badge: '$5.6M' },
       { label: 'Bank Reconciliation', href: '/dashboard/bursar/reconcile', icon: 'Landmark' },
+      { label: 'Account Settings', href: '/dashboard/bursar/settings', icon: 'Sliders' },
     ],
   },
 
@@ -413,6 +416,7 @@ export const ROLES_CONFIG: Record<RoleKey, RoleConfig> = {
       { label: 'My Attendance Streak', href: '/dashboard/student/attendance', icon: 'CheckCircle2' },
       { label: 'Enrolled Subjects', href: '/dashboard/student/subjects', icon: 'BookMarked' },
       { label: 'School Notices', href: '/dashboard/student/bulletins', icon: 'Bell' },
+      { label: 'Account Settings', href: '/dashboard/student/settings', icon: 'Sliders' },
     ],
   },
 
@@ -465,6 +469,7 @@ export const ROLES_CONFIG: Record<RoleKey, RoleConfig> = {
       { label: 'Daily Gate Attendance', href: '/dashboard/parent/attendance', icon: 'Activity' },
       { label: 'Teacher Messages', href: '/dashboard/parent/messages', icon: 'MessageSquareText' },
       { label: 'School Calendar', href: '/dashboard/parent/calendar', icon: 'Calendar' },
+      { label: 'Account Settings', href: '/dashboard/parent/settings', icon: 'Sliders' },
     ],
   },
 };

@@ -31,7 +31,9 @@ import {
   Users,
   Briefcase,
   Heart,
+  User,
 } from "lucide-react";
+import { AccountSettingsView } from "@/components/dashboard/account-settings-view";
 import {
   WorkspaceConfig,
   WorkspaceThemeId,
@@ -48,7 +50,7 @@ import {
 
 export default function AdminSettingsPage() {
   const [config, setConfig] = useState<WorkspaceConfig>(DEFAULT_WORKSPACE_CONFIG);
-  const [activeTab, setActiveTab] = useState<"theme" | "logo" | "colors" | "calendar">("theme");
+  const [activeTab, setActiveTab] = useState<"theme" | "logo" | "colors" | "calendar" | "account">("theme");
   const [saved, setSaved] = useState(false);
   const [resetModalOpen, setResetModalOpen] = useState(false);
   const fileInputRef = useRef<HTMLInputElement>(null);
@@ -57,6 +59,12 @@ export default function AdminSettingsPage() {
   useEffect(() => {
     const loaded = getStoredWorkspaceConfig();
     setConfig(loaded);
+    if (typeof window !== "undefined") {
+      const params = new URLSearchParams(window.location.search);
+      if (params.get("tab") === "account") {
+        setActiveTab("account");
+      }
+    }
   }, []);
 
   // Live theme switch preview
@@ -242,6 +250,18 @@ export default function AdminSettingsPage() {
             >
               <Calendar className="size-4" />
               <span>4. Calendar &amp; Session</span>
+            </button>
+
+            <button
+              onClick={() => setActiveTab("account")}
+              className={`inline-flex items-center gap-2 rounded-xl px-4 py-2 text-xs font-bold transition-all ${
+                activeTab === "account"
+                  ? "bg-emerald-600 text-white shadow-sm"
+                  : "bg-surface-raised text-ink-muted hover:text-ink"
+              }`}
+            >
+              <User className="size-4" />
+              <span>5. My Admin Account</span>
             </button>
           </div>
         </div>
@@ -1206,6 +1226,13 @@ export default function AdminSettingsPage() {
                 </div>
               </div>
             </div>
+          </div>
+        )}
+
+        {/* TAB 5: ADMIN ACCOUNT SETTINGS */}
+        {activeTab === "account" && (
+          <div className="pt-2">
+            <AccountSettingsView currentRole="admin" />
           </div>
         )}
 
