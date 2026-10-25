@@ -28,6 +28,8 @@ export const metadata: Metadata = {
   },
 };
 
+import { ThemeProvider } from "@/components/theme-provider";
+
 export const viewport: Viewport = {
   themeColor: "#4f6ef7",
 };
@@ -44,6 +46,7 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
         suppressHydrationWarning
         className="min-h-screen bg-canvas font-sans text-ink antialiased"
       >
+        <ThemeProvider />
         <noscript
           dangerouslySetInnerHTML={{
             __html: ".reveal{opacity:1!important;transform:none!important}",

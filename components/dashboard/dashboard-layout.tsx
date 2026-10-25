@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import Link from "next/link";
 import { useRouter, usePathname } from "next/navigation";
 import {
@@ -13,6 +13,7 @@ import {
   LogOut,
   Menu,
   Search,
+  Shield,
   ShieldAlert,
   ShieldCheck,
   Sparkles,
@@ -39,13 +40,59 @@ import {
   Activity,
   MessageSquareText,
   Calendar,
+  Crown,
+  Globe,
 } from "lucide-react";
 import { RoleConfig, RoleKey, ROLES_CONFIG } from "@/lib/rbac";
 import { RolePrivilegeModal } from "./role-privilege-modal";
+import {
+  WorkspaceConfig,
+  WorkspaceBranding,
+  DEFAULT_WORKSPACE_CONFIG,
+  getStoredWorkspaceConfig,
+} from "@/lib/workspace-customization";
 
 interface DashboardLayoutProps {
   currentRole: RoleKey;
   children: React.ReactNode;
+}
+
+function SchoolLogoBadge({ branding }: { branding: WorkspaceBranding }) {
+  if (branding.logoType === "upload" && branding.logoUrl) {
+    return (
+      <img
+        src={branding.logoUrl}
+        alt={branding.schoolName}
+        className="size-9 rounded-xl object-cover shadow-md border border-line shrink-0"
+      />
+    );
+  }
+
+  if (branding.logoType === "initials") {
+    return (
+      <div
+        className="size-9 rounded-xl flex items-center justify-center font-black text-sm shadow-md shrink-0"
+        style={{ backgroundColor: branding.logoBgColor, color: branding.logoTextColor }}
+      >
+        {branding.logoInitials || "RC"}
+      </div>
+    );
+  }
+
+  // Preset Crests
+  const icon = branding.logoPreset;
+  return (
+    <div
+      className="size-9 rounded-xl flex items-center justify-center shadow-md transition-all shrink-0"
+      style={{ backgroundColor: branding.logoBgColor, color: branding.logoTextColor }}
+    >
+      {icon === "shield-crest" && <Shield className="size-5" />}
+      {icon === "university-pillar" && <Landmark className="size-5" />}
+      {icon === "golden-quill" && <BookOpen className="size-5" />}
+      {icon === "royal-crown" && <Crown className="size-5" />}
+      {icon === "laurel-globe" && <Globe className="size-5" />}
+    </div>
+  );
 }
 
 const iconMap: Record<string, React.ElementType> = {
@@ -85,8 +132,23 @@ export function DashboardLayout({ currentRole, children }: DashboardLayoutProps)
   const [showPrivilegeModal, setShowPrivilegeModal] = useState(false);
   const [roleDropdownOpen, setRoleDropdownOpen] = useState(false);
   const [notificationOpen, setNotificationOpen] = useState(false);
+  const [workspaceConfig, setWorkspaceConfig] = useState<WorkspaceConfig>(DEFAULT_WORKSPACE_CONFIG);
+
+  useEffect(() => {
+    const syncConfig = () => {
+      setWorkspaceConfig(getStoredWorkspaceConfig());
+    };
+    syncConfig();
+    window.addEventListener("campus360:workspace-customized", syncConfig);
+    window.addEventListener("storage", syncConfig);
+    return () => {
+      window.removeEventListener("campus360:workspace-customized", syncConfig);
+      window.removeEventListener("storage", syncConfig);
+    };
+  }, []);
 
   const roleConfig = ROLES_CONFIG[currentRole];
+  const roleColor = workspaceConfig.dashboardColors[currentRole];
 
   const handleRoleSwitch = (newRole: RoleKey) => {
     setRoleDropdownOpen(false);
@@ -143,21 +205,21 @@ export function DashboardLayout({ currentRole, children }: DashboardLayoutProps)
           {/* School Identifier */}
           <div className="p-5 border-b border-line">
             <div className="flex items-center justify-between">
-              <Link href="/" className="flex items-center gap-2.5">
-                <div className="size-9 rounded-xl bg-gradient-to-br from-primary to-accent flex items-center justify-center text-white font-black text-lg shadow-md shadow-primary/20">
-                  C
-                </div>
-                <div>
-                  <h1 className="font-extrabold text-sm text-ink leading-tight">Riverside College</h1>
-                  <span className="font-mono text-[10px] font-semibold text-primary block">
-                    Campus360 Workspace
+              <Link href="/" className="flex items-center gap-2.5 min-w-0">
+                <SchoolLogoBadge branding={workspaceConfig.branding} />
+                <div className="min-w-0 flex-1">
+                  <h1 className="font-extrabold text-sm text-ink leading-tight truncate" title={workspaceConfig.branding.schoolName}>
+                    {workspaceConfig.branding.schoolName}
+                  </h1>
+                  <span className="font-mono text-[10px] font-semibold text-primary block truncate" title={workspaceConfig.branding.motto}>
+                    {workspaceConfig.branding.motto || "Campus360 Workspace"}
                   </span>
                 </div>
               </Link>
               <button
                 type="button"
                 onClick={() => setMobileMenuOpen(false)}
-                className="lg:hidden p-1.5 rounded-lg text-ink-muted hover:text-ink"
+                className="lg:hidden p-1.5 rounded-lg text-ink-muted hover:text-ink shrink-0 ml-2"
                 aria-label="Close menu"
               >
                 <X className="size-5" />
@@ -168,17 +230,22 @@ export function DashboardLayout({ currentRole, children }: DashboardLayoutProps)
             <div className="mt-3.5 flex items-center justify-between rounded-xl border border-line bg-surface-raised px-3 py-1.5 font-mono text-[10px] text-ink-muted">
               <span className="flex items-center gap-1.5 font-bold text-ink-soft">
                 <span className="size-1.5 rounded-full bg-emerald-500" />
-                2025/2026 Term 2
+                {workspaceConfig.calendar.academicYear} Term {workspaceConfig.calendar.currentTerm}
               </span>
               <span className="rounded bg-primary-light px-1.5 py-0.5 font-bold text-primary">
-                Week 8
+                Active
               </span>
             </div>
           </div>
 
           {/* Active Persona Profile Card */}
           <div className="p-4 border-b border-line-soft">
-            <div className={`p-3 rounded-2xl bg-gradient-to-br ${roleConfig.gradient} text-white shadow-sm`}>
+            <div
+              className="p-3 rounded-2xl text-white shadow-sm transition-all"
+              style={{
+                background: `linear-gradient(135deg, ${roleColor || "#4f6ef7"} 0%, #0f172a 100%)`,
+              }}
+            >
               <div className="flex items-center justify-between">
                 <span className="font-mono text-[10px] uppercase font-bold tracking-wider text-white/80">
                   {roleConfig.badge}

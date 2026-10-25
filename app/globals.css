@@ -169,3 +169,87 @@
     transition: none !important;
   }
 }
+
+/* ── Theme Definitions ────────────────────────────────────────── */
+:root,
+[data-theme="modern-campus"] {
+  --color-canvas: #f0f4ff;
+  --color-surface: #ffffff;
+  --color-surface-raised: #f8faff;
+  --color-card: #ffffff;
+  --color-primary: #4f6ef7;
+  --color-primary-hover: #3a57e8;
+  --color-primary-light: #eef1ff;
+  --color-primary-deep: #2d43c9;
+  --color-accent: #7c3aed;
+  --color-accent-light: #f3eeff;
+  --color-ink: #0f172a;
+  --color-ink-soft: #334155;
+  --color-ink-muted: #64748b;
+  --color-ink-faint: #94a3b8;
+  --color-line: #e2e8f0;
+  --color-line-soft: #f1f5f9;
+}
+
+[data-theme="classic-academic"] {
+  --color-canvas: #fbfaf8;
+  --color-surface: #ffffff;
+  --color-surface-raised: #f6f3ed;
+  --color-card: #ffffff;
+  --color-primary: #0f766e;
+  --color-primary-hover: #115e59;
+  --color-primary-light: #f0fdfa;
+  --color-primary-deep: #134e4a;
+  --color-accent: #b45309;
+  --color-accent-light: #fef3c7;
+  --color-ink: #1c1917;
+  --color-ink-soft: #44403c;
+  --color-ink-muted: #78716c;
+  --color-ink-faint: #a8a29e;
+  --color-line: #e7e2d9;
+  --color-line-soft: #f4f0e8;
+}
+
+[data-theme="midnight-executive"] {
+  --color-canvas: #0b0f19;
+  --color-surface: #111827;
+  --color-surface-raised: #1f2937;
+  --color-card: #111827;
+  --color-primary: #38bdf8;
+  --color-primary-hover: #0ea5e9;
+  --color-primary-light: rgba(56, 189, 248, 0.15);
+  --color-primary-deep: #0284c7;
+  --color-accent: #a855f7;
+  --color-accent-light: rgba(168, 85, 247, 0.15);
+  --color-ink: #f8fafc;
+  --color-ink-soft: #cbd5e1;
+  --color-ink-muted: #94a3b8;
+  --color-ink-faint: #64748b;
+  --color-line: #1e293b;
+  --color-line-soft: #1e293b;
+}
+
+[data-theme="midnight-executive"] .bg-surface {
+  background-color: #111827;
+}
+
+[data-theme="midnight-executive"] .bg-surface-raised {
+  background-color: #1a2234;
+}
+
+[data-theme="midnight-executive"] .border-line {
+  border-color: #1e293b;
+}
+
+[data-theme="midnight-executive"] .border-line-soft {
+  border-color: #1e293b;
+}
+
+[data-theme="classic-academic"] .bg-surface-raised {
+  background-color: #f7f4ed;
+}
+
+[data-theme="classic-academic"] .border-line {
+  border-color: #e5dfd3;
+}
+
