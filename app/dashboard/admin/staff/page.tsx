@@ -20,7 +20,14 @@ import {
   ShieldAlert,
   GraduationCap,
   Sparkles,
+  KeyRound,
+  Eye,
+  EyeOff,
+  Copy,
+  Check,
+  Lock,
 } from "lucide-react";
+import { provisionUserCredentials } from "@/lib/actions/user-credentials";
 
 type StaffRole = "teacher" | "bursar" | "admin";
 
@@ -38,6 +45,8 @@ interface StaffMember {
   formClass: string;
   teachingSubjects: { subject: string; classArm: string; periodsPerWeek: number }[];
   status: "Active" | "On Leave";
+  loginPassword?: string;
+  portalAccess?: boolean;
 }
 
 const INITIAL_CLASSES = [
@@ -82,6 +91,8 @@ const INITIAL_STAFF: StaffMember[] = [
       { subject: "Mathematics", classArm: "SSS 1 Science", periodsPerWeek: 5 },
     ],
     status: "Active",
+    loginPassword: "Alabi#2026!",
+    portalAccess: true,
   },
   {
     id: "stf-02",
@@ -100,6 +111,8 @@ const INITIAL_STAFF: StaffMember[] = [
       { subject: "Biology", classArm: "SSS 2A (Pure Science)", periodsPerWeek: 4 },
     ],
     status: "Active",
+    loginPassword: "Okon#2026!",
+    portalAccess: true,
   },
   {
     id: "stf-03",
@@ -118,6 +131,8 @@ const INITIAL_STAFF: StaffMember[] = [
       { subject: "Basic Science & Tech", classArm: "JSS 1 Alpha", periodsPerWeek: 4 },
     ],
     status: "Active",
+    loginPassword: "Chioma#2026!",
+    portalAccess: true,
   },
   {
     id: "stf-04",
@@ -137,6 +152,8 @@ const INITIAL_STAFF: StaffMember[] = [
       { subject: "Technical Drawing", classArm: "SSS 2A (Pure Science)", periodsPerWeek: 3 },
     ],
     status: "Active",
+    loginPassword: "Eze#2026!",
+    portalAccess: true,
   },
   {
     id: "stf-05",
@@ -155,6 +172,8 @@ const INITIAL_STAFF: StaffMember[] = [
       { subject: "English Language & Literature", classArm: "SSS 2A (Pure Science)", periodsPerWeek: 5 },
     ],
     status: "Active",
+    loginPassword: "Udoh#2026!",
+    portalAccess: true,
   },
   {
     id: "stf-06",
@@ -170,6 +189,8 @@ const INITIAL_STAFF: StaffMember[] = [
     formClass: "None (Bursary Division)",
     teachingSubjects: [],
     status: "Active",
+    loginPassword: "Bursar#2026!",
+    portalAccess: true,
   },
   {
     id: "stf-07",
@@ -185,6 +206,8 @@ const INITIAL_STAFF: StaffMember[] = [
     formClass: "None (Bursary Division)",
     teachingSubjects: [],
     status: "Active",
+    loginPassword: "Bursar#2026!",
+    portalAccess: true,
   },
   {
     id: "stf-08",
@@ -200,6 +223,8 @@ const INITIAL_STAFF: StaffMember[] = [
     formClass: "None (School Administration)",
     teachingSubjects: [],
     status: "Active",
+    loginPassword: "Admin#2026!",
+    portalAccess: true,
   },
 ];
 
@@ -212,6 +237,16 @@ export default function AdminStaffPage() {
   const [showOnboardModal, setShowOnboardModal] = useState(false);
   const [assignFormMasterStaff, setAssignFormMasterStaff] = useState<StaffMember | null>(null);
   const [assignSubjectsStaff, setAssignSubjectsStaff] = useState<StaffMember | null>(null);
+
+  // Credential Management modal state
+  const [manageCredentialsStaff, setManageCredentialsStaff] = useState<StaffMember | null>(null);
+  const [staffCredentialForm, setStaffCredentialForm] = useState({
+    email: "",
+    password: "",
+    portalAccess: true,
+  });
+  const [showStaffCredentialPassword, setShowStaffCredentialPassword] = useState(false);
+  const [copiedStaffCreds, setCopiedStaffCreds] = useState(false);
 
   // Success toast
   const [toastMessage, setToastMessage] = useState<string | null>(null);
@@ -229,9 +264,12 @@ export default function AdminStaffPage() {
     designation: "Subject Teacher",
     department: "STEM & Mathematics",
     email: "",
+    password: "Staff#2026!",
     phone: "+234 803 ",
     formClass: "None (Subject Teacher)",
+    grantPortalAccess: true,
   });
+  const [showOnboardPassword, setShowOnboardPassword] = useState(false);
 
   // Teaching Assignment form state
   const [newAssignment, setNewAssignment] = useState({
@@ -246,13 +284,14 @@ export default function AdminStaffPage() {
       s.name.toLowerCase().includes(search.toLowerCase()) ||
       s.staffId.toLowerCase().includes(search.toLowerCase()) ||
       s.department.toLowerCase().includes(search.toLowerCase()) ||
-      s.designation.toLowerCase().includes(search.toLowerCase());
+      s.designation.toLowerCase().includes(search.toLowerCase()) ||
+      s.email.toLowerCase().includes(search.toLowerCase());
     const matchesRole = roleFilter === "all" || s.role === roleFilter;
     return matchesSearch && matchesRole;
   });
 
-  // Handler: Onboard Staff
-  const handleOnboardStaff = (e: React.FormEvent) => {
+  // Handler: Onboard Staff with Login Credentials
+  const handleOnboardStaff = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!onboardForm.firstName || !onboardForm.lastName || !onboardForm.email) return;
 
@@ -271,12 +310,28 @@ export default function AdminStaffPage() {
       formClass: onboardForm.role === "teacher" ? onboardForm.formClass : "None (Office)",
       teachingSubjects: [],
       status: "Active",
+      loginPassword: onboardForm.password,
+      portalAccess: onboardForm.grantPortalAccess,
     };
 
     setStaff([newStaff, ...staff]);
     setShowOnboardModal(false);
+
+    // Call server action to provision credentials
+    try {
+      await provisionUserCredentials({
+        role: onboardForm.role,
+        email: onboardForm.email,
+        password: onboardForm.password,
+        fullName,
+        targetId: onboardForm.staffId,
+      });
+    } catch {
+      // Local fallback continues smoothly
+    }
+
     showToast(
-      `New ${onboardForm.role.toUpperCase()} ${fullName} (${onboardForm.staffId}) successfully onboarded!`
+      `New ${onboardForm.role.toUpperCase()} ${fullName} created with portal login: ${onboardForm.email}`
     );
 
     // Reset form
@@ -288,9 +343,59 @@ export default function AdminStaffPage() {
       designation: "Subject Teacher",
       department: "STEM & Mathematics",
       email: "",
+      password: "Staff#2026!",
       phone: "+234 803 ",
       formClass: "None (Subject Teacher)",
+      grantPortalAccess: true,
     });
+    setShowOnboardPassword(false);
+  };
+
+  // Handler: Update / Save Credentials for existing staff
+  const handleSaveStaffCredentials = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!manageCredentialsStaff) return;
+
+    setStaff((prev) =>
+      prev.map((s) =>
+        s.id === manageCredentialsStaff.id
+          ? {
+              ...s,
+              email: staffCredentialForm.email,
+              loginPassword: staffCredentialForm.password,
+              portalAccess: staffCredentialForm.portalAccess,
+            }
+          : s
+      )
+    );
+
+    try {
+      await provisionUserCredentials({
+        role: manageCredentialsStaff.role,
+        email: staffCredentialForm.email,
+        password: staffCredentialForm.password,
+        fullName: manageCredentialsStaff.name,
+        targetId: manageCredentialsStaff.staffId,
+      });
+    } catch {
+      // Graceful local handling
+    }
+
+    showToast(
+      `Login credentials updated for ${manageCredentialsStaff.name} (${staffCredentialForm.email})`
+    );
+    setManageCredentialsStaff(null);
+  };
+
+  // Handler: Copy Staff Credentials to clipboard
+  const copyStaffCredentials = (name: string, role: string, email: string, pass: string) => {
+    const text = `Campus360 Portal Login Credentials\nUser: ${name}\nRole: ${role.toUpperCase()}\nLogin Email: ${email}\nPassword: ${pass}\nPortal Sign-in URL: ${typeof window !== "undefined" ? window.location.origin : ""}/login`;
+    if (typeof navigator !== "undefined" && navigator.clipboard) {
+      navigator.clipboard.writeText(text);
+    }
+    setCopiedStaffCreds(true);
+    showToast("Login credentials copied to clipboard!");
+    setTimeout(() => setCopiedStaffCreds(false), 2500);
   };
 
   // Handler: Assign Form Master
@@ -535,34 +640,66 @@ export default function AdminStaffPage() {
                       )}
                     </td>
                     <td className="py-3.5 font-mono text-ink-muted text-[11px]">
-                      <span className="block text-ink font-sans">{s.email}</span>
-                      <span>{s.phone}</span>
+                      <div className="flex items-center gap-1.5 font-sans font-medium text-ink">
+                        <Mail className="size-3 text-ink-muted" />
+                        <span>{s.email}</span>
+                      </div>
+                      <div className="flex items-center gap-1.5 mt-0.5">
+                        <span
+                          className={`inline-flex items-center gap-1 rounded px-1.5 py-0.2 font-mono text-[10px] font-bold ${
+                            s.portalAccess !== false
+                              ? "bg-emerald-50 text-emerald-800 border border-emerald-200"
+                              : "bg-rose-50 text-rose-700 border border-rose-200"
+                          }`}
+                        >
+                          <KeyRound className="size-2.5 text-emerald-600" />
+                          Portal: {s.portalAccess !== false ? "Active" : "Disabled"}
+                        </span>
+                        <span>{s.phone}</span>
+                      </div>
                     </td>
                     <td className="py-3.5 text-right">
-                      {s.role === "teacher" ? (
-                        <div className="flex items-center justify-end gap-1.5">
-                          <button
-                            type="button"
-                            onClick={() => setAssignFormMasterStaff(s)}
-                            className="rounded-lg border border-line bg-surface-raised px-2 py-1 font-mono text-[11px] font-semibold text-ink hover:border-emerald-600 hover:text-emerald-700 transition-colors"
-                          >
-                            Set Form Master
-                          </button>
-                          <button
-                            type="button"
-                            onClick={() => {
-                              setAssignSubjectsStaff(s);
-                            }}
-                            className="rounded-lg bg-emerald-600 px-2 py-1 font-mono text-[11px] font-bold text-white shadow-sm hover:bg-emerald-700 transition-colors"
-                          >
-                            Assign Subjects
-                          </button>
-                        </div>
-                      ) : (
-                        <span className="font-mono text-[11px] font-bold text-success-deep">
-                          Authorized {s.role.toUpperCase()}
-                        </span>
-                      )}
+                      <div className="flex items-center justify-end gap-1.5">
+                        <button
+                          type="button"
+                          onClick={() => {
+                            setManageCredentialsStaff(s);
+                            setStaffCredentialForm({
+                              email: s.email,
+                              password: s.loginPassword || "Staff#2026!",
+                              portalAccess: s.portalAccess !== false,
+                            });
+                            setShowStaffCredentialPassword(false);
+                            setCopiedStaffCreds(false);
+                          }}
+                          title="Manage portal login email & password"
+                          className="inline-flex items-center gap-1 rounded-lg border border-line bg-surface-raised px-2.5 py-1 font-mono text-[11px] font-bold text-ink hover:border-emerald-600 hover:text-emerald-700 transition-colors"
+                        >
+                          <KeyRound className="size-3 text-emerald-600" />
+                          <span>Portal Login</span>
+                        </button>
+
+                        {s.role === "teacher" && (
+                          <>
+                            <button
+                              type="button"
+                              onClick={() => setAssignFormMasterStaff(s)}
+                              className="rounded-lg border border-line bg-surface-raised px-2 py-1 font-mono text-[11px] font-semibold text-ink hover:border-emerald-600 hover:text-emerald-700 transition-colors"
+                            >
+                              Form Master
+                            </button>
+                            <button
+                              type="button"
+                              onClick={() => {
+                                setAssignSubjectsStaff(s);
+                              }}
+                              className="rounded-lg bg-emerald-600 px-2 py-1 font-mono text-[11px] font-bold text-white shadow-sm hover:bg-emerald-700 transition-colors"
+                            >
+                              Subjects
+                            </button>
+                          </>
+                        )}
+                      </div>
                     </td>
                   </tr>
                 ))}
@@ -710,7 +847,21 @@ export default function AdminStaffPage() {
                     />
                   </div>
                   <div>
-                    <label className="block text-xs font-bold text-ink">Work Email</label>
+                    <div className="flex items-center justify-between">
+                      <label className="block text-xs font-bold text-ink">Work / Login Email</label>
+                      {onboardForm.firstName && onboardForm.lastName && (
+                        <button
+                          type="button"
+                          onClick={() => {
+                            const suggested = `${onboardForm.firstName.toLowerCase()[0]}.${onboardForm.lastName.toLowerCase()}@riverside.edu`;
+                            setOnboardForm({ ...onboardForm, email: suggested });
+                          }}
+                          className="text-[11px] font-semibold text-emerald-700 hover:underline"
+                        >
+                          ⚡ Auto-fill
+                        </button>
+                      )}
+                    </div>
                     <input
                       type="email"
                       required
@@ -720,6 +871,71 @@ export default function AdminStaffPage() {
                       className="mt-1 w-full rounded-xl border border-line bg-surface-raised px-3 py-2 text-xs text-ink focus:border-emerald-600 focus:outline-none"
                     />
                   </div>
+                </div>
+
+                {/* Portal Login Credentials Section */}
+                <div className="rounded-2xl border border-emerald-200 bg-emerald-50/60 p-3.5 space-y-3">
+                  <div className="flex items-center justify-between">
+                    <div className="flex items-center gap-1.5 text-xs font-bold text-emerald-950">
+                      <KeyRound className="size-3.5 text-emerald-700" />
+                      <span>Staff Portal Login &amp; Password</span>
+                    </div>
+                    <span className="rounded bg-emerald-100 px-2 py-0.5 font-mono text-[10px] font-bold text-emerald-800">
+                      {onboardForm.role.toUpperCase()} ACCESS
+                    </span>
+                  </div>
+
+                  <div>
+                    <div className="flex items-center justify-between">
+                      <label className="block text-xs font-bold text-ink">Assigned Portal Password</label>
+                      <button
+                        type="button"
+                        onClick={() => {
+                          const prefix = onboardForm.role === "bursar" ? "Bursar" : onboardForm.role === "admin" ? "Admin" : "Faculty";
+                          const generated = `${prefix}#${Math.floor(1000 + Math.random() * 9000)}!`;
+                          setOnboardForm({ ...onboardForm, password: generated });
+                        }}
+                        className="text-[11px] font-semibold text-emerald-700 hover:underline"
+                      >
+                        ⚡ Generate Password
+                      </button>
+                    </div>
+                    <div className="relative mt-1">
+                      <Lock className="absolute left-3 top-2.5 size-4 text-ink-muted" />
+                      <input
+                        type={showOnboardPassword ? "text" : "password"}
+                        required
+                        value={onboardForm.password}
+                        onChange={(e) => setOnboardForm({ ...onboardForm, password: e.target.value })}
+                        className="w-full rounded-xl border border-line bg-surface pl-9 pr-10 py-2 font-mono text-xs text-ink focus:border-emerald-600 focus:outline-none"
+                        placeholder="Enter initial password"
+                      />
+                      <button
+                        type="button"
+                        onClick={() => setShowOnboardPassword(!showOnboardPassword)}
+                        className="absolute right-2.5 top-2.5 text-ink-muted hover:text-ink"
+                      >
+                        {showOnboardPassword ? <EyeOff className="size-4" /> : <Eye className="size-4" />}
+                      </button>
+                    </div>
+                    <p className="mt-1 text-[11px] text-ink-muted">
+                      Admin assigns this initial password. The staff member logs in using{" "}
+                      <strong className="text-ink">{onboardForm.email || "this email"}</strong> at{" "}
+                      <span className="font-mono text-emerald-700">/login</span>.
+                    </p>
+                  </div>
+
+                  <label className="flex items-center gap-2 cursor-pointer pt-0.5">
+                    <input
+                      type="checkbox"
+                      checked={onboardForm.grantPortalAccess}
+                      onChange={(e) => setOnboardForm({ ...onboardForm, grantPortalAccess: e.target.checked })}
+                      className="size-4 rounded border-line text-emerald-600 focus:ring-emerald-500"
+                    />
+                    <span className="text-xs font-semibold text-ink">
+                      Grant immediate active portal access on creation
+                    </span>
+                  </label>
                 </div>
 
                 <div className="grid gap-3 sm:grid-cols-2">
@@ -981,7 +1197,160 @@ export default function AdminStaffPage() {
             </div>
           </div>
         )}
+
+        {/* MODAL: MANAGE STAFF LOGIN CREDENTIALS */}
+        {manageCredentialsStaff && (
+          <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 backdrop-blur-sm p-4 animate-in fade-in duration-200">
+            <div className="w-full max-w-md rounded-3xl border border-line bg-surface p-6 shadow-2xl">
+              <div className="flex items-center justify-between border-b border-line pb-4">
+                <div className="flex items-center gap-2">
+                  <div className="flex size-9 items-center justify-center rounded-xl bg-emerald-100 text-emerald-700">
+                    <KeyRound className="size-5" />
+                  </div>
+                  <div>
+                    <h3 className="text-base font-extrabold text-ink">Manage Portal Login Credentials</h3>
+                    <p className="text-xs text-ink-muted">
+                      {manageCredentialsStaff.name} ({manageCredentialsStaff.role.toUpperCase()} — {manageCredentialsStaff.staffId})
+                    </p>
+                  </div>
+                </div>
+                <button
+                  onClick={() => setManageCredentialsStaff(null)}
+                  className="rounded-lg p-1 text-ink-muted hover:bg-surface-raised hover:text-ink"
+                >
+                  <X className="size-5" />
+                </button>
+              </div>
+
+              <form onSubmit={handleSaveStaffCredentials} className="mt-4 space-y-4">
+                <div>
+                  <label className="block text-xs font-bold text-ink">Login Email Address</label>
+                  <div className="relative mt-1">
+                    <Mail className="absolute left-3 top-2.5 size-4 text-ink-muted" />
+                    <input
+                      type="email"
+                      required
+                      value={staffCredentialForm.email}
+                      onChange={(e) =>
+                        setStaffCredentialForm({ ...staffCredentialForm, email: e.target.value })
+                      }
+                      className="w-full rounded-xl border border-line bg-surface-raised pl-9 pr-3 py-2 text-xs text-ink focus:border-emerald-600 focus:outline-none"
+                    />
+                  </div>
+                  <p className="mt-1 text-[11px] text-ink-muted">
+                    This email is used by the staff member to sign in to their {manageCredentialsStaff.role} dashboard.
+                  </p>
+                </div>
+
+                <div>
+                  <div className="flex items-center justify-between">
+                    <label className="block text-xs font-bold text-ink">Password</label>
+                    <button
+                      type="button"
+                      onClick={() => {
+                        const prefix =
+                          manageCredentialsStaff.role === "bursar"
+                            ? "Bursar"
+                            : manageCredentialsStaff.role === "admin"
+                            ? "Admin"
+                            : "Faculty";
+                        const generated = `${prefix}#${Math.floor(1000 + Math.random() * 9000)}!`;
+                        setStaffCredentialForm({ ...staffCredentialForm, password: generated });
+                      }}
+                      className="text-[11px] font-semibold text-emerald-700 hover:underline"
+                    >
+                      ⚡ Generate New
+                    </button>
+                  </div>
+                  <div className="relative mt-1">
+                    <Lock className="absolute left-3 top-2.5 size-4 text-ink-muted" />
+                    <input
+                      type={showStaffCredentialPassword ? "text" : "password"}
+                      required
+                      value={staffCredentialForm.password}
+                      onChange={(e) =>
+                        setStaffCredentialForm({ ...staffCredentialForm, password: e.target.value })
+                      }
+                      className="w-full rounded-xl border border-line bg-surface-raised pl-9 pr-10 py-2 font-mono text-xs text-ink focus:border-emerald-600 focus:outline-none"
+                    />
+                    <button
+                      type="button"
+                      onClick={() => setShowStaffCredentialPassword(!showStaffCredentialPassword)}
+                      className="absolute right-2.5 top-2.5 text-ink-muted hover:text-ink"
+                    >
+                      {showStaffCredentialPassword ? <EyeOff className="size-4" /> : <Eye className="size-4" />}
+                    </button>
+                  </div>
+                  <p className="mt-1 text-[11px] text-ink-muted">
+                    School admin can reset this password anytime.
+                  </p>
+                </div>
+
+                <div className="rounded-2xl border border-line bg-surface-raised p-3">
+                  <label className="flex items-center justify-between cursor-pointer">
+                    <div>
+                      <span className="block text-xs font-bold text-ink">Portal Account Access</span>
+                      <span className="text-[11px] text-ink-muted">
+                        {staffCredentialForm.portalAccess
+                          ? "Account is active and authorized to sign in."
+                          : "Account is suspended; login attempts will be rejected."}
+                      </span>
+                    </div>
+                    <input
+                      type="checkbox"
+                      checked={staffCredentialForm.portalAccess}
+                      onChange={(e) =>
+                        setStaffCredentialForm({ ...staffCredentialForm, portalAccess: e.target.checked })
+                      }
+                      className="size-4 rounded border-line text-emerald-600 focus:ring-emerald-500"
+                    />
+                  </label>
+                </div>
+
+                {/* Quick Copy Credentials Box */}
+                <div className="flex items-center justify-between rounded-xl bg-emerald-50 border border-emerald-200 px-3 py-2.5">
+                  <div className="text-[11px] text-emerald-950">
+                    <span className="font-bold block">Share with Staff Member</span>
+                    <span className="text-emerald-700 text-[10px]">Copies login email, password, and sign-in URL</span>
+                  </div>
+                  <button
+                    type="button"
+                    onClick={() =>
+                      copyStaffCredentials(
+                        manageCredentialsStaff.name,
+                        manageCredentialsStaff.role,
+                        staffCredentialForm.email,
+                        staffCredentialForm.password
+                      )
+                    }
+                    className="inline-flex items-center gap-1.5 rounded-lg bg-emerald-600 px-2.5 py-1.5 text-[11px] font-bold text-white shadow-sm hover:bg-emerald-700 transition-colors"
+                  >
+                    {copiedStaffCreds ? <Check className="size-3.5" /> : <Copy className="size-3.5" />}
+                    <span>{copiedStaffCreds ? "Copied!" : "Copy Credentials"}</span>
+                  </button>
+                </div>
+
+                <div className="mt-6 flex items-center justify-end gap-2 border-t border-line pt-4">
+                  <button
+                    type="button"
+                    onClick={() => setManageCredentialsStaff(null)}
+                    className="rounded-xl border border-line px-4 py-2 text-xs font-semibold text-ink hover:bg-surface-raised"
+                  >
+                    Cancel
+                  </button>
+                  <button
+                    type="submit"
+                    className="rounded-xl bg-emerald-600 px-5 py-2 text-xs font-bold text-white shadow-sm hover:bg-emerald-700"
+                  >
+                    Save &amp; Update Credentials
+                  </button>
+                </div>
+              </form>
+            </div>
+          </div>
+        )}
       </div>
     </DashboardLayout>
   );
 }
+

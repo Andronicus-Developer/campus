@@ -8,6 +8,7 @@ export type PermissionCode =
   | 'students.delete'
   | 'parents.create'
   | 'parents.assign'
+  | 'credentials.manage'
   // Admissions
   | 'admissions.read'
   | 'admissions.create'
@@ -271,12 +272,14 @@ export const ROLES_CONFIG: Record<RoleKey, RoleConfig> = {
       'school.settings.read',
       'school.settings.manage',
       'school.members.manage',
+      'credentials.manage',
     ],
     privileges: [
       {
         category: 'Registry, Faculty & User Provisioning',
         items: [
           { action: 'Create Students, Teachers, Bursars & Parents', allowed: true, description: 'Direct authority to onboard students, teachers, bursars, and register parent/guardian profiles' },
+          { action: 'Provision Login Email & Password Credentials', allowed: true, description: 'Direct authority to configure, manage, and reset login email and password portal credentials for teachers, students, parents, and bursars' },
           { action: 'Assign Parents to Students', allowed: true, description: 'Link parent and guardian accounts to their respective student wards with relationship designations' },
           { action: 'Assign Teachers to Classes & Subjects', allowed: true, description: 'Designate Form Masters and allocate teachers to core and elective subject streams' },
           { action: 'Assign Students to Class Arms', allowed: true, description: 'Enroll, stream, and reassign students to academic class arms and sets' },

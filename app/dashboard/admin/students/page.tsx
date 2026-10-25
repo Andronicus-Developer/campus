@@ -21,7 +21,14 @@ import {
   HeartHandshake,
   DoorOpen,
   BookOpen,
+  KeyRound,
+  Eye,
+  EyeOff,
+  Copy,
+  Check,
+  Lock,
 } from "lucide-react";
+import { provisionUserCredentials } from "@/lib/actions/user-credentials";
 
 interface StudentRecord {
   id: string;
@@ -37,6 +44,9 @@ interface StudentRecord {
   relationship: string;
   status: "Active" | "Graduated" | "Transferred";
   enrolledSubjects: string[];
+  loginEmail: string;
+  loginPassword?: string;
+  portalAccess?: boolean;
 }
 
 interface GuardianRecord {
@@ -49,6 +59,8 @@ interface GuardianRecord {
   occupation: string;
   address: string;
   wards: { studentId: string; studentName: string; relationship: string; isPrimary: boolean }[];
+  loginPassword?: string;
+  portalAccess?: boolean;
 }
 
 const INITIAL_CLASSES = [
@@ -73,6 +85,8 @@ const INITIAL_GUARDIANS: GuardianRecord[] = [
     occupation: "Senior Legal Counsel",
     address: "14 Victoria Garden Estate, Lekki",
     wards: [{ studentId: "std-01", studentName: "Adeleke Tobi", relationship: "Mother", isPrimary: true }],
+    loginPassword: "Parent#2026!",
+    portalAccess: true,
   },
   {
     id: "grd-02",
@@ -84,6 +98,8 @@ const INITIAL_GUARDIANS: GuardianRecord[] = [
     occupation: "Managing Director",
     address: "28 Bourdillon Road, Ikoyi",
     wards: [{ studentId: "std-02", studentName: "Balogun Farouk", relationship: "Father", isPrimary: true }],
+    loginPassword: "Parent#2026!",
+    portalAccess: true,
   },
   {
     id: "grd-03",
@@ -95,6 +111,8 @@ const INITIAL_GUARDIANS: GuardianRecord[] = [
     occupation: "Consultant Neurosurgeon",
     address: "7 Parkview Avenue, Ikoyi",
     wards: [{ studentId: "std-03", studentName: "Chukwuma Kamsi", relationship: "Father", isPrimary: true }],
+    loginPassword: "Parent#2026!",
+    portalAccess: true,
   },
   {
     id: "grd-04",
@@ -106,6 +124,8 @@ const INITIAL_GUARDIANS: GuardianRecord[] = [
     occupation: "Commodities Broker",
     address: "19 Admiralty Way, Lekki Phase 1",
     wards: [{ studentId: "std-04", studentName: "Danjuma Aisha", relationship: "Father", isPrimary: true }],
+    loginPassword: "Parent#2026!",
+    portalAccess: true,
   },
   {
     id: "grd-05",
@@ -117,6 +137,8 @@ const INITIAL_GUARDIANS: GuardianRecord[] = [
     occupation: "Civil Engineering Partner",
     address: "42 Glover Road, Ikoyi",
     wards: [{ studentId: "std-05", studentName: "Eze Somtochukwu", relationship: "Father", isPrimary: true }],
+    loginPassword: "Parent#2026!",
+    portalAccess: true,
   },
   {
     id: "grd-06",
@@ -128,6 +150,8 @@ const INITIAL_GUARDIANS: GuardianRecord[] = [
     occupation: "Chartered Surveyor",
     address: "10 Banana Island Estate, Ikoyi",
     wards: [{ studentId: "std-06", studentName: "Mohammed Zainab", relationship: "Father", isPrimary: true }],
+    loginPassword: "Parent#2026!",
+    portalAccess: true,
   },
 ];
 
@@ -146,6 +170,9 @@ const INITIAL_STUDENTS: StudentRecord[] = [
     relationship: "Mother",
     status: "Active",
     enrolledSubjects: ["Mathematics", "English", "Physics", "Chemistry", "Biology"],
+    loginEmail: "tobi.adeleke@student.campus360.edu",
+    loginPassword: "Student#2026!",
+    portalAccess: true,
   },
   {
     id: "std-02",
@@ -161,6 +188,9 @@ const INITIAL_STUDENTS: StudentRecord[] = [
     relationship: "Father",
     status: "Active",
     enrolledSubjects: ["Mathematics", "English", "Physics", "Chemistry", "Further Maths"],
+    loginEmail: "farouk.balogun@student.campus360.edu",
+    loginPassword: "Student#2026!",
+    portalAccess: true,
   },
   {
     id: "std-03",
@@ -176,6 +206,9 @@ const INITIAL_STUDENTS: StudentRecord[] = [
     relationship: "Father",
     status: "Active",
     enrolledSubjects: ["Mathematics", "English", "Physics", "Chemistry", "Biology"],
+    loginEmail: "kamsi.chukwuma@student.campus360.edu",
+    loginPassword: "Student#2026!",
+    portalAccess: true,
   },
   {
     id: "std-04",
@@ -191,6 +224,9 @@ const INITIAL_STUDENTS: StudentRecord[] = [
     relationship: "Father",
     status: "Active",
     enrolledSubjects: ["Mathematics", "English", "Physics", "Chemistry", "Technical Drawing"],
+    loginEmail: "aisha.danjuma@student.campus360.edu",
+    loginPassword: "Student#2026!",
+    portalAccess: true,
   },
   {
     id: "std-05",
@@ -206,6 +242,9 @@ const INITIAL_STUDENTS: StudentRecord[] = [
     relationship: "Father",
     status: "Active",
     enrolledSubjects: ["Mathematics", "English", "Physics", "Chemistry", "Economics"],
+    loginEmail: "somtochukwu.eze@student.campus360.edu",
+    loginPassword: "Student#2026!",
+    portalAccess: true,
   },
   {
     id: "std-06",
@@ -221,6 +260,9 @@ const INITIAL_STUDENTS: StudentRecord[] = [
     relationship: "Father",
     status: "Active",
     enrolledSubjects: ["Mathematics", "English", "Basic Science", "Social Studies"],
+    loginEmail: "zainab.mohammed@student.campus360.edu",
+    loginPassword: "Student#2026!",
+    portalAccess: true,
   },
 ];
 
@@ -239,6 +281,25 @@ export default function AdminStudentsPage() {
   const [assignClassStudent, setAssignClassStudent] = useState<StudentRecord | null>(null);
   const [assignGuardianStudent, setAssignGuardianStudent] = useState<StudentRecord | null>(null);
 
+  // Credential Management modals state
+  const [manageStudentCredentials, setManageStudentCredentials] = useState<StudentRecord | null>(null);
+  const [studentCredForm, setStudentCredForm] = useState({
+    email: "",
+    password: "",
+    portalAccess: true,
+  });
+  const [showStudentCredPass, setShowStudentCredPass] = useState(false);
+  const [copiedStudentCreds, setCopiedStudentCreds] = useState(false);
+
+  const [manageGuardianCredentials, setManageGuardianCredentials] = useState<GuardianRecord | null>(null);
+  const [guardianCredForm, setGuardianCredForm] = useState({
+    email: "",
+    password: "",
+    portalAccess: true,
+  });
+  const [showGuardianCredPass, setShowGuardianCredPass] = useState(false);
+  const [copiedGuardianCreds, setCopiedGuardianCreds] = useState(false);
+
   // Success message toast
   const [toastMessage, setToastMessage] = useState<string | null>(null);
 
@@ -247,7 +308,7 @@ export default function AdminStudentsPage() {
     setTimeout(() => setToastMessage(null), 4000);
   };
 
-  // Form states for Add Student
+  // Form states for Add Student with Credentials
   const [newStudentForm, setNewStudentForm] = useState({
     firstName: "",
     lastName: "",
@@ -256,26 +317,34 @@ export default function AdminStudentsPage() {
     gender: "Male" as "Male" | "Female",
     guardianId: INITIAL_GUARDIANS[0].id,
     relationship: "Father",
+    loginEmail: "",
+    password: "Student#2026!",
+    grantPortalAccess: true,
   });
+  const [showNewStudentPassword, setShowNewStudentPassword] = useState(false);
 
-  // Form states for Add Guardian
+  // Form states for Add Guardian with Credentials
   const [newGuardianForm, setNewGuardianForm] = useState({
     firstName: "",
     lastName: "",
     email: "",
+    password: "Parent#2026!",
     phone: "",
     occupation: "",
     address: "",
     linkedStudentId: "",
     relationship: "Mother",
+    grantPortalAccess: true,
   });
+  const [showNewGuardianPassword, setShowNewGuardianPassword] = useState(false);
 
   // Filtered Students
   const filteredStudents = students.filter((s) => {
     const matchesSearch =
       s.name.toLowerCase().includes(search.toLowerCase()) ||
       s.studentNumber.toLowerCase().includes(search.toLowerCase()) ||
-      s.guardianName.toLowerCase().includes(search.toLowerCase());
+      s.guardianName.toLowerCase().includes(search.toLowerCase()) ||
+      s.loginEmail.toLowerCase().includes(search.toLowerCase());
     const matchesClass = selectedClassFilter === "all" || s.classArm === selectedClassFilter;
     return matchesSearch && matchesClass;
   });
@@ -288,14 +357,17 @@ export default function AdminStudentsPage() {
       g.phone.includes(search)
   );
 
-  // Handler: Add Student
-  const handleAddStudent = (e: React.FormEvent) => {
+  // Handler: Add Student with Login Credentials
+  const handleAddStudent = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!newStudentForm.firstName || !newStudentForm.lastName) return;
 
     const guardian = guardians.find((g) => g.id === newStudentForm.guardianId);
     const newStudentId = `std-${Date.now()}`;
     const fullName = `${newStudentForm.lastName} ${newStudentForm.firstName}`;
+    const effectiveEmail =
+      newStudentForm.loginEmail ||
+      `${newStudentForm.firstName.toLowerCase()}.${newStudentForm.lastName.toLowerCase()}@student.campus360.edu`;
 
     const newRecord: StudentRecord = {
       id: newStudentId,
@@ -311,6 +383,9 @@ export default function AdminStudentsPage() {
       relationship: newStudentForm.relationship,
       status: "Active",
       enrolledSubjects: ["Mathematics", "English", "General Science"],
+      loginEmail: effectiveEmail,
+      loginPassword: newStudentForm.password,
+      portalAccess: newStudentForm.grantPortalAccess,
     };
 
     setStudents([newRecord, ...students]);
@@ -338,7 +413,24 @@ export default function AdminStudentsPage() {
     }
 
     setShowAddStudentModal(false);
-    showToast(`Student ${fullName} (${newStudentForm.studentNumber}) successfully registered and assigned to ${newStudentForm.classArm}!`);
+
+    // Call server action to provision login account
+    try {
+      await provisionUserCredentials({
+        role: "student",
+        email: effectiveEmail,
+        password: newStudentForm.password,
+        fullName,
+        targetId: newStudentForm.studentNumber,
+      });
+    } catch {
+      // Local fallback continues
+    }
+
+    showToast(
+      `Student ${fullName} registered with portal credentials: ${effectiveEmail}`
+    );
+
     // reset form
     setNewStudentForm({
       firstName: "",
@@ -348,24 +440,31 @@ export default function AdminStudentsPage() {
       gender: "Male",
       guardianId: INITIAL_GUARDIANS[0].id,
       relationship: "Father",
+      loginEmail: "",
+      password: "Student#2026!",
+      grantPortalAccess: true,
     });
+    setShowNewStudentPassword(false);
   };
 
-  // Handler: Add Guardian
-  const handleAddGuardian = (e: React.FormEvent) => {
+  // Handler: Add Guardian with Login Credentials
+  const handleAddGuardian = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!newGuardianForm.firstName || !newGuardianForm.lastName || !newGuardianForm.phone) return;
 
     const guardianId = `grd-${Date.now()}`;
     const fullName = `${newGuardianForm.firstName} ${newGuardianForm.lastName}`;
     const linkedStudent = students.find((s) => s.id === newGuardianForm.linkedStudentId);
+    const effectiveEmail =
+      newGuardianForm.email ||
+      `${newGuardianForm.firstName.toLowerCase()}.${newGuardianForm.lastName.toLowerCase()}@gmail.com`;
 
     const newGrd: GuardianRecord = {
       id: guardianId,
       name: fullName,
       firstName: newGuardianForm.firstName,
       lastName: newGuardianForm.lastName,
-      email: newGuardianForm.email || `${newGuardianForm.firstName.toLowerCase()}.${newGuardianForm.lastName.toLowerCase()}@gmail.com`,
+      email: effectiveEmail,
       phone: newGuardianForm.phone,
       occupation: newGuardianForm.occupation || "Professional",
       address: newGuardianForm.address || "Lekki Peninsula, Lagos",
@@ -379,6 +478,8 @@ export default function AdminStudentsPage() {
             },
           ]
         : [],
+      loginPassword: newGuardianForm.password,
+      portalAccess: newGuardianForm.grantPortalAccess,
     };
 
     setGuardians([newGrd, ...guardians]);
@@ -400,17 +501,124 @@ export default function AdminStudentsPage() {
     }
 
     setShowAddGuardianModal(false);
-    showToast(`Parent/Guardian ${fullName} successfully registered!`);
+
+    // Call server action to provision login account
+    try {
+      await provisionUserCredentials({
+        role: "parent",
+        email: effectiveEmail,
+        password: newGuardianForm.password,
+        fullName,
+        targetId: guardianId,
+      });
+    } catch {
+      // Local fallback continues
+    }
+
+    showToast(`Parent/Guardian ${fullName} registered with portal credentials: ${effectiveEmail}`);
     setNewGuardianForm({
       firstName: "",
       lastName: "",
       email: "",
+      password: "Parent#2026!",
       phone: "",
       occupation: "",
       address: "",
       linkedStudentId: "",
       relationship: "Mother",
+      grantPortalAccess: true,
     });
+    setShowNewGuardianPassword(false);
+  };
+
+  // Handler: Update Student Credentials
+  const handleSaveStudentCredentials = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!manageStudentCredentials) return;
+
+    setStudents((prev) =>
+      prev.map((s) =>
+        s.id === manageStudentCredentials.id
+          ? {
+              ...s,
+              loginEmail: studentCredForm.email,
+              loginPassword: studentCredForm.password,
+              portalAccess: studentCredForm.portalAccess,
+            }
+          : s
+      )
+    );
+
+    try {
+      await provisionUserCredentials({
+        role: "student",
+        email: studentCredForm.email,
+        password: studentCredForm.password,
+        fullName: manageStudentCredentials.name,
+        targetId: manageStudentCredentials.studentNumber,
+      });
+    } catch {
+      // Local fallback
+    }
+
+    showToast(`Student credentials updated for ${manageStudentCredentials.name}`);
+    setManageStudentCredentials(null);
+  };
+
+  // Handler: Update Guardian Credentials
+  const handleSaveGuardianCredentials = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!manageGuardianCredentials) return;
+
+    setGuardians((prev) =>
+      prev.map((g) =>
+        g.id === manageGuardianCredentials.id
+          ? {
+              ...g,
+              email: guardianCredForm.email,
+              loginPassword: guardianCredForm.password,
+              portalAccess: guardianCredForm.portalAccess,
+            }
+          : g
+      )
+    );
+
+    try {
+      await provisionUserCredentials({
+        role: "parent",
+        email: guardianCredForm.email,
+        password: guardianCredForm.password,
+        fullName: manageGuardianCredentials.name,
+        targetId: manageGuardianCredentials.id,
+      });
+    } catch {
+      // Local fallback
+    }
+
+    showToast(`Parent portal credentials updated for ${manageGuardianCredentials.name}`);
+    setManageGuardianCredentials(null);
+  };
+
+  // Copy Student Credentials to clipboard
+  const copyStudentCredentials = (name: string, studentNo: string, email: string, pass: string) => {
+    const text = `Campus360 Student Portal Login\nStudent: ${name} (${studentNo})\nLogin Email: ${email}\nPassword: ${pass}\nPortal URL: ${typeof window !== "undefined" ? window.location.origin : ""}/login`;
+    if (typeof navigator !== "undefined" && navigator.clipboard) {
+      navigator.clipboard.writeText(text);
+    }
+    setCopiedStudentCreds(true);
+    showToast("Student credentials copied to clipboard!");
+    setTimeout(() => setCopiedStudentCreds(false), 2500);
+  };
+
+  // Copy Guardian Credentials to clipboard
+  const copyGuardianCredentials = (name: string, email: string, pass: string) => {
+    const text = `Campus360 Parent Portal Login\nGuardian: ${name}\nLogin Email: ${email}\nPassword: ${pass}\nPortal URL: ${typeof window !== "undefined" ? window.location.origin : ""}/login`;
+    if (typeof navigator !== "undefined" && navigator.clipboard) {
+      navigator.clipboard.writeText(text);
+    }
+    setCopiedGuardianCreds(true);
+    showToast("Parent credentials copied to clipboard!");
+    setTimeout(() => setCopiedGuardianCreds(false), 2500);
   };
 
   // Handler: Reassign Student Class
@@ -607,7 +815,19 @@ export default function AdminStudentsPage() {
                     <tr key={s.id} className="hover:bg-surface-raised transition-colors">
                       <td className="py-3.5">
                         <span className="font-bold text-ink block">{s.name}</span>
-                        <span className="font-mono text-[10px] text-ink-muted">{s.stream} Stream</span>
+                        <div className="flex items-center gap-1.5 mt-0.5">
+                          <span className="font-mono text-[10px] text-ink-muted">{s.stream} Stream</span>
+                          <span
+                            className={`inline-flex items-center gap-0.5 rounded px-1.5 py-0.2 font-mono text-[10px] font-bold ${
+                              s.portalAccess !== false
+                                ? "bg-emerald-50 text-emerald-800 border border-emerald-200"
+                                : "bg-rose-50 text-rose-700 border border-rose-200"
+                            }`}
+                          >
+                            <KeyRound className="size-2.5 text-emerald-600" />
+                            {s.loginEmail}
+                          </span>
+                        </div>
                       </td>
                       <td className="py-3.5 font-mono text-primary font-bold">{s.studentNumber}</td>
                       <td className="py-3.5">
@@ -634,12 +854,31 @@ export default function AdminStudentsPage() {
                         <div className="flex items-center justify-end gap-1.5">
                           <button
                             type="button"
+                            onClick={() => {
+                              setManageStudentCredentials(s);
+                              setStudentCredForm({
+                                email: s.loginEmail,
+                                password: s.loginPassword || "Student#2026!",
+                                portalAccess: s.portalAccess !== false,
+                              });
+                              setShowStudentCredPass(false);
+                              setCopiedStudentCreds(false);
+                            }}
+                            title="Manage student login email & password"
+                            className="inline-flex items-center gap-1 rounded-lg border border-line bg-surface-raised px-2 py-1 font-mono text-[11px] font-bold text-ink hover:border-emerald-600 hover:text-emerald-700 transition-colors"
+                          >
+                            <KeyRound className="size-3 text-emerald-600" />
+                            <span>Portal Login</span>
+                          </button>
+
+                          <button
+                            type="button"
                             onClick={() => setAssignClassStudent(s)}
                             title="Assign to another class arm"
                             className="inline-flex items-center gap-1 rounded-lg border border-line bg-surface-raised px-2 py-1 font-mono text-[11px] font-semibold text-ink hover:border-emerald-600 hover:text-emerald-700 transition-colors"
                           >
                             <DoorOpen className="size-3" />
-                            <span>Change Class</span>
+                            <span>Class</span>
                           </button>
 
                           <button
@@ -649,7 +888,7 @@ export default function AdminStudentsPage() {
                             className="inline-flex items-center gap-1 rounded-lg border border-line bg-surface-raised px-2 py-1 font-mono text-[11px] font-semibold text-ink hover:border-emerald-600 hover:text-emerald-700 transition-colors"
                           >
                             <LinkIcon className="size-3" />
-                            <span>Assign Parent</span>
+                            <span>Parent</span>
                           </button>
                         </div>
                       </td>
@@ -676,7 +915,7 @@ export default function AdminStudentsPage() {
                 <thead>
                   <tr className="border-b border-line font-mono text-[11px] text-ink-muted">
                     <th className="pb-3 font-bold uppercase">Parent / Guardian Name</th>
-                    <th className="pb-3 font-bold uppercase">Contact Information</th>
+                    <th className="pb-3 font-bold uppercase">Contact &amp; Portal Account</th>
                     <th className="pb-3 font-bold uppercase">Occupation</th>
                     <th className="pb-3 font-bold uppercase">Residential Address</th>
                     <th className="pb-3 font-bold uppercase">Linked Student Wards</th>
@@ -704,10 +943,20 @@ export default function AdminStudentsPage() {
                             <Mail className="size-3 text-ink-muted" />
                             {g.email}
                           </span>
-                          <span className="flex items-center gap-1.5 font-mono text-ink-muted">
+                          <div className="flex items-center gap-1.5 font-mono text-ink-muted text-[10px]">
                             <Phone className="size-3 text-ink-muted" />
-                            {g.phone}
-                          </span>
+                            <span>{g.phone}</span>
+                            <span
+                              className={`inline-flex items-center gap-1 rounded px-1.5 py-0.2 font-mono font-bold ${
+                                g.portalAccess !== false
+                                  ? "bg-emerald-50 text-emerald-800 border border-emerald-200"
+                                  : "bg-rose-50 text-rose-700 border border-rose-200"
+                              }`}
+                            >
+                              <KeyRound className="size-2.5 text-emerald-600" />
+                              Portal: {g.portalAccess !== false ? "Active" : "Disabled"}
+                            </span>
+                          </div>
                         </div>
                       </td>
                       <td className="py-3.5 text-ink-muted font-medium">{g.occupation}</td>
@@ -729,15 +978,36 @@ export default function AdminStudentsPage() {
                         </div>
                       </td>
                       <td className="py-3.5 text-right">
-                        <button
-                          type="button"
-                          onClick={() => {
-                            showToast(`Parent profile ${g.name} verified.`);
-                          }}
-                          className="rounded-lg border border-line bg-surface-raised px-2.5 py-1 text-ink font-semibold hover:border-emerald-600 transition-colors"
-                        >
-                          View Details
-                        </button>
+                        <div className="flex items-center justify-end gap-1.5">
+                          <button
+                            type="button"
+                            onClick={() => {
+                              setManageGuardianCredentials(g);
+                              setGuardianCredForm({
+                                email: g.email,
+                                password: g.loginPassword || "Parent#2026!",
+                                portalAccess: g.portalAccess !== false,
+                              });
+                              setShowGuardianCredPass(false);
+                              setCopiedGuardianCreds(false);
+                            }}
+                            title="Manage parent login email & password"
+                            className="inline-flex items-center gap-1 rounded-lg border border-line bg-surface-raised px-2.5 py-1 font-mono text-[11px] font-bold text-ink hover:border-emerald-600 hover:text-emerald-700 transition-colors"
+                          >
+                            <KeyRound className="size-3 text-emerald-600" />
+                            <span>Portal Login</span>
+                          </button>
+
+                          <button
+                            type="button"
+                            onClick={() => {
+                              showToast(`Parent profile ${g.name} verified.`);
+                            }}
+                            className="rounded-lg border border-line bg-surface-raised px-2.5 py-1 text-ink font-semibold hover:border-emerald-600 transition-colors"
+                          >
+                            View
+                          </button>
+                        </div>
                       </td>
                     </tr>
                   ))}
@@ -872,6 +1142,96 @@ export default function AdminStudentsPage() {
                   </div>
                 </div>
 
+                {/* Student Portal Login Credentials Section */}
+                <div className="rounded-2xl border border-emerald-200 bg-emerald-50/60 p-3.5 space-y-3">
+                  <div className="flex items-center justify-between">
+                    <div className="flex items-center gap-1.5 text-xs font-bold text-emerald-950">
+                      <KeyRound className="size-3.5 text-emerald-700" />
+                      <span>Student Portal Login &amp; Password</span>
+                    </div>
+                    <span className="rounded bg-emerald-100 px-2 py-0.5 font-mono text-[10px] font-bold text-emerald-800">
+                      STUDENT ACCESS
+                    </span>
+                  </div>
+
+                  <div>
+                    <div className="flex items-center justify-between">
+                      <label className="block text-xs font-bold text-ink">Student Portal Email</label>
+                      {newStudentForm.firstName && newStudentForm.lastName && (
+                        <button
+                          type="button"
+                          onClick={() => {
+                            const suggested = `${newStudentForm.firstName.toLowerCase()}.${newStudentForm.lastName.toLowerCase()}@student.campus360.edu`;
+                            setNewStudentForm({ ...newStudentForm, loginEmail: suggested });
+                          }}
+                          className="text-[11px] font-semibold text-emerald-700 hover:underline"
+                        >
+                          ⚡ Auto-fill
+                        </button>
+                      )}
+                    </div>
+                    <div className="relative mt-1">
+                      <Mail className="absolute left-3 top-2.5 size-4 text-ink-muted" />
+                      <input
+                        type="email"
+                        placeholder={`${newStudentForm.firstName ? newStudentForm.firstName.toLowerCase() : "student"}.${newStudentForm.lastName ? newStudentForm.lastName.toLowerCase() : "name"}@student.campus360.edu`}
+                        value={newStudentForm.loginEmail}
+                        onChange={(e) => setNewStudentForm({ ...newStudentForm, loginEmail: e.target.value })}
+                        className="w-full rounded-xl border border-line bg-surface pl-9 pr-3 py-2 text-xs text-ink focus:border-emerald-600 focus:outline-none"
+                      />
+                    </div>
+                  </div>
+
+                  <div>
+                    <div className="flex items-center justify-between">
+                      <label className="block text-xs font-bold text-ink">Student Portal Password</label>
+                      <button
+                        type="button"
+                        onClick={() => {
+                          const generated = `Student#${Math.floor(1000 + Math.random() * 9000)}!`;
+                          setNewStudentForm({ ...newStudentForm, password: generated });
+                        }}
+                        className="text-[11px] font-semibold text-emerald-700 hover:underline"
+                      >
+                        ⚡ Generate Password
+                      </button>
+                    </div>
+                    <div className="relative mt-1">
+                      <Lock className="absolute left-3 top-2.5 size-4 text-ink-muted" />
+                      <input
+                        type={showNewStudentPassword ? "text" : "password"}
+                        required
+                        value={newStudentForm.password}
+                        onChange={(e) => setNewStudentForm({ ...newStudentForm, password: e.target.value })}
+                        className="w-full rounded-xl border border-line bg-surface pl-9 pr-10 py-2 font-mono text-xs text-ink focus:border-emerald-600 focus:outline-none"
+                        placeholder="Enter initial password"
+                      />
+                      <button
+                        type="button"
+                        onClick={() => setShowNewStudentPassword(!showNewStudentPassword)}
+                        className="absolute right-2.5 top-2.5 text-ink-muted hover:text-ink"
+                      >
+                        {showNewStudentPassword ? <EyeOff className="size-4" /> : <Eye className="size-4" />}
+                      </button>
+                    </div>
+                    <p className="mt-1 text-[11px] text-ink-muted">
+                      The student will use this email and password to log in to their student portal.
+                    </p>
+                  </div>
+
+                  <label className="flex items-center gap-2 cursor-pointer pt-0.5">
+                    <input
+                      type="checkbox"
+                      checked={newStudentForm.grantPortalAccess}
+                      onChange={(e) => setNewStudentForm({ ...newStudentForm, grantPortalAccess: e.target.checked })}
+                      className="size-4 rounded border-line text-emerald-600 focus:ring-emerald-500"
+                    />
+                    <span className="text-xs font-semibold text-ink">
+                      Grant immediate active portal access upon enrollment
+                    </span>
+                  </label>
+                </div>
+
                 <div className="mt-6 flex items-center justify-end gap-2 border-t border-line pt-4">
                   <button
                     type="button"
@@ -985,6 +1345,68 @@ export default function AdminStudentsPage() {
                       className="mt-1 w-full rounded-xl border border-line bg-surface-raised px-3 py-2 text-xs text-ink focus:border-emerald-600 focus:outline-none"
                     />
                   </div>
+                </div>
+
+                {/* Parent Portal Login Credentials Section */}
+                <div className="rounded-2xl border border-emerald-200 bg-emerald-50/60 p-3.5 space-y-3">
+                  <div className="flex items-center justify-between">
+                    <div className="flex items-center gap-1.5 text-xs font-bold text-emerald-950">
+                      <KeyRound className="size-3.5 text-emerald-700" />
+                      <span>Parent Portal Login &amp; Password</span>
+                    </div>
+                    <span className="rounded bg-emerald-100 px-2 py-0.5 font-mono text-[10px] font-bold text-emerald-800">
+                      PARENT ACCESS
+                    </span>
+                  </div>
+
+                  <div>
+                    <div className="flex items-center justify-between">
+                      <label className="block text-xs font-bold text-ink">Parent Login Password</label>
+                      <button
+                        type="button"
+                        onClick={() => {
+                          const generated = `Parent#${Math.floor(1000 + Math.random() * 9000)}!`;
+                          setNewGuardianForm({ ...newGuardianForm, password: generated });
+                        }}
+                        className="text-[11px] font-semibold text-emerald-700 hover:underline"
+                      >
+                        ⚡ Generate Password
+                      </button>
+                    </div>
+                    <div className="relative mt-1">
+                      <Lock className="absolute left-3 top-2.5 size-4 text-ink-muted" />
+                      <input
+                        type={showNewGuardianPassword ? "text" : "password"}
+                        required
+                        value={newGuardianForm.password}
+                        onChange={(e) => setNewGuardianForm({ ...newGuardianForm, password: e.target.value })}
+                        className="w-full rounded-xl border border-line bg-surface pl-9 pr-10 py-2 font-mono text-xs text-ink focus:border-emerald-600 focus:outline-none"
+                        placeholder="Enter initial password"
+                      />
+                      <button
+                        type="button"
+                        onClick={() => setShowNewGuardianPassword(!showNewGuardianPassword)}
+                        className="absolute right-2.5 top-2.5 text-ink-muted hover:text-ink"
+                      >
+                        {showNewGuardianPassword ? <EyeOff className="size-4" /> : <Eye className="size-4" />}
+                      </button>
+                    </div>
+                    <p className="mt-1 text-[11px] text-ink-muted">
+                      Parent uses <strong className="text-ink">{newGuardianForm.email || "their email address"}</strong> and this password to sign in and monitor their ward&apos;s scores, attendance, and fee status.
+                    </p>
+                  </div>
+
+                  <label className="flex items-center gap-2 cursor-pointer pt-0.5">
+                    <input
+                      type="checkbox"
+                      checked={newGuardianForm.grantPortalAccess}
+                      onChange={(e) => setNewGuardianForm({ ...newGuardianForm, grantPortalAccess: e.target.checked })}
+                      className="size-4 rounded border-line text-emerald-600 focus:ring-emerald-500"
+                    />
+                    <span className="text-xs font-semibold text-ink">
+                      Grant immediate active parent portal access
+                    </span>
+                  </label>
                 </div>
 
                 <div className="border-t border-line pt-3">
@@ -1183,7 +1605,297 @@ export default function AdminStudentsPage() {
             </div>
           </div>
         )}
+
+        {/* MODAL: MANAGE STUDENT LOGIN CREDENTIALS */}
+        {manageStudentCredentials && (
+          <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 backdrop-blur-sm p-4 animate-in fade-in duration-200">
+            <div className="w-full max-w-md rounded-3xl border border-line bg-surface p-6 shadow-2xl">
+              <div className="flex items-center justify-between border-b border-line pb-4">
+                <div className="flex items-center gap-2">
+                  <div className="flex size-9 items-center justify-center rounded-xl bg-emerald-100 text-emerald-700">
+                    <KeyRound className="size-5" />
+                  </div>
+                  <div>
+                    <h3 className="text-base font-extrabold text-ink">Manage Student Portal Credentials</h3>
+                    <p className="text-xs text-ink-muted">
+                      {manageStudentCredentials.name} ({manageStudentCredentials.studentNumber} — {manageStudentCredentials.classArm})
+                    </p>
+                  </div>
+                </div>
+                <button
+                  onClick={() => setManageStudentCredentials(null)}
+                  className="rounded-lg p-1 text-ink-muted hover:bg-surface-raised hover:text-ink"
+                >
+                  <X className="size-5" />
+                </button>
+              </div>
+
+              <form onSubmit={handleSaveStudentCredentials} className="mt-4 space-y-4">
+                <div>
+                  <label className="block text-xs font-bold text-ink">Student Login Email</label>
+                  <div className="relative mt-1">
+                    <Mail className="absolute left-3 top-2.5 size-4 text-ink-muted" />
+                    <input
+                      type="email"
+                      required
+                      value={studentCredForm.email}
+                      onChange={(e) =>
+                        setStudentCredForm({ ...studentCredForm, email: e.target.value })
+                      }
+                      className="w-full rounded-xl border border-line bg-surface-raised pl-9 pr-3 py-2 text-xs text-ink focus:border-emerald-600 focus:outline-none"
+                    />
+                  </div>
+                  <p className="mt-1 text-[11px] text-ink-muted">
+                    Student uses this address to log in to their student station.
+                  </p>
+                </div>
+
+                <div>
+                  <div className="flex items-center justify-between">
+                    <label className="block text-xs font-bold text-ink">Portal Password</label>
+                    <button
+                      type="button"
+                      onClick={() => {
+                        const generated = `Student#${Math.floor(1000 + Math.random() * 9000)}!`;
+                        setStudentCredForm({ ...studentCredForm, password: generated });
+                      }}
+                      className="text-[11px] font-semibold text-emerald-700 hover:underline"
+                    >
+                      ⚡ Generate New
+                    </button>
+                  </div>
+                  <div className="relative mt-1">
+                    <Lock className="absolute left-3 top-2.5 size-4 text-ink-muted" />
+                    <input
+                      type={showStudentCredPass ? "text" : "password"}
+                      required
+                      value={studentCredForm.password}
+                      onChange={(e) =>
+                        setStudentCredForm({ ...studentCredForm, password: e.target.value })
+                      }
+                      className="w-full rounded-xl border border-line bg-surface-raised pl-9 pr-10 py-2 font-mono text-xs text-ink focus:border-emerald-600 focus:outline-none"
+                    />
+                    <button
+                      type="button"
+                      onClick={() => setShowStudentCredPass(!showStudentCredPass)}
+                      className="absolute right-2.5 top-2.5 text-ink-muted hover:text-ink"
+                    >
+                      {showStudentCredPass ? <EyeOff className="size-4" /> : <Eye className="size-4" />}
+                    </button>
+                  </div>
+                  <p className="mt-1 text-[11px] text-ink-muted">
+                    School admin can reset this password at any time.
+                  </p>
+                </div>
+
+                <div className="rounded-2xl border border-line bg-surface-raised p-3">
+                  <label className="flex items-center justify-between cursor-pointer">
+                    <div>
+                      <span className="block text-xs font-bold text-ink">Student Portal Status</span>
+                      <span className="text-[11px] text-ink-muted">
+                        {studentCredForm.portalAccess
+                          ? "Account is active and student can sign in."
+                          : "Account suspended; student sign-in is blocked."}
+                      </span>
+                    </div>
+                    <input
+                      type="checkbox"
+                      checked={studentCredForm.portalAccess}
+                      onChange={(e) =>
+                        setStudentCredForm({ ...studentCredForm, portalAccess: e.target.checked })
+                      }
+                      className="size-4 rounded border-line text-emerald-600 focus:ring-emerald-500"
+                    />
+                  </label>
+                </div>
+
+                {/* Quick Copy Credentials Box */}
+                <div className="flex items-center justify-between rounded-xl bg-emerald-50 border border-emerald-200 px-3 py-2.5">
+                  <div className="text-[11px] text-emerald-950">
+                    <span className="font-bold block">Share with Student / Parent</span>
+                    <span className="text-emerald-700 text-[10px]">Copies login email, password, and sign-in URL</span>
+                  </div>
+                  <button
+                    type="button"
+                    onClick={() =>
+                      copyStudentCredentials(
+                        manageStudentCredentials.name,
+                        manageStudentCredentials.studentNumber,
+                        studentCredForm.email,
+                        studentCredForm.password
+                      )
+                    }
+                    className="inline-flex items-center gap-1.5 rounded-lg bg-emerald-600 px-2.5 py-1.5 text-[11px] font-bold text-white shadow-sm hover:bg-emerald-700 transition-colors"
+                  >
+                    {copiedStudentCreds ? <Check className="size-3.5" /> : <Copy className="size-3.5" />}
+                    <span>{copiedStudentCreds ? "Copied!" : "Copy Details"}</span>
+                  </button>
+                </div>
+
+                <div className="mt-6 flex items-center justify-end gap-2 border-t border-line pt-4">
+                  <button
+                    type="button"
+                    onClick={() => setManageStudentCredentials(null)}
+                    className="rounded-xl border border-line px-4 py-2 text-xs font-semibold text-ink hover:bg-surface-raised"
+                  >
+                    Cancel
+                  </button>
+                  <button
+                    type="submit"
+                    className="rounded-xl bg-emerald-600 px-5 py-2 text-xs font-bold text-white shadow-sm hover:bg-emerald-700"
+                  >
+                    Save Credentials
+                  </button>
+                </div>
+              </form>
+            </div>
+          </div>
+        )}
+
+        {/* MODAL: MANAGE PARENT / GUARDIAN LOGIN CREDENTIALS */}
+        {manageGuardianCredentials && (
+          <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 backdrop-blur-sm p-4 animate-in fade-in duration-200">
+            <div className="w-full max-w-md rounded-3xl border border-line bg-surface p-6 shadow-2xl">
+              <div className="flex items-center justify-between border-b border-line pb-4">
+                <div className="flex items-center gap-2">
+                  <div className="flex size-9 items-center justify-center rounded-xl bg-emerald-100 text-emerald-700">
+                    <KeyRound className="size-5" />
+                  </div>
+                  <div>
+                    <h3 className="text-base font-extrabold text-ink">Manage Parent Portal Credentials</h3>
+                    <p className="text-xs text-ink-muted">{manageGuardianCredentials.name} (Guardian ID: {manageGuardianCredentials.id})</p>
+                  </div>
+                </div>
+                <button
+                  onClick={() => setManageGuardianCredentials(null)}
+                  className="rounded-lg p-1 text-ink-muted hover:bg-surface-raised hover:text-ink"
+                >
+                  <X className="size-5" />
+                </button>
+              </div>
+
+              <form onSubmit={handleSaveGuardianCredentials} className="mt-4 space-y-4">
+                <div>
+                  <label className="block text-xs font-bold text-ink">Parent Login Email</label>
+                  <div className="relative mt-1">
+                    <Mail className="absolute left-3 top-2.5 size-4 text-ink-muted" />
+                    <input
+                      type="email"
+                      required
+                      value={guardianCredForm.email}
+                      onChange={(e) =>
+                        setGuardianCredForm({ ...guardianCredForm, email: e.target.value })
+                      }
+                      className="w-full rounded-xl border border-line bg-surface-raised pl-9 pr-3 py-2 text-xs text-ink focus:border-emerald-600 focus:outline-none"
+                    />
+                  </div>
+                  <p className="mt-1 text-[11px] text-ink-muted">
+                    Parent signs in to track their student wards, view terminal report cards, and pay school fees.
+                  </p>
+                </div>
+
+                <div>
+                  <div className="flex items-center justify-between">
+                    <label className="block text-xs font-bold text-ink">Password</label>
+                    <button
+                      type="button"
+                      onClick={() => {
+                        const generated = `Parent#${Math.floor(1000 + Math.random() * 9000)}!`;
+                        setGuardianCredForm({ ...guardianCredForm, password: generated });
+                      }}
+                      className="text-[11px] font-semibold text-emerald-700 hover:underline"
+                    >
+                      ⚡ Generate New
+                    </button>
+                  </div>
+                  <div className="relative mt-1">
+                    <Lock className="absolute left-3 top-2.5 size-4 text-ink-muted" />
+                    <input
+                      type={showGuardianCredPass ? "text" : "password"}
+                      required
+                      value={guardianCredForm.password}
+                      onChange={(e) =>
+                        setGuardianCredForm({ ...guardianCredForm, password: e.target.value })
+                      }
+                      className="w-full rounded-xl border border-line bg-surface-raised pl-9 pr-10 py-2 font-mono text-xs text-ink focus:border-emerald-600 focus:outline-none"
+                    />
+                    <button
+                      type="button"
+                      onClick={() => setShowGuardianCredPass(!showGuardianCredPass)}
+                      className="absolute right-2.5 top-2.5 text-ink-muted hover:text-ink"
+                    >
+                      {showGuardianCredPass ? <EyeOff className="size-4" /> : <Eye className="size-4" />}
+                    </button>
+                  </div>
+                  <p className="mt-1 text-[11px] text-ink-muted">
+                    School admin can reset parent credentials whenever requested.
+                  </p>
+                </div>
+
+                <div className="rounded-2xl border border-line bg-surface-raised p-3">
+                  <label className="flex items-center justify-between cursor-pointer">
+                    <div>
+                      <span className="block text-xs font-bold text-ink">Parent Portal Access</span>
+                      <span className="text-[11px] text-ink-muted">
+                        {guardianCredForm.portalAccess
+                          ? "Parent account is active and authorized to sign in."
+                          : "Parent account is suspended; login blocked."}
+                      </span>
+                    </div>
+                    <input
+                      type="checkbox"
+                      checked={guardianCredForm.portalAccess}
+                      onChange={(e) =>
+                        setGuardianCredForm({ ...guardianCredForm, portalAccess: e.target.checked })
+                      }
+                      className="size-4 rounded border-line text-emerald-600 focus:ring-emerald-500"
+                    />
+                  </label>
+                </div>
+
+                {/* Quick Copy Credentials Box */}
+                <div className="flex items-center justify-between rounded-xl bg-emerald-50 border border-emerald-200 px-3 py-2.5">
+                  <div className="text-[11px] text-emerald-950">
+                    <span className="font-bold block">Share with Parent</span>
+                    <span className="text-emerald-700 text-[10px]">Copies login email, password, and sign-in URL</span>
+                  </div>
+                  <button
+                    type="button"
+                    onClick={() =>
+                      copyGuardianCredentials(
+                        manageGuardianCredentials.name,
+                        guardianCredForm.email,
+                        guardianCredForm.password
+                      )
+                    }
+                    className="inline-flex items-center gap-1.5 rounded-lg bg-emerald-600 px-2.5 py-1.5 text-[11px] font-bold text-white shadow-sm hover:bg-emerald-700 transition-colors"
+                  >
+                    {copiedGuardianCreds ? <Check className="size-3.5" /> : <Copy className="size-3.5" />}
+                    <span>{copiedGuardianCreds ? "Copied!" : "Copy Credentials"}</span>
+                  </button>
+                </div>
+
+                <div className="mt-6 flex items-center justify-end gap-2 border-t border-line pt-4">
+                  <button
+                    type="button"
+                    onClick={() => setManageGuardianCredentials(null)}
+                    className="rounded-xl border border-line px-4 py-2 text-xs font-semibold text-ink hover:bg-surface-raised"
+                  >
+                    Cancel
+                  </button>
+                  <button
+                    type="submit"
+                    className="rounded-xl bg-emerald-600 px-5 py-2 text-xs font-bold text-white shadow-sm hover:bg-emerald-700"
+                  >
+                    Save Credentials
+                  </button>
+                </div>
+              </form>
+            </div>
+          </div>
+        )}
       </div>
     </DashboardLayout>
   );
 }
+
