@@ -73,7 +73,7 @@ export default function BursarReconciliationPage() {
       id: "rec-4",
       source: "Paystack Batch",
       reference: "PSTK-BATCH-2026-040",
-      description: "Paystack Settlement Batch #040 (Net of ₦2,000 charge fee)",
+      description: "Paystack Settlement Batch #040 (Net of $2,000 charge fee)",
       date: "Yesterday, 06:00 AM",
       ledgerAmount: 3850000,
       bankAmount: 3848000,
@@ -162,7 +162,7 @@ export default function BursarReconciliationPage() {
               <span>Campus360 Ledger</span>
               <FileCheck className="w-4 h-4 text-blue-500" />
             </div>
-            <div className="text-2xl font-black text-foreground">₦108,420,000</div>
+            <div className="text-2xl font-black text-foreground">$108,420,000</div>
             <div className="text-xs text-muted-foreground mt-1">Total receipts posted in term</div>
           </div>
 
@@ -171,7 +171,7 @@ export default function BursarReconciliationPage() {
               <span>Zenith Bank Main Account</span>
               <Building2 className="w-4 h-4 text-emerald-500" />
             </div>
-            <div className="text-2xl font-black text-emerald-600">₦108,603,000</div>
+            <div className="text-2xl font-black text-emerald-600">$108,603,000</div>
             <div className="text-xs text-muted-foreground mt-1">Acct #102938472 · Verified Feed</div>
           </div>
 
@@ -180,7 +180,7 @@ export default function BursarReconciliationPage() {
               <span>Net Variance / Unassigned</span>
               <ArrowRightLeft className="w-4 h-4 text-amber-500" />
             </div>
-            <div className="text-2xl font-black text-amber-600">+₦183,000</div>
+            <div className="text-2xl font-black text-amber-600">+$183,000</div>
             <div className="text-xs text-muted-foreground mt-1">1 unidentified teller deposit to claim</div>
           </div>
         </div>
@@ -236,18 +236,18 @@ export default function BursarReconciliationPage() {
                       </span>
                     </td>
                     <td className="py-3.5 px-4 text-right font-medium text-foreground">
-                      ₦{item.ledgerAmount.toLocaleString()}
+                      ${item.ledgerAmount.toLocaleString()}
                     </td>
                     <td className="py-3.5 px-4 text-right font-semibold text-emerald-600">
-                      ₦{item.bankAmount.toLocaleString()}
+                      ${item.bankAmount.toLocaleString()}
                     </td>
                     <td className="py-3.5 px-4 text-right font-bold">
                       {item.variance === 0 ? (
-                        <span className="text-emerald-600">₦0</span>
+                        <span className="text-emerald-600">$0</span>
                       ) : item.variance > 0 ? (
-                        <span className="text-amber-600">+₦{item.variance.toLocaleString()}</span>
+                        <span className="text-amber-600">+${item.variance.toLocaleString()}</span>
                       ) : (
-                        <span className="text-rose-600">-₦{Math.abs(item.variance).toLocaleString()}</span>
+                        <span className="text-rose-600">-${Math.abs(item.variance).toLocaleString()}</span>
                       )}
                     </td>
                     <td className="py-3.5 px-4 text-center">

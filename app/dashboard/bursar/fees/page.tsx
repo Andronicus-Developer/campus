@@ -182,7 +182,7 @@ export default function BursarFeeStructuresPage() {
 
           <div className="text-right hidden sm:block">
             <span className="text-xs text-muted-foreground">Standard Day Student Term Bill:</span>
-            <span className="ml-2 text-lg font-black text-foreground">₦{totalMandatory.toLocaleString()}</span>
+            <span className="ml-2 text-lg font-black text-foreground">${totalMandatory.toLocaleString()}</span>
           </div>
         </div>
 
@@ -218,7 +218,7 @@ export default function BursarFeeStructuresPage() {
               <div className="pt-4 border-t border-border flex items-center justify-between">
                 <div>
                   <div className="text-[11px] text-muted-foreground">Term Assessment</div>
-                  <div className="text-xl font-black text-foreground">₦{fee.amount.toLocaleString()}</div>
+                  <div className="text-xl font-black text-foreground">${fee.amount.toLocaleString()}</div>
                 </div>
 
                 <div className="flex items-center gap-1.5">
@@ -307,7 +307,7 @@ export default function BursarFeeStructuresPage() {
 
                 <div className="grid grid-cols-2 gap-3">
                   <div>
-                    <label className="block text-muted-foreground mb-1 font-medium">Amount (₦)</label>
+                    <label className="block text-muted-foreground mb-1 font-medium">Amount ($)</label>
                     <input
                       type="number"
                       defaultValue={selectedFee?.amount || 25000}

@@ -139,7 +139,7 @@ export default function ParentFeesPage() {
                 ) : (
                   <div>
                     <span className="text-[10px] font-bold text-rose-600 uppercase">Balance Due</span>
-                    <div className="text-base font-black text-rose-600">₦{child.balanceDue.toLocaleString()}</div>
+                    <div className="text-base font-black text-rose-600">${child.balanceDue.toLocaleString()}</div>
                   </div>
                 )}
               </div>
@@ -152,7 +152,7 @@ export default function ParentFeesPage() {
           <div className="p-4 rounded-xl bg-emerald-50 dark:bg-emerald-950/40 border border-emerald-200 dark:border-emerald-800 text-emerald-800 dark:text-emerald-300 text-xs sm:text-sm flex items-center justify-between">
             <span className="flex items-center gap-2">
               <CheckCircle2 className="w-5 h-5 text-emerald-600 flex-shrink-0" />
-              Payment Successful! ₦65,000 settled via Paystack. Official electronic receipt #PSTK_2026_098235 generated and sent to zainab.adeleke@gmail.com.
+              Payment Successful! $65,000 settled via Paystack. Official electronic receipt #PSTK_2026_098235 generated and sent to zainab.adeleke@gmail.com.
             </span>
             <button onClick={() => setPaySuccess(false)} className="text-emerald-600 hover:underline text-xs ml-4">
               Dismiss
@@ -174,7 +174,7 @@ export default function ParentFeesPage() {
             <div className="text-right">
               <div className="text-xs text-muted-foreground font-medium">Outstanding Balance</div>
               <div className="text-2xl sm:text-3xl font-black text-rose-600">
-                ₦{currentChild.balanceDue.toLocaleString()}
+                ${currentChild.balanceDue.toLocaleString()}
               </div>
             </div>
           </div>
@@ -186,16 +186,16 @@ export default function ParentFeesPage() {
               {currentChild.items.map((item) => (
                 <div key={item.title} className="p-3.5 flex items-center justify-between text-xs sm:text-sm">
                   <span className="text-foreground font-medium">{item.title}</span>
-                  <span className="font-semibold text-foreground">₦{item.amount.toLocaleString()}</span>
+                  <span className="font-semibold text-foreground">${item.amount.toLocaleString()}</span>
                 </div>
               ))}
               <div className="p-3.5 bg-muted/30 flex items-center justify-between text-xs sm:text-sm font-bold">
                 <span>Total Term Assessment</span>
-                <span>₦{currentChild.totalBilled.toLocaleString()}</span>
+                <span>${currentChild.totalBilled.toLocaleString()}</span>
               </div>
               <div className="p-3.5 bg-muted/30 flex items-center justify-between text-xs sm:text-sm font-semibold text-emerald-600">
                 <span>Total Paid to Date</span>
-                <span>- ₦{currentChild.totalPaid.toLocaleString()}</span>
+                <span>- ${currentChild.totalPaid.toLocaleString()}</span>
               </div>
             </div>
           </div>
@@ -213,7 +213,7 @@ export default function ParentFeesPage() {
                 className="w-full sm:w-auto px-6 py-3 rounded-xl bg-pink-600 hover:bg-pink-700 text-white font-bold text-sm shadow-md shadow-pink-600/20 transition flex items-center justify-center gap-2"
               >
                 <CreditCard className="w-4 h-4" />
-                Pay ₦{currentChild.balanceDue.toLocaleString()} Now
+                Pay ${currentChild.balanceDue.toLocaleString()} Now
               </button>
             ) : (
               <button
@@ -242,7 +242,7 @@ export default function ParentFeesPage() {
                   </div>
                 </div>
                 <div className="text-right">
-                  <div className="text-sm font-black text-foreground">₦{currentChild.balanceDue.toLocaleString()}</div>
+                  <div className="text-sm font-black text-foreground">${currentChild.balanceDue.toLocaleString()}</div>
                   <div className="text-[10px] text-muted-foreground">Term 2 Balance</div>
                 </div>
               </div>
@@ -285,7 +285,7 @@ export default function ParentFeesPage() {
                   onClick={handlePay}
                   className="px-5 py-2.5 rounded-xl bg-pink-600 hover:bg-pink-700 text-white font-bold text-xs shadow-sm transition"
                 >
-                  Authorize ₦{currentChild.balanceDue.toLocaleString()}
+                  Authorize ${currentChild.balanceDue.toLocaleString()}
                 </button>
               </div>
             </div>

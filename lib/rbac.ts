@@ -355,7 +355,7 @@ export const ROLES_CONFIG: Record<RoleKey, RoleConfig> = {
       { label: 'Invoices & Billing', href: '/dashboard/bursar/invoices', icon: 'FileSpreadsheet' },
       { label: 'Payment Inflows', href: '/dashboard/bursar/payments', icon: 'Receipt', badge: 'Live' },
       { label: 'Fee Structures', href: '/dashboard/bursar/fees', icon: 'Layers' },
-      { label: 'Debt Recovery Aging', href: '/dashboard/bursar/debt', icon: 'ClockAlert', badge: '₦5.6M' },
+      { label: 'Debt Recovery Aging', href: '/dashboard/bursar/debt', icon: 'ClockAlert', badge: '$5.6M' },
       { label: 'Bank Reconciliation', href: '/dashboard/bursar/reconcile', icon: 'Landmark' },
     ],
   },

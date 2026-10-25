@@ -137,13 +137,13 @@ export default function BursarInvoicesPage() {
   ]);
 
   const handleSendReminder = (invoice: InvoiceItem) => {
-    alert(`Automated WhatsApp and SMS payment reminder sent to ${invoice.guardianName} (${invoice.guardianPhone}) for outstanding balance ₦${invoice.balance.toLocaleString()}.`);
+    alert(`Automated WhatsApp and SMS payment reminder sent to ${invoice.guardianName} (${invoice.guardianPhone}) for outstanding balance $${invoice.balance.toLocaleString()}.`);
   };
 
   const handleBatchRun = () => {
     setBatchNotice("Generating Term 2 billing batch across all 32 class arms... 842 invoices synthesized.");
     setTimeout(() => {
-      setBatchNotice("Batch Billing Run Complete: 842 invoices generated, total billed ₦142,850,000. Invoices published to parent portals.");
+      setBatchNotice("Batch Billing Run Complete: 842 invoices generated, total billed $142,850,000. Invoices published to parent portals.");
       setBatchModalOpen(false);
     }, 1200);
   };
@@ -212,24 +212,24 @@ export default function BursarInvoicesPage() {
         <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
           <div className="p-4 rounded-2xl bg-card border border-border shadow-xs">
             <div className="text-xs font-medium text-muted-foreground">Total Invoiced (Term 2)</div>
-            <div className="text-xl sm:text-2xl font-black text-foreground mt-1">₦142,850,000</div>
+            <div className="text-xl sm:text-2xl font-black text-foreground mt-1">$142,850,000</div>
             <div className="text-[11px] text-muted-foreground mt-1 flex items-center gap-1">
               <span className="text-emerald-600 font-semibold">842 Students</span> across 32 class arms
             </div>
           </div>
           <div className="p-4 rounded-2xl bg-card border border-border shadow-xs">
             <div className="text-xs font-medium text-muted-foreground">Settled Inflows</div>
-            <div className="text-xl sm:text-2xl font-black text-emerald-600 mt-1">₦108,420,000</div>
+            <div className="text-xl sm:text-2xl font-black text-emerald-600 mt-1">$108,420,000</div>
             <div className="text-[11px] text-emerald-600 font-semibold mt-1">75.9% collection rate</div>
           </div>
           <div className="p-4 rounded-2xl bg-card border border-border shadow-xs">
             <div className="text-xs font-medium text-muted-foreground">Pending Partial Balance</div>
-            <div className="text-xl sm:text-2xl font-black text-amber-600 mt-1">₦28,830,000</div>
+            <div className="text-xl sm:text-2xl font-black text-amber-600 mt-1">$28,830,000</div>
             <div className="text-[11px] text-muted-foreground mt-1">118 accounts with balance</div>
           </div>
           <div className="p-4 rounded-2xl bg-card border border-border shadow-xs">
             <div className="text-xs font-medium text-muted-foreground">Overdue / Delinquent</div>
-            <div className="text-xl sm:text-2xl font-black text-rose-600 mt-1">₦5,600,000</div>
+            <div className="text-xl sm:text-2xl font-black text-rose-600 mt-1">$5,600,000</div>
             <div className="text-[11px] text-rose-600 font-semibold mt-1">32 accounts past 30 days</div>
           </div>
         </div>
@@ -308,16 +308,16 @@ export default function BursarInvoicesPage() {
                       <div className="text-xs text-muted-foreground">{inv.guardianPhone}</div>
                     </td>
                     <td className="py-3.5 px-4 text-right font-medium text-foreground">
-                      ₦{inv.amount.toLocaleString()}
+                      ${inv.amount.toLocaleString()}
                     </td>
                     <td className="py-3.5 px-4 text-right font-semibold text-emerald-600">
-                      ₦{inv.paid.toLocaleString()}
+                      ${inv.paid.toLocaleString()}
                     </td>
                     <td className="py-3.5 px-4 text-right font-bold text-foreground">
                       {inv.balance > 0 ? (
-                        <span className="text-rose-600">₦{inv.balance.toLocaleString()}</span>
+                        <span className="text-rose-600">${inv.balance.toLocaleString()}</span>
                       ) : (
-                        <span className="text-emerald-600">₦0</span>
+                        <span className="text-emerald-600">$0</span>
                       )}
                     </td>
                     <td className="py-3.5 px-4 text-center">
@@ -409,31 +409,31 @@ export default function BursarInvoicesPage() {
               <div className="p-3 rounded-xl bg-canvas border border-border space-y-2 text-xs">
                 <div className="flex justify-between py-1 border-b border-border">
                   <span className="text-muted-foreground">Tuition & Instructional Levy</span>
-                  <span className="font-medium text-foreground">₦120,000</span>
+                  <span className="font-medium text-foreground">$120,000</span>
                 </div>
                 <div className="flex justify-between py-1 border-b border-border">
                   <span className="text-muted-foreground">Science Lab & STEM Fee</span>
-                  <span className="font-medium text-foreground">₦35,000</span>
+                  <span className="font-medium text-foreground">$35,000</span>
                 </div>
                 <div className="flex justify-between py-1 border-b border-border">
                   <span className="text-muted-foreground">PTA Development Levy</span>
-                  <span className="font-medium text-foreground">₦15,000</span>
+                  <span className="font-medium text-foreground">$15,000</span>
                 </div>
                 <div className="flex justify-between py-1 border-b border-border">
                   <span className="text-muted-foreground">Digital Campus & Portal License</span>
-                  <span className="font-medium text-foreground">₦15,000</span>
+                  <span className="font-medium text-foreground">$15,000</span>
                 </div>
                 <div className="flex justify-between pt-2 text-sm font-bold">
                   <span>Total Invoiced:</span>
-                  <span className="text-foreground">₦{selectedInvoice.amount.toLocaleString()}</span>
+                  <span className="text-foreground">${selectedInvoice.amount.toLocaleString()}</span>
                 </div>
                 <div className="flex justify-between text-xs font-semibold text-emerald-600">
                   <span>Total Paid via Paystack:</span>
-                  <span>- ₦{selectedInvoice.paid.toLocaleString()}</span>
+                  <span>- ${selectedInvoice.paid.toLocaleString()}</span>
                 </div>
                 <div className="flex justify-between text-sm font-black pt-1 border-t border-border text-rose-600">
                   <span>Balance Due:</span>
-                  <span>₦{selectedInvoice.balance.toLocaleString()}</span>
+                  <span>${selectedInvoice.balance.toLocaleString()}</span>
                 </div>
               </div>
 
@@ -484,7 +484,7 @@ export default function BursarInvoicesPage() {
                 </div>
                 <div className="flex justify-between">
                   <span className="text-muted-foreground">Estimated Term Inflows:</span>
-                  <span className="font-semibold text-amber-600">₦142,850,000</span>
+                  <span className="font-semibold text-amber-600">$142,850,000</span>
                 </div>
               </div>
 

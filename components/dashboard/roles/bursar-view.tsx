@@ -49,7 +49,7 @@ export function BursarDashboardView() {
       id: "pay-1",
       student: "Adeleke Tobi",
       studentId: "RC-2023-0184",
-      amount: "₦185,000",
+      amount: "$185,000",
       channel: "Paystack (Debit Card)",
       reference: "PSTK_98240182",
       date: "Today, 11:20 AM",
@@ -59,7 +59,7 @@ export function BursarDashboardView() {
       id: "pay-2",
       student: "Bello Zainab",
       studentId: "RC-2023-0195",
-      amount: "₦120,000",
+      amount: "$120,000",
       channel: "Bank Direct Transfer",
       reference: "GTB_TRF_772109",
       date: "Today, 10:45 AM",
@@ -69,7 +69,7 @@ export function BursarDashboardView() {
       id: "pay-3",
       student: "Okonkwo Emeka",
       studentId: "RC-2023-0202",
-      amount: "₦210,000",
+      amount: "$210,000",
       channel: "Paystack (USSD)",
       reference: "PSTK_98240091",
       date: "Today, 09:15 AM",
@@ -79,7 +79,7 @@ export function BursarDashboardView() {
       id: "pay-4",
       student: "Danjuma Aisha",
       studentId: "RC-2023-0187",
-      amount: "₦65,000",
+      amount: "$65,000",
       channel: "Cash at Bursary",
       reference: "BUR_REC_0842",
       date: "Yesterday",
@@ -92,7 +92,7 @@ export function BursarDashboardView() {
       id: "inv-1",
       student: "Eze Somtochukwu",
       classGroup: "SSS 2A",
-      amountDue: "₦140,000",
+      amountDue: "$140,000",
       daysOverdue: 24,
       guardianPhone: "+234 803 445 1029",
       reminded: false,
@@ -101,7 +101,7 @@ export function BursarDashboardView() {
       id: "inv-2",
       student: "Mohammed Aminu",
       classGroup: "JSS 3B",
-      amountDue: "₦95,000",
+      amountDue: "$95,000",
       daysOverdue: 18,
       guardianPhone: "+234 809 112 4001",
       reminded: false,
@@ -110,7 +110,7 @@ export function BursarDashboardView() {
       id: "inv-3",
       student: "Alabi Kehinde",
       classGroup: "JSS 1 Gold",
-      amountDue: "₦120,000",
+      amountDue: "$120,000",
       daysOverdue: 32,
       guardianPhone: "+234 818 900 3341",
       reminded: false,
@@ -161,7 +161,7 @@ export function BursarDashboardView() {
             Total Invoiced (Term 2)
           </span>
           <div className="mt-2 flex items-baseline justify-between">
-            <span className="font-mono text-3xl font-extrabold text-ink">₦48.2M</span>
+            <span className="font-mono text-3xl font-extrabold text-ink">$48.2M</span>
             <span className="font-mono text-xs font-bold text-ink-muted">842 invoices</span>
           </div>
           <p className="mt-2 text-xs text-ink-muted">Tuition, boarding, levies &amp; uniforms</p>
@@ -172,8 +172,8 @@ export function BursarDashboardView() {
             Total Collected (88.4%)
           </span>
           <div className="mt-2 flex items-baseline justify-between">
-            <span className="font-mono text-3xl font-extrabold text-success">₦42.6M</span>
-            <span className="font-mono text-xs font-bold text-success">+₦850k today</span>
+            <span className="font-mono text-3xl font-extrabold text-success">$42.6M</span>
+            <span className="font-mono text-xs font-bold text-success">+$850k today</span>
           </div>
           <p className="mt-2 text-xs text-ink-muted">Settled via Paystack &amp; direct bank transfers</p>
         </div>
@@ -183,7 +183,7 @@ export function BursarDashboardView() {
             Outstanding Tuition Debt
           </span>
           <div className="mt-2 flex items-baseline justify-between">
-            <span className="font-mono text-3xl font-extrabold text-danger">₦5.6M</span>
+            <span className="font-mono text-3xl font-extrabold text-danger">$5.6M</span>
             <span className="font-mono text-xs font-bold text-danger">64 accounts</span>
           </div>
           <p className="mt-2 text-xs text-ink-muted">Subject to auto payment reminders</p>
@@ -194,7 +194,7 @@ export function BursarDashboardView() {
             Today&apos;s Cash &amp; Bank Inflow
           </span>
           <div className="mt-2 flex items-baseline justify-between">
-            <span className="font-mono text-3xl font-extrabold text-primary">₦850,000</span>
+            <span className="font-mono text-3xl font-extrabold text-primary">$850,000</span>
             <span className="font-mono text-xs font-bold text-primary">6 transactions</span>
           </div>
           <p className="mt-2 text-xs text-ink-muted">Verified &amp; reconciled in realtime</p>

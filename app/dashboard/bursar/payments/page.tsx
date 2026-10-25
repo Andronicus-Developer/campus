@@ -186,24 +186,24 @@ export default function BursarPaymentsPage() {
         <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
           <div className="p-4 rounded-2xl bg-card border border-border shadow-xs">
             <div className="text-xs font-medium text-muted-foreground">Today's Collections</div>
-            <div className="text-xl sm:text-2xl font-black text-emerald-600 mt-1">₦4,245,000</div>
+            <div className="text-xl sm:text-2xl font-black text-emerald-600 mt-1">$4,245,000</div>
             <div className="text-[11px] text-muted-foreground mt-1 flex items-center gap-1">
               <span className="text-emerald-600 font-semibold">+18.5%</span> vs yesterday
             </div>
           </div>
           <div className="p-4 rounded-2xl bg-card border border-border shadow-xs">
             <div className="text-xs font-medium text-muted-foreground">Term 2 Total Settled</div>
-            <div className="text-xl sm:text-2xl font-black text-foreground mt-1">₦108,420,000</div>
+            <div className="text-xl sm:text-2xl font-black text-foreground mt-1">$108,420,000</div>
             <div className="text-[11px] text-muted-foreground mt-1">694 settled transactions</div>
           </div>
           <div className="p-4 rounded-2xl bg-card border border-border shadow-xs">
             <div className="text-xs font-medium text-muted-foreground">Paystack Automated Payouts</div>
-            <div className="text-xl sm:text-2xl font-black text-amber-600 mt-1">₦92,150,000</div>
+            <div className="text-xl sm:text-2xl font-black text-amber-600 mt-1">$92,150,000</div>
             <div className="text-[11px] text-emerald-600 font-semibold mt-1">Direct to Zenith Bank #102938472</div>
           </div>
           <div className="p-4 rounded-2xl bg-card border border-border shadow-xs">
             <div className="text-xs font-medium text-muted-foreground">Gateway Surcharge Capped</div>
-            <div className="text-xl sm:text-2xl font-black text-foreground mt-1">₦348,200</div>
+            <div className="text-xl sm:text-2xl font-black text-foreground mt-1">$348,200</div>
             <div className="text-[11px] text-muted-foreground mt-1">Absorbed by school tech levy</div>
           </div>
         </div>
@@ -290,10 +290,10 @@ export default function BursarPaymentsPage() {
                       </span>
                     </td>
                     <td className="py-3.5 px-4 text-right font-medium text-foreground">
-                      ₦{tx.amount.toLocaleString()}
+                      ${tx.amount.toLocaleString()}
                     </td>
                     <td className="py-3.5 px-4 text-right font-bold text-emerald-600">
-                      ₦{tx.settledAmount.toLocaleString()}
+                      ${tx.settledAmount.toLocaleString()}
                     </td>
                     <td className="py-3.5 px-4 text-center">
                       {tx.status === "success" && (
@@ -364,7 +364,7 @@ export default function BursarPaymentsPage() {
                 </div>
                 <div className="flex justify-between pt-2 border-t border-border text-sm font-black">
                   <span>Amount Settled:</span>
-                  <span className="text-emerald-600">₦{selectedTx.amount.toLocaleString()}</span>
+                  <span className="text-emerald-600">${selectedTx.amount.toLocaleString()}</span>
                 </div>
               </div>
 

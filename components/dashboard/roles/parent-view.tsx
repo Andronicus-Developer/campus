@@ -49,7 +49,7 @@ export function ParentDashboardView() {
       classGroup: "SSS 2A (Senior Science)",
       avatar: "TA",
       feeStatus: "due",
-      feeAmount: "₦185,000",
+      feeAmount: "$185,000",
       attendancePct: "98.2%",
       lastArrival: "Today, 07:42 AM (Gate Check-in)",
       classTeacher: "Mr. David Alabi",
@@ -62,7 +62,7 @@ export function ParentDashboardView() {
       classGroup: "JSS 1 Alpha (Junior Secondary)",
       avatar: "KA",
       feeStatus: "paid",
-      feeAmount: "₦145,000",
+      feeAmount: "$145,000",
       attendancePct: "100%",
       lastArrival: "Today, 07:40 AM (Gate Check-in)",
       classTeacher: "Ms. Chioma Okon",
@@ -190,19 +190,19 @@ export function ParentDashboardView() {
             <div className="mt-4 divide-y divide-line-soft text-xs">
               <div className="py-2.5 flex justify-between">
                 <span className="text-ink">Senior Secondary Tuition &amp; Instruction</span>
-                <span className="font-mono font-bold text-ink">₦130,000</span>
+                <span className="font-mono font-bold text-ink">$130,000</span>
               </div>
               <div className="py-2.5 flex justify-between">
                 <span className="text-ink">Science Laboratory &amp; ICT Practical Levy</span>
-                <span className="font-mono font-bold text-ink">₦30,000</span>
+                <span className="font-mono font-bold text-ink">$30,000</span>
               </div>
               <div className="py-2.5 flex justify-between">
                 <span className="text-ink">Parent-Teacher Association (PTA) Levy</span>
-                <span className="font-mono font-bold text-ink">₦15,000</span>
+                <span className="font-mono font-bold text-ink">$15,000</span>
               </div>
               <div className="py-2.5 flex justify-between">
                 <span className="text-ink">Co-curricular Sports &amp; Health Clinic Retainer</span>
-                <span className="font-mono font-bold text-ink">₦10,000</span>
+                <span className="font-mono font-bold text-ink">$10,000</span>
               </div>
               <div className="pt-3 flex justify-between font-bold text-sm">
                 <span className="text-ink">Total Terminal Fee</span>

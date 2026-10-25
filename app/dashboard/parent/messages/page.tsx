@@ -63,7 +63,7 @@ export default function ParentMessagesPage() {
       role: "Bursar & Accounts",
       childSubject: "Tuition & Receipts Desk",
       avatar: "AN",
-      lastMessage: "Payment of ₦100,000 for Maryam verified on Paystack.",
+      lastMessage: "Payment of $100,000 for Maryam verified on Paystack.",
       time: "Jan 22",
     },
   ];
@@ -79,7 +79,7 @@ export default function ParentMessagesPage() {
       { id: "m-5", sender: "parent", text: "Thank you Ms. Okon, she spent the weekend reading the literature novel.", time: "Yesterday, 04:00 PM" },
     ],
     "t-3": [
-      { id: "m-6", sender: "teacher", text: "Payment of ₦100,000 for Maryam verified on Paystack. Balance remaining is ₦65,000.", time: "Jan 22, 11:10 AM" },
+      { id: "m-6", sender: "teacher", text: "Payment of $100,000 for Maryam verified on Paystack. Balance remaining is $65,000.", time: "Jan 22, 11:10 AM" },
     ],
   });
 

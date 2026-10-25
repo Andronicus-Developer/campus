@@ -61,7 +61,7 @@ export default function PrincipalApprovalsPage() {
       submittedAt: "Yesterday, 04:30 PM",
       department: "Bursary Division",
       description: "Annual 25% academic concession for Tobi Adeleke (1st position in STEM Olympiad).",
-      metrics: "Credit: ₦46,250 concession · Term balance adjusted",
+      metrics: "Credit: $46,250 concession · Term balance adjusted",
       status: "pending",
     },
     {

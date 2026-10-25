@@ -109,7 +109,7 @@ export function PrincipalDashboardView() {
             </span>
             <span className="flex items-center gap-1.5 rounded-lg bg-white/10 px-3 py-1.5">
               <DollarSign className="size-3.5 text-amber-300" />
-              <span>₦42.6M Collected (88.4%)</span>
+              <span>$42.6M Collected (88.4%)</span>
             </span>
           </div>
         </div>
@@ -165,9 +165,9 @@ export function PrincipalDashboardView() {
           </div>
           <div className="mt-3">
             <span className="font-mono text-3xl font-extrabold text-ink">88.4%</span>
-            <span className="ml-2 font-mono text-xs font-bold text-ink-muted">₦42.6M</span>
+            <span className="ml-2 font-mono text-xs font-bold text-ink-muted">$42.6M</span>
           </div>
-          <p className="mt-2 text-xs text-ink-muted">₦5.6M outstanding pending Paystack/transfer</p>
+          <p className="mt-2 text-xs text-ink-muted">$5.6M outstanding pending Paystack/transfer</p>
         </div>
 
         {/* KPI 4: Faculty Roster */}

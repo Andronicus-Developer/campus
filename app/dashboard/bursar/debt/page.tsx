@@ -203,7 +203,7 @@ export default function BursarDebtRecoveryPage() {
             }`}
           >
             <div className="text-xs font-semibold uppercase text-muted-foreground tracking-wider">Total Delinquent</div>
-            <div className="text-2xl font-black text-foreground mt-2">₦5,600,000</div>
+            <div className="text-2xl font-black text-foreground mt-2">$5,600,000</div>
             <div className="text-xs text-muted-foreground mt-1">32 unpaid accounts across school</div>
           </div>
 
@@ -214,7 +214,7 @@ export default function BursarDebtRecoveryPage() {
             }`}
           >
             <div className="text-xs font-semibold uppercase text-amber-600 tracking-wider">0–30 Days (Mild)</div>
-            <div className="text-2xl font-black text-amber-600 mt-2">₦2,140,000</div>
+            <div className="text-2xl font-black text-amber-600 mt-2">$2,140,000</div>
             <div className="text-xs text-muted-foreground mt-1">18 accounts · Courtesy SMS active</div>
           </div>
 
@@ -225,7 +225,7 @@ export default function BursarDebtRecoveryPage() {
             }`}
           >
             <div className="text-xs font-semibold uppercase text-orange-600 tracking-wider">31–60 Days (Moderate)</div>
-            <div className="text-2xl font-black text-orange-600 mt-2">₦1,980,000</div>
+            <div className="text-2xl font-black text-orange-600 mt-2">$1,980,000</div>
             <div className="text-xs text-muted-foreground mt-1">9 accounts · Formal demand letter</div>
           </div>
 
@@ -236,7 +236,7 @@ export default function BursarDebtRecoveryPage() {
             }`}
           >
             <div className="text-xs font-semibold uppercase text-rose-600 tracking-wider">60+ Days (Severe)</div>
-            <div className="text-2xl font-black text-rose-600 mt-2">₦1,480,000</div>
+            <div className="text-2xl font-black text-rose-600 mt-2">$1,480,000</div>
             <div className="text-xs text-rose-600 font-semibold mt-1">5 accounts · Portal access hold</div>
           </div>
         </div>
@@ -287,7 +287,7 @@ export default function BursarDebtRecoveryPage() {
                       <div className="text-xs text-muted-foreground">{item.guardianPhone}</div>
                     </td>
                     <td className="py-3.5 px-4 text-right font-black text-rose-600">
-                      ₦{item.balance.toLocaleString()}
+                      ${item.balance.toLocaleString()}
                     </td>
                     <td className="py-3.5 px-4 text-center">
                       <span
