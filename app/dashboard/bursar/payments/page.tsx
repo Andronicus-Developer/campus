@@ -18,12 +18,16 @@ import {
   ExternalLink,
   PlusCircle,
   RefreshCw,
+  FileText,
+  ShieldCheck,
+  RotateCcw,
+  Plus,
 } from "lucide-react";
 
 interface PaymentTransaction {
   id: string;
   reference: string;
-  gateway: "Paystack Card" | "Paystack Transfer" | "Paystack USSD" | "Direct Bank Wire" | "POS Terminal";
+  gateway: "Paystack Card" | "Paystack Transfer" | "Direct Bank Wire" | "POS Terminal" | "Cash Counter";
   studentName: string;
   studentId: string;
   classArm: string;
@@ -33,14 +37,22 @@ interface PaymentTransaction {
   channelFee: number;
   settledAmount: number;
   timestamp: string;
-  status: "success" | "pending" | "failed";
+  status: "success" | "pending" | "failed" | "unallocated";
+  cashier?: string;
 }
 
 export default function BursarPaymentsPage() {
   const [search, setSearch] = useState("");
   const [channelFilter, setChannelFilter] = useState("all");
-  const [statusFilter, setStatusFilter] = useState<"all" | "success" | "pending" | "failed">("all");
-  const [selectedTx, setSelectedTx] = useState<PaymentTransaction | null>(null);
+  const [statusFilter, setStatusFilter] = useState<string>("all");
+  const [recordModalOpen, setRecordModalOpen] = useState(false);
+
+  // New manual payment record state
+  const [recStudent, setRecStudent] = useState("Tobi Adeleke (RC-2023-0184)");
+  const [recAmount, setRecAmount] = useState("");
+  const [recChannel, setRecChannel] = useState<"Cash Counter" | "Direct Bank Wire" | "POS Terminal">("Cash Counter");
+  const [recRef, setRecRef] = useState("");
+  const [recPayer, setRecPayer] = useState("");
 
   const [transactions, setTransactions] = useState<PaymentTransaction[]>([
     {
@@ -51,10 +63,10 @@ export default function BursarPaymentsPage() {
       studentId: "RC-2023-0184",
       classArm: "SSS 2A",
       payerName: "Mrs. Zainab Adeleke",
-      amount: 185000,
+      amount: 1450,
       feeType: "Term 2 Full Tuition & Levies",
-      channelFee: 2000,
-      settledAmount: 183000,
+      channelFee: 21.75,
+      settledAmount: 1428.25,
       timestamp: "Today, 11:24 AM",
       status: "success",
     },
@@ -62,14 +74,14 @@ export default function BursarPaymentsPage() {
       id: "tx-2",
       reference: "PSTK_2026_098230",
       gateway: "Paystack Transfer",
-      studentName: "Maryam Adeleke",
-      studentId: "RC-2024-0091",
-      classArm: "JSS 1C",
+      studentName: "Sope Adeleke",
+      studentId: "RC-2024-0312",
+      classArm: "JSS 2 Blue",
       payerName: "Mrs. Zainab Adeleke",
-      amount: 100000,
-      feeType: "Term 2 Part Installment",
-      channelFee: 1500,
-      settledAmount: 98500,
+      amount: 1100,
+      feeType: "Term 2 Junior Secondary Tuition",
+      channelFee: 16.50,
+      settledAmount: 1083.50,
       timestamp: "Today, 10:48 AM",
       status: "success",
     },
@@ -78,71 +90,88 @@ export default function BursarPaymentsPage() {
       reference: "BNK_WIRE_889211",
       gateway: "Direct Bank Wire",
       studentName: "Amina Yusuf",
-      studentId: "RC-2022-0056",
-      classArm: "SSS 3A",
+      studentId: "RC-2023-0219",
+      classArm: "JSS 3B",
       payerName: "Alhaji Bello Yusuf",
-      amount: 210000,
-      feeType: "Term 2 Boarding & Tuition",
+      amount: 1100,
+      feeType: "Term 2 Tuition Settlement",
       channelFee: 0,
-      settledAmount: 210000,
+      settledAmount: 1100,
       timestamp: "Today, 09:12 AM",
       status: "success",
+      cashier: "Mrs. Angela Nnamdi (BUR-005)",
     },
     {
       id: "tx-4",
-      reference: "PSTK_2026_098229",
-      gateway: "Paystack USSD",
-      studentName: "Daniel Babatunde",
-      studentId: "RC-2024-0312",
-      classArm: "JSS 2A",
-      payerName: "Engr. F. Babatunde",
-      amount: 80000,
-      feeType: "Term 2 Tuition (1st Tranche)",
-      channelFee: 1200,
-      settledAmount: 78800,
-      timestamp: "Yesterday, 04:30 PM",
-      status: "success",
-    },
-    {
-      id: "tx-5",
-      reference: "POS_TER_774102",
-      gateway: "POS Terminal",
-      studentName: "David Adeleke",
-      studentId: "RC-2025-0104",
-      classArm: "Basic 4",
-      payerName: "Dr. K. Adeleke",
-      amount: 95000,
-      feeType: "Primary Tuition & Uniform",
-      channelFee: 500,
-      settledAmount: 94500,
-      timestamp: "Yesterday, 02:10 PM",
-      status: "success",
-    },
-    {
-      id: "tx-6",
-      reference: "PSTK_2026_098220",
-      gateway: "Paystack Card",
+      reference: "BUR_CSH_2026_014",
+      gateway: "Cash Counter",
       studentName: "Chinedu Eze",
       studentId: "RC-2023-0210",
       classArm: "SSS 2B",
       payerName: "Mr. Jude Eze",
-      amount: 185000,
-      feeType: "Term 2 Tuition",
-      channelFee: 2000,
-      settledAmount: 0,
-      timestamp: "Yesterday, 11:05 AM",
-      status: "failed",
+      amount: 450,
+      feeType: "Bus Transit Shuttle (Lekki Zone)",
+      channelFee: 0,
+      settledAmount: 450,
+      timestamp: "Yesterday, 03:30 PM",
+      status: "success",
+      cashier: "Cashier Box #1 (Bursary Counter)",
+    },
+    {
+      id: "tx-5",
+      reference: "ZN_UNM_992140",
+      gateway: "Direct Bank Wire",
+      studentName: "Unmatched Transfer",
+      studentId: "UNKNOWN",
+      classArm: "Pending Verification",
+      payerName: "K. Alabi Enterprises",
+      amount: 1100,
+      feeType: "Unallocated Bank Deposit",
+      channelFee: 0,
+      settledAmount: 1100,
+      timestamp: "Yesterday, 01:15 PM",
+      status: "unallocated",
     },
   ]);
 
-  const filtered = transactions.filter((t) => {
+  const handleRecordPayment = (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!recAmount) return;
+
+    const val = parseFloat(recAmount);
+    const newTx: PaymentTransaction = {
+      id: `tx-${Date.now()}`,
+      reference: recRef || `BUR_${Date.now().toString().slice(-6)}`,
+      gateway: recChannel,
+      studentName: recStudent.split("(")[0].trim(),
+      studentId: recStudent.includes("(") ? recStudent.split("(")[1].replace(")", "") : "RC-2023-0184",
+      classArm: "SSS 2A",
+      payerName: recPayer || "Guardian Depositor",
+      amount: val,
+      feeType: "Term 2 Fee Deposit",
+      channelFee: 0,
+      settledAmount: val,
+      timestamp: "Just now",
+      status: "success",
+      cashier: "Mrs. Angela Nnamdi (BUR-005)",
+    };
+
+    setTransactions([newTx, ...transactions]);
+    setRecordModalOpen(false);
+    setRecAmount("");
+    setRecRef("");
+    setRecPayer("");
+    alert(`Payment of US$ ${val.toFixed(2)} recorded successfully! Official Receipt generated with serial RC-REC-${Date.now().toString().slice(-4)}.`);
+  };
+
+  const filtered = transactions.filter((tx) => {
     const matchesSearch =
-      t.reference.toLowerCase().includes(search.toLowerCase()) ||
-      t.studentName.toLowerCase().includes(search.toLowerCase()) ||
-      t.payerName.toLowerCase().includes(search.toLowerCase()) ||
-      t.studentId.toLowerCase().includes(search.toLowerCase());
-    const matchesChannel = channelFilter === "all" || t.gateway.includes(channelFilter);
-    const matchesStatus = statusFilter === "all" || t.status === statusFilter;
+      tx.studentName.toLowerCase().includes(search.toLowerCase()) ||
+      tx.reference.toLowerCase().includes(search.toLowerCase()) ||
+      tx.payerName.toLowerCase().includes(search.toLowerCase()) ||
+      tx.studentId.toLowerCase().includes(search.toLowerCase());
+    const matchesChannel = channelFilter === "all" || tx.gateway.toLowerCase().includes(channelFilter.toLowerCase());
+    const matchesStatus = statusFilter === "all" || tx.status === statusFilter;
     return matchesSearch && matchesChannel && matchesStatus;
   });
 
@@ -153,112 +182,96 @@ export default function BursarPaymentsPage() {
         <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
           <div>
             <div className="flex items-center gap-2 text-xs font-semibold uppercase tracking-wider text-amber-600 mb-1">
-              <Receipt className="w-4 h-4" />
-              Bursary Division · Real-Time Payment Inflows
+              <Receipt className="size-4" />
+              Bursar Portal · Multi-Channel Cash &amp; Digital Inflows
             </div>
             <h1 className="text-2xl sm:text-3xl font-extrabold text-foreground tracking-tight">
-              Payment Inflows & Transactions
+              Payment Inflow Ledger &amp; Collections
             </h1>
             <p className="text-sm text-muted-foreground mt-0.5">
-              Live settlement ledger connecting Paystack digital checkouts, bank transfers, and campus POS payments.
+              Record physical counter cash, direct bank deposits, POS transactions, and automated Paystack callbacks.
             </p>
           </div>
 
           <div className="flex items-center gap-2.5">
             <button
-              onClick={() => alert("Simulating Paystack webhook sync... 3 new settlements captured.")}
+              onClick={() => alert("Downloading verified payment transaction broadsheet (CSV & PDF)")}
               className="inline-flex items-center gap-2 px-3.5 py-2.5 rounded-xl bg-card border border-border hover:bg-muted text-foreground font-medium text-xs sm:text-sm shadow-sm transition"
             >
-              <RefreshCw className="w-4 h-4 text-amber-600" />
-              Sync Paystack
+              <Download className="size-4 text-amber-600" />
+              Export Inflow Ledger
             </button>
             <button
-              onClick={() => alert("Downloading payment settlement log as Excel")}
-              className="inline-flex items-center gap-2 px-3.5 py-2.5 rounded-xl bg-amber-600 hover:bg-amber-700 text-white font-medium text-xs sm:text-sm shadow-sm transition"
+              onClick={() => setRecordModalOpen(true)}
+              className="inline-flex items-center gap-2 px-4 py-2.5 rounded-xl bg-amber-600 hover:bg-amber-700 text-white font-medium text-xs sm:text-sm shadow-sm transition"
             >
-              <Download className="w-4 h-4" />
-              Export Inflow Register
+              <Plus className="size-4" />
+              Record Cash / Bank Deposit
             </button>
           </div>
         </div>
 
-        {/* Live Counters */}
-        <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
-          <div className="p-4 rounded-2xl bg-card border border-border shadow-xs">
-            <div className="text-xs font-medium text-muted-foreground">Today's Collections</div>
-            <div className="text-xl sm:text-2xl font-black text-emerald-600 mt-1">$4,245,000</div>
-            <div className="text-[11px] text-muted-foreground mt-1 flex items-center gap-1">
-              <span className="text-emerald-600 font-semibold">+18.5%</span> vs yesterday
-            </div>
-          </div>
-          <div className="p-4 rounded-2xl bg-card border border-border shadow-xs">
-            <div className="text-xs font-medium text-muted-foreground">Term 2 Total Settled</div>
-            <div className="text-xl sm:text-2xl font-black text-foreground mt-1">$108,420,000</div>
-            <div className="text-[11px] text-muted-foreground mt-1">694 settled transactions</div>
-          </div>
-          <div className="p-4 rounded-2xl bg-card border border-border shadow-xs">
-            <div className="text-xs font-medium text-muted-foreground">Paystack Automated Payouts</div>
-            <div className="text-xl sm:text-2xl font-black text-amber-600 mt-1">$92,150,000</div>
-            <div className="text-[11px] text-emerald-600 font-semibold mt-1">Direct to Zenith Bank #102938472</div>
-          </div>
-          <div className="p-4 rounded-2xl bg-card border border-border shadow-xs">
-            <div className="text-xs font-medium text-muted-foreground">Gateway Surcharge Capped</div>
-            <div className="text-xl sm:text-2xl font-black text-foreground mt-1">$348,200</div>
-            <div className="text-[11px] text-muted-foreground mt-1">Absorbed by school tech levy</div>
+        {/* Server-Side Verification Safeguard Notice */}
+        <div className="p-4 rounded-2xl bg-cyan-500/10 border border-cyan-500/30 text-xs flex items-start gap-3">
+          <ShieldCheck className="size-5 text-cyan-600 shrink-0 mt-0.5" />
+          <div className="space-y-1 text-ink-soft">
+            <span className="font-bold text-ink block">Cryptographic Server-Side Payment Verification</span>
+            <p>
+              In compliance with financial audit standards, online gateway settlements rely exclusively on authenticated
+              server-side provider callbacks (webhook SHA-256 HMAC) rather than browser-side redirect claims.
+              Receipts are issued only upon confirmed fund clearance.
+            </p>
           </div>
         </div>
 
-        {/* Search & Filter Toolbar */}
+        {/* Filter Toolbar */}
         <div className="p-4 rounded-2xl bg-card border border-border shadow-xs flex flex-col md:flex-row gap-3 items-stretch md:items-center justify-between">
           <div className="flex-1 relative">
-            <Search className="w-4 h-4 text-muted-foreground absolute left-3.5 top-1/2 -translate-y-1/2" />
+            <Search className="size-4 text-muted-foreground absolute left-3.5 top-1/2 -translate-y-1/2" />
             <input
               type="text"
               value={search}
               onChange={(e) => setSearch(e.target.value)}
-              placeholder="Search reference, student name, payer, or ID..."
+              placeholder="Search by student, payer name, bank reference..."
               className="w-full pl-10 pr-4 py-2 text-xs sm:text-sm rounded-xl bg-canvas border border-border focus:outline-none focus:ring-2 focus:ring-amber-500/30"
             />
           </div>
 
-          <div className="flex flex-wrap items-center gap-2">
+          <div className="flex items-center gap-2 flex-wrap">
             <select
               value={channelFilter}
               onChange={(e) => setChannelFilter(e.target.value)}
-              className="px-3 py-2 text-xs rounded-xl bg-canvas border border-border text-foreground focus:outline-none"
+              className="px-3 py-2 rounded-xl bg-canvas border border-border text-foreground text-xs font-semibold focus:outline-none"
             >
               <option value="all">All Channels</option>
-              <option value="Card">Paystack Card</option>
-              <option value="Transfer">Paystack Transfer</option>
-              <option value="USSD">Paystack USSD</option>
-              <option value="Wire">Direct Bank Wire</option>
-              <option value="POS">POS Terminal</option>
+              <option value="paystack">Paystack Gateway</option>
+              <option value="bank">Direct Bank Wires</option>
+              <option value="cash">Bursary Cash Counter</option>
             </select>
 
             <select
               value={statusFilter}
-              onChange={(e) => setStatusFilter(e.target.value as any)}
-              className="px-3 py-2 text-xs rounded-xl bg-canvas border border-border text-foreground focus:outline-none"
+              onChange={(e) => setStatusFilter(e.target.value)}
+              className="px-3 py-2 rounded-xl bg-canvas border border-border text-foreground text-xs font-semibold focus:outline-none"
             >
               <option value="all">All Statuses</option>
-              <option value="success">Successful</option>
-              <option value="pending">Pending</option>
-              <option value="failed">Failed / Declined</option>
+              <option value="success">Verified (Cleared)</option>
+              <option value="unallocated">Unallocated Wires</option>
             </select>
           </div>
         </div>
 
-        {/* Transactions Table */}
-        <div className="rounded-2xl bg-card border border-border overflow-hidden shadow-xs">
+        {/* Payments Table */}
+        <div className="rounded-3xl bg-card border border-border overflow-hidden shadow-xs">
           <div className="overflow-x-auto">
             <table className="w-full text-left text-xs sm:text-sm">
               <thead className="bg-canvas border-b border-border text-muted-foreground uppercase text-[11px] font-semibold tracking-wider">
                 <tr>
-                  <th className="py-3 px-4">Gateway Reference</th>
-                  <th className="py-3 px-4">Student & Class</th>
-                  <th className="py-3 px-4">Payer Details</th>
+                  <th className="py-3 px-4">Payment Ref</th>
                   <th className="py-3 px-4">Channel / Method</th>
-                  <th className="py-3 px-4 text-right">Gross Inflow</th>
+                  <th className="py-3 px-4">Student &amp; Class</th>
+                  <th className="py-3 px-4">Payer / Remitter</th>
+                  <th className="py-3 px-4 text-right">Amount</th>
                   <th className="py-3 px-4 text-right">Net Settled</th>
                   <th className="py-3 px-4 text-center">Status</th>
                   <th className="py-3 px-4 text-right">Receipt</th>
@@ -267,59 +280,57 @@ export default function BursarPaymentsPage() {
               <tbody className="divide-y divide-border">
                 {filtered.map((tx) => (
                   <tr key={tx.id} className="hover:bg-canvas/50 transition">
-                    <td className="py-3.5 px-4 font-mono">
-                      <div className="font-semibold text-foreground">{tx.reference}</div>
-                      <div className="text-[10px] text-muted-foreground">{tx.timestamp}</div>
+                    <td className="py-3.5 px-4 font-mono font-bold text-foreground">
+                      {tx.reference}
+                      <span className="block text-[10px] text-muted-foreground font-normal">{tx.timestamp}</span>
                     </td>
                     <td className="py-3.5 px-4">
-                      <div className="font-semibold text-foreground">{tx.studentName}</div>
-                      <div className="text-xs text-muted-foreground">{tx.studentId} · {tx.classArm}</div>
+                      <span className="font-semibold text-foreground block">{tx.gateway}</span>
+                      {tx.cashier && (
+                        <span className="text-[10px] text-muted-foreground block">By: {tx.cashier}</span>
+                      )}
                     </td>
                     <td className="py-3.5 px-4">
-                      <div className="text-foreground">{tx.payerName}</div>
-                      <div className="text-xs text-muted-foreground">{tx.feeType}</div>
+                      <span className="font-bold text-foreground block">{tx.studentName}</span>
+                      <span className="text-[11px] text-muted-foreground font-mono">{tx.studentId} · {tx.classArm}</span>
                     </td>
-                    <td className="py-3.5 px-4">
-                      <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-lg text-xs font-medium bg-canvas border border-border text-foreground">
-                        {tx.gateway.includes("Card") && <CreditCard className="w-3.5 h-3.5 text-blue-500" />}
-                        {tx.gateway.includes("Transfer") && <Landmark className="w-3.5 h-3.5 text-emerald-500" />}
-                        {tx.gateway.includes("USSD") && <Smartphone className="w-3.5 h-3.5 text-amber-500" />}
-                        {tx.gateway.includes("Wire") && <Building className="w-3.5 h-3.5 text-purple-500" />}
-                        {tx.gateway.includes("POS") && <Receipt className="w-3.5 h-3.5 text-slate-500" />}
-                        {tx.gateway}
-                      </span>
+                    <td className="py-3.5 px-4 text-foreground font-medium">
+                      {tx.payerName}
                     </td>
-                    <td className="py-3.5 px-4 text-right font-medium text-foreground">
-                      ${tx.amount.toLocaleString()}
+                    <td className="py-3.5 px-4 text-right font-black text-foreground">
+                      US$ {tx.amount.toLocaleString(undefined, { minimumFractionDigits: 2 })}
                     </td>
                     <td className="py-3.5 px-4 text-right font-bold text-emerald-600">
-                      ${tx.settledAmount.toLocaleString()}
+                      US$ {tx.settledAmount.toLocaleString(undefined, { minimumFractionDigits: 2 })}
                     </td>
                     <td className="py-3.5 px-4 text-center">
-                      {tx.status === "success" && (
-                        <span className="inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-[11px] font-semibold bg-emerald-50 dark:bg-emerald-950/50 text-emerald-600 border border-emerald-200 dark:border-emerald-800">
-                          <CheckCircle2 className="w-3 h-3" /> Settled
+                      {tx.status === "success" ? (
+                        <span className="inline-block px-2.5 py-0.5 rounded-full text-[10px] font-bold bg-emerald-50 dark:bg-emerald-950/50 text-emerald-600 border border-emerald-200 dark:border-emerald-800">
+                          Verified Cleared
                         </span>
-                      )}
-                      {tx.status === "pending" && (
-                        <span className="inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-[11px] font-semibold bg-amber-50 dark:bg-amber-950/50 text-amber-600 border border-amber-200 dark:border-amber-800">
-                          <Clock className="w-3 h-3" /> Processing
-                        </span>
-                      )}
-                      {tx.status === "failed" && (
-                        <span className="inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-[11px] font-semibold bg-rose-50 dark:bg-rose-950/50 text-rose-600 border border-rose-200 dark:border-rose-800">
-                          <AlertCircle className="w-3 h-3" /> Failed
+                      ) : (
+                        <span className="inline-block px-2.5 py-0.5 rounded-full text-[10px] font-bold bg-amber-50 dark:bg-amber-950/50 text-amber-600 border border-amber-200 dark:border-amber-800 animate-pulse">
+                          Unallocated Wire
                         </span>
                       )}
                     </td>
                     <td className="py-3.5 px-4 text-right">
-                      <button
-                        onClick={() => setSelectedTx(tx)}
-                        className="inline-flex items-center gap-1 px-2.5 py-1.5 rounded-lg border border-border hover:bg-muted text-xs font-medium text-foreground transition"
-                      >
-                        <Receipt className="w-3.5 h-3.5 text-amber-600" />
-                        Slip
-                      </button>
+                      {tx.status === "success" ? (
+                        <button
+                          onClick={() => alert(`Downloading verified cryptographic PDF receipt for ${tx.reference}`)}
+                          className="inline-flex items-center gap-1 font-semibold text-amber-600 hover:underline"
+                        >
+                          <Download className="size-3" />
+                          <span>Receipt</span>
+                        </button>
+                      ) : (
+                        <button
+                          onClick={() => alert(`Matching unallocated wire ${tx.reference} to student account`)}
+                          className="px-2.5 py-1 rounded-lg bg-amber-600 text-white font-bold text-xs"
+                        >
+                          Match
+                        </button>
+                      )}
                     </td>
                   </tr>
                 ))}
@@ -328,60 +339,115 @@ export default function BursarPaymentsPage() {
           </div>
         </div>
 
-        {/* Receipt Voucher Modal */}
-        {selectedTx && (
+        {/* Record Manual Payment Modal */}
+        {recordModalOpen && (
           <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-xs">
-            <div className="bg-card border border-border rounded-2xl max-w-md w-full p-6 shadow-2xl space-y-4">
-              <div className="text-center pb-3 border-b border-border">
-                <div className="w-12 h-12 rounded-full bg-emerald-500/10 text-emerald-600 flex items-center justify-center mx-auto mb-2">
-                  <CheckCircle2 className="w-6 h-6" />
+            <div className="bg-surface border border-line rounded-3xl max-w-lg w-full p-6 shadow-2xl space-y-4">
+              <div className="flex items-center justify-between border-b border-line pb-3">
+                <div className="flex items-center gap-2">
+                  <Receipt className="size-5 text-amber-600" />
+                  <h3 className="text-base font-extrabold text-ink">Record Physical Cash / Bank Deposit</h3>
                 </div>
-                <div className="text-xs uppercase font-bold text-emerald-600 tracking-wider">Payment Verified</div>
-                <h3 className="text-lg font-bold text-foreground">Official E-Payment Receipt</h3>
-                <p className="text-xs text-muted-foreground font-mono mt-0.5">{selectedTx.reference}</p>
-              </div>
-
-              <div className="p-4 rounded-xl bg-canvas border border-border space-y-2 text-xs">
-                <div className="flex justify-between">
-                  <span className="text-muted-foreground">Student Name:</span>
-                  <span className="font-semibold text-foreground">{selectedTx.studentName}</span>
-                </div>
-                <div className="flex justify-between">
-                  <span className="text-muted-foreground">Student ID / Arm:</span>
-                  <span className="text-foreground">{selectedTx.studentId} · {selectedTx.classArm}</span>
-                </div>
-                <div className="flex justify-between">
-                  <span className="text-muted-foreground">Payer Name:</span>
-                  <span className="text-foreground">{selectedTx.payerName}</span>
-                </div>
-                <div className="flex justify-between">
-                  <span className="text-muted-foreground">Payment Channel:</span>
-                  <span className="font-medium text-foreground">{selectedTx.gateway}</span>
-                </div>
-                <div className="flex justify-between">
-                  <span className="text-muted-foreground">Transaction Time:</span>
-                  <span className="text-foreground">{selectedTx.timestamp}</span>
-                </div>
-                <div className="flex justify-between pt-2 border-t border-border text-sm font-black">
-                  <span>Amount Settled:</span>
-                  <span className="text-emerald-600">${selectedTx.amount.toLocaleString()}</span>
-                </div>
-              </div>
-
-              <div className="flex items-center justify-end gap-2 pt-2">
                 <button
-                  onClick={() => alert(`Official cryptographic PDF receipt downloaded for ${selectedTx.reference}`)}
-                  className="px-4 py-2 rounded-xl bg-amber-600 hover:bg-amber-700 text-white text-xs font-medium"
+                  onClick={() => setRecordModalOpen(false)}
+                  className="size-7 rounded-lg hover:bg-surface-raised flex items-center justify-center text-ink-muted"
                 >
-                  Download PDF Receipt
-                </button>
-                <button
-                  onClick={() => setSelectedTx(null)}
-                  className="px-4 py-2 rounded-xl border border-border hover:bg-muted text-xs font-medium"
-                >
-                  Close
+                  ✕
                 </button>
               </div>
+
+              <p className="text-xs text-ink-muted leading-relaxed">
+                Log authenticated cash collections at the Bursary counter or direct bank teller wire transfers.
+                A unique, signed electronic receipt will be generated.
+              </p>
+
+              <form onSubmit={handleRecordPayment} className="space-y-3.5 text-xs">
+                <div>
+                  <label className="block text-ink font-semibold mb-1">Select Student &amp; Admission Number</label>
+                  <select
+                    value={recStudent}
+                    onChange={(e) => setRecStudent(e.target.value)}
+                    className="w-full px-3 py-2 rounded-xl bg-surface-raised border border-line text-ink font-medium focus:outline-none"
+                  >
+                    <option value="Tobi Adeleke (RC-2023-0184)">Tobi Adeleke (RC-2023-0184) — SSS 2A</option>
+                    <option value="Zainab Bello (RC-2023-0195)">Zainab Bello (RC-2023-0195) — SSS 2A</option>
+                    <option value="Somtochukwu Eze (RC-2023-0210)">Somtochukwu Eze (RC-2023-0210) — SSS 2A</option>
+                    <option value="Amina Yusuf (RC-2023-0219)">Amina Yusuf (RC-2023-0219) — JSS 3B</option>
+                    <option value="Kehinde Alabi (RC-2023-0231)">Kehinde Alabi (RC-2023-0231) — JSS 1 Gold</option>
+                  </select>
+                </div>
+
+                <div className="grid grid-cols-2 gap-3">
+                  <div>
+                    <label className="block text-ink font-semibold mb-1">Amount Paid (USD)</label>
+                    <input
+                      type="number"
+                      step="0.01"
+                      required
+                      value={recAmount}
+                      onChange={(e) => setRecAmount(e.target.value)}
+                      placeholder="e.g. 1450.00"
+                      className="w-full px-3 py-2 rounded-xl bg-surface-raised border border-line text-ink focus:outline-none focus:ring-2 focus:ring-amber-500/30"
+                    />
+                  </div>
+                  <div>
+                    <label className="block text-ink font-semibold mb-1">Payment Method</label>
+                    <select
+                      value={recChannel}
+                      onChange={(e) => setRecChannel(e.target.value as any)}
+                      className="w-full px-3 py-2 rounded-xl bg-surface-raised border border-line text-ink font-medium focus:outline-none"
+                    >
+                      <option value="Cash Counter">Cash at Bursary Counter</option>
+                      <option value="Direct Bank Wire">Direct Bank Wire (Zenith/GTB)</option>
+                      <option value="POS Terminal">Bursary POS Terminal</option>
+                    </select>
+                  </div>
+                </div>
+
+                <div className="grid grid-cols-2 gap-3">
+                  <div>
+                    <label className="block text-ink font-semibold mb-1">Payer / Remitter Name</label>
+                    <input
+                      type="text"
+                      required
+                      value={recPayer}
+                      onChange={(e) => setRecPayer(e.target.value)}
+                      placeholder="e.g. Mrs. Zainab Adeleke"
+                      className="w-full px-3 py-2 rounded-xl bg-surface-raised border border-line text-ink focus:outline-none"
+                    />
+                  </div>
+                  <div>
+                    <label className="block text-ink font-semibold mb-1">Bank Teller / Reference #</label>
+                    <input
+                      type="text"
+                      value={recRef}
+                      onChange={(e) => setRecRef(e.target.value)}
+                      placeholder="e.g. ZN-TELL-88214"
+                      className="w-full px-3 py-2 rounded-xl bg-surface-raised border border-line text-ink font-mono focus:outline-none"
+                    />
+                  </div>
+                </div>
+
+                <div className="p-3 rounded-xl bg-canvas border border-line text-[11px] text-ink-muted">
+                  Logged by authenticated cashier: <strong>Mrs. Angela Nnamdi (BUR-005)</strong>. A permanent receipt number will be issued.
+                </div>
+
+                <div className="flex items-center justify-end gap-2 pt-2">
+                  <button
+                    type="button"
+                    onClick={() => setRecordModalOpen(false)}
+                    className="px-4 py-2 rounded-xl border border-line hover:bg-surface-raised font-medium"
+                  >
+                    Cancel
+                  </button>
+                  <button
+                    type="submit"
+                    className="px-4 py-2 rounded-xl bg-amber-600 hover:bg-amber-700 text-white font-semibold transition"
+                  >
+                    Confirm &amp; Issue Receipt
+                  </button>
+                </div>
+              </form>
             </div>
           </div>
         )}
