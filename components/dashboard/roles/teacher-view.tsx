@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import Link from "next/link";
 import {
   Award,
   BookOpen,
@@ -17,6 +18,15 @@ import {
   UserCheck,
   Users,
   XCircle,
+  AlertTriangle,
+  ArrowRight,
+  TrendingDown,
+  TrendingUp,
+  MessageSquare,
+  FileText,
+  Sliders,
+  Send,
+  Plus,
 } from "lucide-react";
 
 interface StudentAttendance {
@@ -37,6 +47,7 @@ interface StudentGrade {
 export function TeacherDashboardView() {
   const [selectedClass, setSelectedClass] = useState("SSS 2A");
   const [attendanceSaved, setAttendanceSaved] = useState(false);
+  const [toastMsg, setToastMsg] = useState<string | null>(null);
 
   const [students, setStudents] = useState<StudentAttendance[]>([
     { id: "st-1", name: "Adeleke Tobi", rollNo: "RC-2023-0184", status: "present" },
@@ -57,6 +68,11 @@ export function TeacherDashboardView() {
     { id: "st-5", name: "Eze Somtochukwu", ca1: 14, ca2: 15, exam: 42 },
   ]);
 
+  const showToast = (msg: string) => {
+    setToastMsg(msg);
+    setTimeout(() => setToastMsg(null), 3500);
+  };
+
   const setStatus = (id: string, status: "present" | "absent" | "late" | "excused") => {
     setStudents((prev) =>
       prev.map((s) => (s.id === id ? { ...s, status } : s))
@@ -65,10 +81,12 @@ export function TeacherDashboardView() {
 
   const markAllPresent = () => {
     setStudents((prev) => prev.map((s) => ({ ...s, status: "present" })));
+    showToast("All students marked present in quick register.");
   };
 
   const handleSaveAttendance = () => {
     setAttendanceSaved(true);
+    showToast("Morning register submitted to School Admin and Principal radar.");
     setTimeout(() => setAttendanceSaved(false), 3000);
   };
 
@@ -83,47 +101,186 @@ export function TeacherDashboardView() {
 
   return (
     <div className="space-y-6">
-      {/* Teacher Workspace Header */}
-      <div className="rounded-3xl border border-line bg-surface p-6 shadow-sm">
+      {/* SECTION A.1: Teacher Workspace Header & Persona Station */}
+      <div className="rounded-3xl border border-line bg-surface p-6 shadow-sm space-y-6">
         <div className="flex flex-wrap items-center justify-between gap-4">
           <div>
             <div className="flex items-center gap-2">
               <span className="rounded-full bg-violet-100 px-3 py-1 font-mono text-[11px] font-bold text-violet-700">
-                Form Master · Senior Secondary
+                Form Master · Senior Secondary SSS 2A
               </span>
-              <span className="text-xs text-ink-muted">Mr. David Alabi (Mathematics)</span>
+              <span className="text-xs text-ink-muted">Mr. David Alabi · Mathematics &amp; STEM Faculty</span>
             </div>
             <h2 className="mt-2 text-2xl font-black text-ink">Teacher Faculty Station</h2>
             <p className="text-xs text-ink-muted">
-              Active assigned class: <strong className="text-primary font-bold">SSS 2A (Science Stream)</strong> · Room 204
+              Personalized instructional workspace for your assigned classes, daily registers, homework evaluations, and continuous assessments.
             </p>
           </div>
 
-          <div className="flex items-center gap-3">
-            <span className="rounded-xl border border-line bg-surface-raised px-4 py-2 font-mono text-xs text-ink-muted">
-              Period: <strong className="text-ink">3 of 6 (10:45 AM - 11:30 AM)</strong>
-            </span>
+          <div className="flex flex-wrap items-center gap-2.5">
+            <Link
+              href="/dashboard/teacher/attendance"
+              className="inline-flex items-center gap-1.5 rounded-xl bg-violet-600 px-3.5 py-2 text-xs font-bold text-white shadow-sm hover:bg-violet-700 active:scale-95 transition-all"
+            >
+              <UserCheck className="size-4" />
+              <span>Take Attendance</span>
+            </Link>
+
+            <Link
+              href="/dashboard/teacher/assignments"
+              className="inline-flex items-center gap-1.5 rounded-xl border border-violet-500/40 bg-violet-50 px-3.5 py-2 text-xs font-bold text-violet-800 shadow-sm hover:bg-violet-100 active:scale-95 transition-all"
+            >
+              <FileSpreadsheet className="size-4 text-violet-700" />
+              <span>Grade Tasks (12)</span>
+            </Link>
+
+            <Link
+              href="/dashboard/teacher/scores"
+              className="inline-flex items-center gap-1.5 rounded-xl border border-line bg-surface-raised px-3.5 py-2 text-xs font-bold text-ink shadow-sm hover:border-violet-600 hover:text-violet-700 active:scale-95 transition-all"
+            >
+              <GraduationCap className="size-4 text-violet-600" />
+              <span>Enter CA Scores</span>
+            </Link>
+          </div>
+        </div>
+
+        {/* SECTION A.2: Assigned Classes & Daily Workload Stats */}
+        <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 pt-4 border-t border-line">
+          <Link
+            href="/dashboard/teacher/roster"
+            className="p-3.5 rounded-2xl bg-surface-raised border border-line-soft hover:border-violet-500 transition-all group"
+          >
+            <div className="flex items-center justify-between">
+              <span className="text-[11px] text-ink-muted block font-medium group-hover:text-violet-700">
+                Assigned Students
+              </span>
+              <Users className="size-3.5 text-violet-600" />
+            </div>
+            <div className="flex items-baseline gap-2 mt-1">
+              <span className="text-2xl font-black text-ink">98</span>
+              <span className="text-[10px] text-ink-muted font-mono">Across 3 class arms</span>
+            </div>
+          </Link>
+
+          <Link
+            href="/dashboard/teacher/attendance"
+            className="p-3.5 rounded-2xl bg-amber-500/10 border border-amber-500/20 hover:border-amber-500 transition-all group"
+          >
+            <div className="flex items-center justify-between">
+              <span className="text-[11px] text-amber-800 block font-medium">Morning Register</span>
+              <Clock className="size-3.5 text-amber-600" />
+            </div>
+            <div className="flex items-baseline gap-2 mt-1">
+              <span className="text-sm font-bold text-amber-900">Due Today</span>
+              <span className="text-[10px] text-amber-700 font-bold font-mono">SSS 2A Form Arm</span>
+            </div>
+          </Link>
+
+          <Link
+            href="/dashboard/teacher/assignments"
+            className="p-3.5 rounded-2xl bg-surface-raised border border-line-soft hover:border-violet-500 transition-all group"
+          >
+            <div className="flex items-center justify-between">
+              <span className="text-[11px] text-ink-muted block font-medium group-hover:text-violet-700">
+                Awaiting Grading
+              </span>
+              <FileSpreadsheet className="size-3.5 text-violet-600" />
+            </div>
+            <div className="flex items-baseline gap-2 mt-1">
+              <span className="text-2xl font-black text-ink">12</span>
+              <span className="text-[10px] text-violet-600 font-bold font-mono">Further Math HW #4</span>
+            </div>
+          </Link>
+
+          <Link
+            href="/dashboard/teacher/curriculum"
+            className="p-3.5 rounded-2xl bg-emerald-500/10 border border-emerald-500/20 hover:border-emerald-500 transition-all group"
+          >
+            <div className="flex items-center justify-between">
+              <span className="text-[11px] text-emerald-800 block font-medium">Curriculum Covered</span>
+              <CheckCircle2 className="size-3.5 text-emerald-600" />
+            </div>
+            <div className="flex items-baseline gap-2 mt-1">
+              <span className="text-2xl font-black text-emerald-700">70%</span>
+              <span className="text-[10px] text-emerald-600 font-bold font-mono">7 of 10 Modules</span>
+            </div>
+          </Link>
+        </div>
+
+        {/* SECTION A.3: Deadlines & Students Needing Academic Support */}
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+          <div className="p-4 rounded-2xl border border-violet-500/30 bg-violet-500/5 space-y-2">
+            <div className="flex items-center justify-between">
+              <div className="flex items-center gap-2 text-violet-800 font-bold text-xs">
+                <Clock className="size-4 text-violet-600" />
+                <span>Upcoming Examination &amp; Grade Entry Deadlines</span>
+              </div>
+              <span className="font-mono text-[10px] text-violet-700 font-bold">Term 2 Week 8</span>
+            </div>
+            <div className="space-y-1.5 text-xs">
+              <div className="flex justify-between items-center text-ink">
+                <span>• Continuous Assessment CA2 Score Submissions</span>
+                <span className="font-mono text-[11px] font-bold text-rose-600">Friday, 04:00 PM</span>
+              </div>
+              <div className="flex justify-between items-center text-ink">
+                <span>• SSS 3 Mock Examination Timetable Verification</span>
+                <span className="font-mono text-[11px] font-bold text-ink-muted">Next Tuesday</span>
+              </div>
+            </div>
+          </div>
+
+          <div className="p-4 rounded-2xl border border-rose-500/30 bg-rose-500/5 space-y-2">
+            <div className="flex items-center justify-between">
+              <div className="flex items-center gap-2 text-rose-800 font-bold text-xs">
+                <AlertTriangle className="size-4 text-rose-600" />
+                <span>Students Flagged for Academic Attention</span>
+              </div>
+              <Link href="/dashboard/teacher/roster" className="text-[11px] font-bold text-rose-700 underline">
+                View Roster →
+              </Link>
+            </div>
+            <div className="space-y-1 text-xs text-ink">
+              <p>
+                <strong>Somtochukwu Eze (SSS 2A)</strong>: 3 unexcused absences this week &amp; CA1 score of 14/20.
+              </p>
+              <p className="text-[11px] text-ink-muted">
+                Remedial clinic allocated for Period 6 today in Room 204.
+              </p>
+            </div>
           </div>
         </div>
       </div>
 
-      {/* Today's Timetable Schedule Banner */}
+      {/* Toast Alert */}
+      {toastMsg && (
+        <div className="rounded-2xl border border-emerald-500/30 bg-emerald-950 p-4 text-xs text-white font-semibold flex items-center justify-between shadow-xl animate-in slide-in-from-top-3">
+          <div className="flex items-center gap-2.5">
+            <CheckCircle2 className="size-4.5 text-emerald-400" />
+            <span>{toastMsg}</span>
+          </div>
+          <span className="font-mono text-[10px] text-emerald-300">Live Active</span>
+        </div>
+      )}
+
+      {/* SECTION A.4: Today's Timetable Schedule Banner */}
       <div className="rounded-3xl border border-line bg-surface p-6 shadow-sm">
         <div className="flex items-center justify-between border-b border-line pb-4">
           <div className="flex items-center gap-2">
-            <CalendarDays className="size-4.5 text-primary" />
-            <h3 className="text-base font-extrabold text-ink">Today&apos;s Class Schedule (Wednesday)</h3>
+            <CalendarDays className="size-4.5 text-violet-600" />
+            <h3 className="text-base font-extrabold text-ink">Today&apos;s Lecture Schedule (Wednesday)</h3>
           </div>
           <span className="font-mono text-xs font-semibold text-ink-muted">Term 2 · Week 8</span>
         </div>
 
         <div className="mt-4 grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
-          <div className="rounded-2xl border border-primary/40 bg-primary-light/40 p-4 relative overflow-hidden">
-            <span className="absolute top-2 right-2 flex size-2 rounded-full bg-primary animate-ping" />
-            <span className="font-mono text-[10px] font-bold text-primary uppercase">Current Period 3</span>
+          <div className="rounded-2xl border border-violet-500/40 bg-violet-500/10 p-4 relative overflow-hidden">
+            <span className="absolute top-2 right-2 flex size-2 rounded-full bg-violet-600 animate-ping" />
+            <span className="font-mono text-[10px] font-bold text-violet-700 uppercase">Current Period 3</span>
             <h4 className="mt-1 text-sm font-extrabold text-ink">Further Mathematics</h4>
-            <span className="text-xs text-ink-muted block mt-0.5">SSS 2A · Room 204</span>
-            <span className="mt-3 inline-block font-mono text-[11px] font-semibold text-primary">10:45 - 11:30 AM</span>
+            <span className="text-xs text-ink-muted block mt-0.5">SSS 2A · Science Rm 204</span>
+            <span className="mt-3 inline-block font-mono text-[11px] font-semibold text-violet-700">
+              10:45 - 11:30 AM
+            </span>
           </div>
 
           <div className="rounded-2xl border border-line bg-surface-raised p-4">
@@ -135,147 +292,86 @@ export function TeacherDashboardView() {
 
           <div className="rounded-2xl border border-line bg-surface-raised p-4">
             <span className="font-mono text-[10px] font-bold text-ink-muted uppercase">Period 5</span>
-            <h4 className="mt-1 text-sm font-extrabold text-ink">Lesson Prep &amp; Marking</h4>
+            <h4 className="mt-1 text-sm font-extrabold text-ink">Lesson Prep &amp; Homework Marking</h4>
             <span className="text-xs text-ink-muted block mt-0.5">Faculty Room 12</span>
             <span className="mt-3 inline-block font-mono text-[11px] text-ink-muted">01:00 - 01:45 PM</span>
           </div>
 
           <div className="rounded-2xl border border-line bg-surface-raised p-4">
             <span className="font-mono text-[10px] font-bold text-ink-muted uppercase">Period 6</span>
-            <h4 className="mt-1 text-sm font-extrabold text-ink">Mathematics Remedial</h4>
-            <span className="text-xs text-ink-muted block mt-0.5">SSS 2A · Room 204</span>
+            <h4 className="mt-1 text-sm font-extrabold text-ink">Mathematics Remedial Clinic</h4>
+            <span className="text-xs text-ink-muted block mt-0.5">SSS 2A · Science Rm 204</span>
             <span className="mt-3 inline-block font-mono text-[11px] text-ink-muted">02:00 - 02:45 PM</span>
           </div>
         </div>
       </div>
 
-      {/* Two Column Section: Live Attendance Register & Marks Entry */}
-      <div className="grid gap-6 lg:grid-cols-12">
-        {/* Attendance Register (7 Cols) */}
-        <div className="lg:col-span-7 space-y-4">
-          <div className="rounded-3xl border border-line bg-surface p-6 shadow-sm">
-            <div className="flex flex-wrap items-center justify-between gap-3 border-b border-line pb-4">
-              <div>
-                <h3 className="text-base font-extrabold text-ink">Daily Attendance Register</h3>
-                <p className="text-xs text-ink-muted">Class: SSS 2A · Roll Call for Today</p>
-              </div>
-
-              <div className="flex items-center gap-2">
-                <button
-                  type="button"
-                  onClick={markAllPresent}
-                  className="rounded-xl border border-line bg-surface-raised px-3 py-1.5 text-xs font-semibold text-ink-soft hover:bg-surface hover:text-ink"
-                >
-                  Mark All Present
-                </button>
-                <button
-                  type="button"
-                  onClick={handleSaveAttendance}
-                  className="inline-flex items-center gap-1.5 rounded-xl bg-primary px-3.5 py-1.5 text-xs font-bold text-white shadow-sm hover:bg-primary-hover active:scale-95"
-                >
-                  <Save className="size-3.5" />
-                  <span>Save Register</span>
-                </button>
-              </div>
+      {/* Quick Attendance Widget for Form Master */}
+      <div className="rounded-3xl border border-line bg-surface p-6 shadow-sm space-y-4">
+        <div className="flex flex-wrap items-center justify-between gap-4 border-b border-line pb-4">
+          <div>
+            <div className="flex items-center gap-2">
+              <UserCheck className="size-4.5 text-violet-600" />
+              <h3 className="text-base font-extrabold text-ink">Quick Class Attendance Register</h3>
             </div>
+            <p className="text-xs text-ink-muted">
+              Class: <strong>{selectedClass}</strong> · Form Master Morning Roll Call.
+            </p>
+          </div>
 
-            {attendanceSaved && (
-              <div className="mt-4 rounded-xl border border-success/30 bg-success-light p-3 text-xs text-success-deep font-semibold flex items-center gap-2">
-                <CheckCircle2 className="size-4" />
-                <span>Attendance register recorded &amp; synced to parent SMS gateway!</span>
-              </div>
-            )}
-
-            {/* Students Register List */}
-            <div className="mt-4 divide-y divide-line-soft">
-              {students.map((student) => (
-                <div key={student.id} className="py-3 flex items-center justify-between gap-3">
-                  <div>
-                    <span className="font-bold text-xs text-ink block">{student.name}</span>
-                    <span className="font-mono text-[10px] text-ink-muted">{student.rollNo}</span>
-                  </div>
-
-                  {/* Status Pills */}
-                  <div className="flex items-center gap-1">
-                    {(["present", "late", "absent", "excused"] as const).map((st) => {
-                      const isSelected = student.status === st;
-                      return (
-                        <button
-                          key={st}
-                          type="button"
-                          onClick={() => setStatus(student.id, st)}
-                          className={`px-2.5 py-1 rounded-lg font-mono text-[10px] font-bold uppercase transition-all ${
-                            isSelected
-                              ? st === "present"
-                                ? "bg-success text-white shadow-sm"
-                                : st === "late"
-                                ? "bg-amber-500 text-white shadow-sm"
-                                : st === "absent"
-                                ? "bg-danger text-white shadow-sm"
-                                : "bg-primary text-white shadow-sm"
-                              : "bg-surface-raised text-ink-muted hover:text-ink"
-                          }`}
-                        >
-                          {st}
-                        </button>
-                      );
-                    })}
-                  </div>
-                </div>
-              ))}
-            </div>
+          <div className="flex items-center gap-2">
+            <button
+              type="button"
+              onClick={markAllPresent}
+              className="rounded-xl border border-line bg-surface-raised px-3 py-1.5 font-mono text-xs font-bold text-ink hover:border-violet-600 transition-colors"
+            >
+              Mark All Present
+            </button>
+            <button
+              type="button"
+              onClick={handleSaveAttendance}
+              className="inline-flex items-center gap-1.5 rounded-xl bg-violet-600 px-4 py-1.5 font-mono text-xs font-bold text-white shadow-sm hover:bg-violet-700 transition-colors"
+            >
+              <Save className="size-3.5" />
+              <span>{attendanceSaved ? "Submitted!" : "Submit Register"}</span>
+            </button>
           </div>
         </div>
 
-        {/* Continuous Assessment (CA) Score Entry (5 Cols) */}
-        <div className="lg:col-span-5 space-y-4">
-          <div className="rounded-3xl border border-line bg-surface p-6 shadow-sm">
-            <div className="border-b border-line pb-4">
-              <h3 className="text-base font-extrabold text-ink">Continuous Assessment (CA) Marks</h3>
-              <p className="text-xs text-ink-muted">Subject: Further Mathematics · Midterm Broadsheet</p>
-            </div>
-
-            <div className="mt-4 space-y-3">
-              {grades.map((g) => {
-                const total = getScoreTotal(g.ca1, g.ca2, g.exam);
-                const letter = getLetterGrade(total);
-                return (
-                  <div key={g.id} className="rounded-2xl border border-line bg-surface-raised p-3 text-xs">
-                    <div className="flex items-center justify-between">
-                      <span className="font-bold text-ink">{g.name}</span>
-                      <span className={`px-2 py-0.5 rounded font-mono font-bold text-xs ${letter.color}`}>
-                        {letter.grade} ({total}%)
-                      </span>
-                    </div>
-
-                    <div className="mt-2.5 grid grid-cols-3 gap-2 font-mono text-[11px]">
-                      <div className="rounded-lg bg-surface border border-line p-2 text-center">
-                        <span className="block text-[10px] text-ink-muted">CA 1 (20)</span>
-                        <span className="font-bold text-ink">{g.ca1}</span>
-                      </div>
-                      <div className="rounded-lg bg-surface border border-line p-2 text-center">
-                        <span className="block text-[10px] text-ink-muted">CA 2 (20)</span>
-                        <span className="font-bold text-ink">{g.ca2}</span>
-                      </div>
-                      <div className="rounded-lg bg-surface border border-line p-2 text-center">
-                        <span className="block text-[10px] text-ink-muted">Exam (60)</span>
-                        <span className="font-bold text-ink">{g.exam}</span>
-                      </div>
-                    </div>
-                  </div>
-                );
-              })}
-            </div>
-
-            <button
-              type="button"
-              onClick={() => alert("Marks broadsheet submitted to Principal for publication review.")}
-              className="mt-4 w-full flex items-center justify-center gap-2 rounded-xl bg-violet-600 py-2.5 text-xs font-bold text-white shadow-sm hover:bg-violet-700 active:scale-95"
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3">
+          {students.map((st) => (
+            <div
+              key={st.id}
+              className="p-3 rounded-2xl border border-line bg-surface-raised/70 space-y-2"
             >
-              <Award className="size-4" />
-              <span>Submit Marks to Principal Broadsheet</span>
-            </button>
-          </div>
+              <div className="flex items-center justify-between">
+                <span className="font-bold text-xs text-ink">{st.name}</span>
+                <span className="font-mono text-[10px] text-ink-muted">{st.rollNo}</span>
+              </div>
+              <div className="flex items-center gap-1 pt-1">
+                {(["present", "late", "absent", "excused"] as const).map((status) => (
+                  <button
+                    key={status}
+                    type="button"
+                    onClick={() => setStatus(st.id, status)}
+                    className={`flex-1 py-1 rounded-lg text-[10px] font-mono font-bold capitalize transition-all ${
+                      st.status === status
+                        ? status === "present"
+                          ? "bg-emerald-600 text-white"
+                          : status === "late"
+                          ? "bg-amber-600 text-white"
+                          : status === "absent"
+                          ? "bg-rose-600 text-white"
+                          : "bg-blue-600 text-white"
+                        : "bg-surface border border-line-soft text-ink-muted hover:text-ink"
+                    }`}
+                  >
+                    {status.charAt(0).toUpperCase()}
+                  </button>
+                ))}
+              </div>
+            </div>
+          ))}
         </div>
       </div>
     </div>
