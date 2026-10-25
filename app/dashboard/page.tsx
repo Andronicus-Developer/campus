@@ -1,3 +1,4 @@
+import { Suspense } from "react";
 import type { Metadata } from "next";
 import { DashboardLayout } from "@/components/dashboard/dashboard-layout";
 import { PrincipalDashboardView } from "@/components/dashboard/roles/principal-view";
@@ -13,10 +14,12 @@ export const metadata: Metadata = {
   description: "Role-specific operational dashboard for school staff, teachers, bursars, students, and parents.",
 };
 
-export default async function DashboardRootPage(props: {
-  searchParams: Promise<{ role?: string }>;
+async function DashboardContent({
+  searchParamsPromise,
+}: {
+  searchParamsPromise: Promise<{ role?: string }>;
 }) {
-  const searchParams = await props.searchParams;
+  const searchParams = await searchParamsPromise;
   const roleParam = searchParams.role?.toLowerCase() as RoleKey;
 
   const validRoles: RoleKey[] = [
@@ -41,5 +44,26 @@ export default async function DashboardRootPage(props: {
       {activeRole === "student" && <StudentDashboardView />}
       {activeRole === "parent" && <ParentDashboardView />}
     </DashboardLayout>
+  );
+}
+
+export default function DashboardRootPage(props: {
+  searchParams: Promise<{ role?: string }>;
+}) {
+  return (
+    <Suspense
+      fallback={
+        <DashboardLayout currentRole="principal">
+          <div className="flex h-96 items-center justify-center">
+            <div className="flex items-center gap-2 font-mono text-xs text-ink-muted">
+              <span className="inline-block size-3 animate-spin rounded-full border-2 border-primary border-t-transparent" />
+              Loading dashboard workspace...
+            </div>
+          </div>
+        </DashboardLayout>
+      }
+    >
+      <DashboardContent searchParamsPromise={props.searchParams} />
+    </Suspense>
   );
 }
