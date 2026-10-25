@@ -53,6 +53,12 @@ export function SiteHeader() {
 
           <div className="hidden items-center gap-3 lg:flex">
             <Link
+              href="/dashboard"
+              className="inline-flex items-center gap-1.5 rounded-xl border border-primary/20 bg-primary-light/60 px-3.5 py-1.5 text-xs font-bold text-primary transition-all hover:bg-primary hover:text-white"
+            >
+              <span>Explore Dashboards</span>
+            </Link>
+            <Link
               href="/login"
               className="rounded-lg px-4 py-2 text-sm font-medium text-ink-soft transition-colors hover:text-primary"
             >

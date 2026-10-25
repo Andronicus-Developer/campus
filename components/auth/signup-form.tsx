@@ -2,16 +2,21 @@
 
 import { useState } from "react";
 import Link from "next/link";
-import { ArrowRight, Building2, Check, Globe, Lock, Mail, Sparkles, User } from "lucide-react";
+import { useRouter } from "next/navigation";
+import { AlertCircle, ArrowRight, Building2, Check, Globe, Lock, Mail, Sparkles, User } from "lucide-react";
 import { SelectField } from "@/components/forms/select-field";
 import { TextField } from "@/components/forms/text-field";
 import { Eyebrow } from "@/components/site/primitives";
+import { createClient } from "@/lib/supabase/client";
 
 export function SignupForm() {
+  const router = useRouter();
   const [schoolName, setSchoolName] = useState("");
   const [password, setPassword] = useState("");
   const [loading, setLoading] = useState(false);
   const [submitted, setSubmitted] = useState(false);
+  const [errorMessage, setErrorMessage] = useState<string | null>(null);
+  const [needsEmailConfirmation, setNeedsEmailConfirmation] = useState(false);
 
   // Generate safe subdomain preview from school name
   const slug = schoolName
@@ -32,13 +37,62 @@ export function SignupForm() {
 
   const strength = getStrength(password);
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
+    setErrorMessage(null);
     setLoading(true);
-    setTimeout(() => {
+
+    const formData = new FormData(e.currentTarget);
+    const fullName = (formData.get("name") as string)?.trim() || "";
+    const email = (formData.get("email") as string)?.trim() || "";
+    const school = schoolName.trim();
+    const role = (formData.get("role") as string) || "";
+    const students = (formData.get("students") as string) || "";
+
+    try {
+      const supabase = createClient();
+      const redirectUrl = typeof window !== "undefined" ? `${window.location.origin}/auth/callback` : undefined;
+
+      const { data, error } = await supabase.auth.signUp({
+        email,
+        password,
+        options: {
+          data: {
+            full_name: fullName,
+            school_name: school,
+            role,
+            students_population: students,
+            workspace_slug: slug,
+          },
+          emailRedirectTo: redirectUrl,
+        },
+      });
+
+      if (error) {
+        setErrorMessage(error.message);
+        setLoading(false);
+        return;
+      }
+
       setLoading(false);
       setSubmitted(true);
-    }, 1000);
+
+      // If user created but session is null, email confirmation is active in Supabase project
+      if (data.user && !data.session) {
+        setNeedsEmailConfirmation(true);
+      } else {
+        // Logged in immediately (e.g. email confirmations disabled in Supabase)
+        setTimeout(() => {
+          router.push("/");
+          router.refresh();
+        }, 1500);
+      }
+    } catch (err: unknown) {
+      setErrorMessage(
+        err instanceof Error ? err.message : "An unexpected error occurred while connecting to Supabase."
+      );
+      setLoading(false);
+    }
   };
 
   return (
@@ -63,13 +117,41 @@ export function SignupForm() {
           <div className="mx-auto flex size-12 items-center justify-center rounded-full bg-success text-white shadow-md shadow-success/30">
             <Check className="size-6" />
           </div>
-          <h2 className="mt-3 text-base font-bold text-ink">Workspace Created!</h2>
+          <h2 className="mt-3 text-base font-bold text-ink">
+            {needsEmailConfirmation ? "Check Your Email" : "Workspace Created!"}
+          </h2>
           <p className="mt-1 text-xs text-ink-muted">
-            Your workspace <span className="font-mono font-semibold text-primary">{slug}.campus360.app</span> is being provisioned. Redirecting to your onboarding wizard...
+            {needsEmailConfirmation ? (
+              <>
+                We sent a confirmation link to your email. Click it to verify your account and access your{" "}
+                <span className="font-mono font-semibold text-primary">{slug}.campus360.app</span> workspace.
+              </>
+            ) : (
+              <>
+                Your workspace <span className="font-mono font-semibold text-primary">{slug}.campus360.app</span> is ready. Redirecting you to the platform...
+              </>
+            )}
           </p>
+          {needsEmailConfirmation && (
+            <div className="mt-4">
+              <Link
+                href="/login"
+                className="inline-flex items-center gap-1.5 text-xs font-bold text-primary hover:underline"
+              >
+                <span>Back to Sign In</span>
+                <ArrowRight className="size-3" />
+              </Link>
+            </div>
+          )}
         </div>
       ) : (
         <form className="mt-6 space-y-4" onSubmit={handleSubmit}>
+          {errorMessage && (
+            <div className="flex items-start gap-2.5 rounded-xl border border-danger/30 bg-danger-light p-3 text-xs text-danger">
+              <AlertCircle className="size-4 shrink-0 mt-0.5" />
+              <div className="flex-1 font-medium">{errorMessage}</div>
+            </div>
+          )}
           {/* Name & Email */}
           <div className="grid gap-4 sm:grid-cols-2">
             <TextField
@@ -128,7 +210,6 @@ export function SignupForm() {
                 "Principal / Head of School",
                 "School Administrator",
                 "Bursar / Finance Officer",
-                "IT Director",
                 "Teacher / Academic Head",
               ]}
               required

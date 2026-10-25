@@ -2,22 +2,53 @@
 
 import { useState } from "react";
 import Link from "next/link";
-import { ArrowRight, GraduationCap, Lock, Mail, ShieldCheck, Sparkles, UserCheck } from "lucide-react";
+import { useRouter } from "next/navigation";
+import { AlertCircle, ArrowRight, GraduationCap, Lock, Mail, ShieldCheck, Sparkles, UserCheck } from "lucide-react";
 import { TextField } from "@/components/forms/text-field";
 import { Eyebrow } from "@/components/site/primitives";
+import { createClient } from "@/lib/supabase/client";
 
 export function LoginForm() {
+  const router = useRouter();
   const [portalType, setPortalType] = useState<"staff" | "portal">("staff");
   const [loading, setLoading] = useState(false);
   const [submitted, setSubmitted] = useState(false);
+  const [errorMessage, setErrorMessage] = useState<string | null>(null);
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
+    setErrorMessage(null);
     setLoading(true);
-    setTimeout(() => {
+
+    const formData = new FormData(e.currentTarget);
+    const email = (formData.get("email") as string)?.trim() || "";
+    const password = (formData.get("password") as string) || "";
+
+    try {
+      const supabase = createClient();
+      const { data, error } = await supabase.auth.signInWithPassword({
+        email,
+        password,
+      });
+
+      if (error) {
+        setErrorMessage(error.message);
+        setLoading(false);
+        return;
+      }
+
       setLoading(false);
       setSubmitted(true);
-    }, 800);
+      setTimeout(() => {
+        router.push("/");
+        router.refresh();
+      }, 1000);
+    } catch (err: unknown) {
+      setErrorMessage(
+        err instanceof Error ? err.message : "An unexpected error occurred during authentication."
+      );
+      setLoading(false);
+    }
   };
 
   return (
@@ -79,6 +110,12 @@ export function LoginForm() {
         </div>
       ) : (
         <form className="mt-6 space-y-4" onSubmit={handleSubmit}>
+          {errorMessage && (
+            <div className="flex items-start gap-2.5 rounded-xl border border-danger/30 bg-danger-light p-3 text-xs text-danger">
+              <AlertCircle className="size-4 shrink-0 mt-0.5" />
+              <div className="flex-1 font-medium">{errorMessage}</div>
+            </div>
+          )}
           <TextField
             label={portalType === "staff" ? "Work Email" : "Student / Guardian ID or Email"}
             name="email"

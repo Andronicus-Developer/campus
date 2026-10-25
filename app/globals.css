@@ -5,6 +5,8 @@
   --color-canvas:   #f0f4ff;      /* page background — cool off-white */
   --color-surface:  #ffffff;      /* cards, sheets */
   --color-surface-raised: #f8faff; /* subtly raised panels */
+  --color-card:     #ffffff;
+  --color-border:   transparent;
 
   /* ── Primary — bright indigo-blue ──────────────────────────────── */
   --color-primary:        #4f6ef7; /* main brand blue */

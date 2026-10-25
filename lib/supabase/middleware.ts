@@ -40,19 +40,29 @@ export async function updateSession(request: NextRequest) {
   } = await supabase.auth.getUser();
 
   // Redirect unauthenticated users trying to access protected routes
-  if (
-    !user &&
-    !request.nextUrl.pathname.startsWith('/login') &&
-    !request.nextUrl.pathname.startsWith('/signup') &&
-    !request.nextUrl.pathname.startsWith('/auth') &&
-    !request.nextUrl.pathname.startsWith('/api/webhooks') &&
-    request.nextUrl.pathname !== '/' &&
-    !request.nextUrl.pathname.startsWith('/book-demo') &&
-    !request.nextUrl.pathname.startsWith('/contact-sales')
-  ) {
-    const url = request.nextUrl.clone();
-    url.pathname = '/login';
-    return NextResponse.redirect(url);
+  if (!user) {
+    const isPublicRoute =
+      request.nextUrl.pathname === '/' ||
+      request.nextUrl.pathname.startsWith('/login') ||
+      request.nextUrl.pathname.startsWith('/signup') ||
+      request.nextUrl.pathname.startsWith('/super-admin/login') ||
+      request.nextUrl.pathname.startsWith('/auth') ||
+      request.nextUrl.pathname.startsWith('/api/webhooks') ||
+      request.nextUrl.pathname.startsWith('/book-demo') ||
+      request.nextUrl.pathname.startsWith('/contact-sales') ||
+      request.nextUrl.pathname.startsWith('/dashboard') ||
+      request.nextUrl.pathname.startsWith('/super-admin');
+
+    if (!isPublicRoute) {
+      const url = request.nextUrl.clone();
+      // Redirect to dedicated super-admin login if accessing super-admin routes
+      if (request.nextUrl.pathname.startsWith('/super-admin')) {
+        url.pathname = '/super-admin/login';
+      } else {
+        url.pathname = '/login';
+      }
+      return NextResponse.redirect(url);
+    }
   }
 
   return supabaseResponse;

@@ -1,11 +1,20 @@
+"use client";
+
 import Link from "next/link";
 import {
   Activity,
   ArrowRight,
   Building2,
+  CalendarCheck,
+  CheckCircle2,
   Download,
+  ExternalLink,
   GraduationCap,
+  HardDrive,
+  LayoutDashboard,
   Plus,
+  ShieldCheck,
+  Sparkles,
   TrendingUp,
   Users,
   Zap,
@@ -38,9 +47,9 @@ import {
 } from "@/lib/platform";
 
 const ghostButton =
-  "inline-flex h-9 items-center gap-2 rounded-full border border-line bg-surface px-4 text-xs font-medium text-ink-soft transition-colors hover:text-ink";
+  "inline-flex h-10 items-center gap-2 rounded-xl border border-line bg-surface px-4 text-xs font-semibold text-ink-soft transition-all hover:border-primary/40 hover:bg-primary-light hover:text-primary shadow-xs";
 const primaryButton =
-  "inline-flex h-9 items-center gap-2 rounded-full bg-ink px-4 text-xs font-medium text-paper transition-colors hover:bg-ink-soft";
+  "inline-flex h-10 items-center gap-2 rounded-xl bg-primary hover:bg-primary-hover px-5 text-xs font-semibold text-white shadow-md shadow-primary/25 transition-all";
 
 const statusOrder: TenantStatus[] = [
   "active",
@@ -81,86 +90,141 @@ const activeFlags = featureFlags.filter((flag) => flag.enabled);
 
 export default function PlatformOverviewPage() {
   return (
-    <>
-      <PageHeader
-        eyebrow="Platform overview"
-        title="Every school, plan and operator signal in one console."
-        description="Monitor tenant health, recurring revenue, onboarding progress and anything that needs a human decision today."
-        actions={
-          <>
-            <span className="hidden items-center gap-2 rounded-full border border-line bg-surface px-3.5 py-2 font-mono text-[10px] uppercase tracking-wide text-ink-muted sm:inline-flex">
-              Last 30 days
-            </span>
-            <button type="button" className={ghostButton}>
-              <Download className="size-3.5" aria-hidden="true" />
-              Export report
-            </button>
-            <button type="button" className={primaryButton}>
-              <Plus className="size-3.5" aria-hidden="true" />
-              Add school
-            </button>
-          </>
-        }
-      />
+    <div className="space-y-8">
+      {/* ── Landing Page Themed Hero Banner ────────────────────────────── */}
+      <div className="relative overflow-hidden rounded-3xl border border-line bg-surface p-6 sm:p-8 shadow-xs">
+        {/* Dot-grid background from landing page */}
+        <div className="pointer-events-none absolute inset-0 bg-dot-grid opacity-50" aria-hidden="true" />
 
+        {/* Colour glow blobs */}
+        <div className="pointer-events-none absolute -top-32 -right-24 size-[480px] gradient-blob-blue opacity-40" aria-hidden="true" />
+        <div className="pointer-events-none absolute -bottom-24 -left-20 size-[360px] gradient-blob-violet opacity-30" aria-hidden="true" />
+
+        <div className="relative z-10 flex flex-col lg:flex-row lg:items-center justify-between gap-6">
+          <div className="max-w-3xl">
+            {/* Landing page eyebrow pill */}
+            <div className="inline-flex items-center gap-2 rounded-full border border-primary/20 bg-primary-light px-3.5 py-1 text-xs font-semibold text-primary">
+              <Sparkles className="size-3.5" aria-hidden="true" />
+              <span>Multi-Tenant Platform Governance</span>
+            </div>
+
+            <h1 className="mt-4 text-3xl sm:text-4xl lg:text-[2.6rem] font-extrabold tracking-tight text-ink leading-tight">
+              Platform Overview &{" "}
+              <span className="text-gradient">Control Center</span>
+            </h1>
+
+            <p className="mt-3 max-w-2xl text-sm sm:text-base leading-relaxed text-ink-muted">
+              Live oversight across all 48 school tenants, recurring subscription revenue,
+              automated Paystack settlements, and isolated cloud databases.
+            </p>
+
+            {/* Proof Points & Platform Health Badges */}
+            <div className="mt-6 flex flex-wrap items-center gap-3 text-xs">
+              <span className="inline-flex items-center gap-1.5 rounded-xl border border-line bg-surface-raised px-3 py-1.5 font-mono font-semibold text-ink-soft">
+                <Building2 className="size-3.5 text-primary" />
+                <span>48 Active Schools</span>
+              </span>
+              <span className="inline-flex items-center gap-1.5 rounded-xl border border-line bg-surface-raised px-3 py-1.5 font-mono font-semibold text-ink-soft">
+                <Users className="size-3.5 text-accent" />
+                <span>24,180 Students Enrolled</span>
+              </span>
+              <span className="inline-flex items-center gap-1.5 rounded-xl border border-success/30 bg-success-light px-3 py-1.5 font-mono font-bold text-success-deep">
+                <CheckCircle2 className="size-3.5 text-success" />
+                <span>99.98% Platform Uptime</span>
+              </span>
+            </div>
+          </div>
+
+          {/* Quick Actions matching Landing Page Buttons */}
+          <div className="flex flex-wrap lg:flex-col items-stretch gap-2.5 shrink-0">
+            <Link
+              href="/super-admin/tenants"
+              className={primaryButton}
+            >
+              <Plus className="size-4" aria-hidden="true" />
+              <span>Provision New School</span>
+            </Link>
+
+            <button
+              type="button"
+              onClick={() => alert("Generating unified platform financial and compliance audit report...")}
+              className={ghostButton}
+            >
+              <Download className="size-4" aria-hidden="true" />
+              <span>Export Audit Report</span>
+            </button>
+
+            <Link
+              href="/dashboard"
+              className="inline-flex h-10 items-center justify-center gap-2 rounded-xl border border-primary/20 bg-primary-light/70 px-4 text-xs font-bold text-primary transition-all hover:bg-primary hover:text-white shadow-xs"
+            >
+              <span>Explore School Workspaces</span>
+              <ExternalLink className="size-3.5" />
+            </Link>
+          </div>
+        </div>
+      </div>
+
+      {/* ── 8 Core KPI Cards with Landing Page Hover Lift ─────────────── */}
       <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
         <KpiCard
-          label="Monthly recurring revenue"
+          label="Monthly Recurring Revenue"
           value={formatUsd(platformStats.mrr)}
           delta={platformStats.mrrGrowth}
           hint="vs. last month"
-          icon={<TrendingUp className="size-3.5" aria-hidden="true" />}
+          icon={<TrendingUp className="size-4" aria-hidden="true" />}
         />
         <KpiCard
-          label="Active tenants"
+          label="Active School Tenants"
           value={formatNumber(platformStats.activeTenants)}
-          hint={`of ${formatNumber(platformStats.totalTenants)} schools`}
-          icon={<Building2 className="size-3.5" aria-hidden="true" />}
+          hint={`of ${formatNumber(platformStats.totalTenants)} total schools`}
+          icon={<Building2 className="size-4" aria-hidden="true" />}
         />
         <KpiCard
-          label="Students managed"
+          label="Total Students Managed"
           value={formatNumber(platformStats.totalStudents)}
-          hint={`${formatNumber(platformStats.totalStaff)} staff accounts`}
-          icon={<GraduationCap className="size-3.5" aria-hidden="true" />}
+          hint={`${formatNumber(platformStats.totalStaff)} faculty & staff`}
+          icon={<GraduationCap className="size-4" aria-hidden="true" />}
         />
         <KpiCard
-          label="Net revenue retention"
+          label="Net Revenue Retention"
           value={formatPercent(platformStats.netRevenueRetention)}
           delta={2.1}
           hint="expansion vs. churn"
-          icon={<Activity className="size-3.5" aria-hidden="true" />}
+          icon={<Activity className="size-4" aria-hidden="true" />}
         />
         <KpiCard
-          label="Annual recurring revenue"
+          label="Annual Recurring Revenue"
           value={formatUsd(platformStats.arr)}
           hint="run-rate on current MRR"
-          icon={<TrendingUp className="size-3.5" aria-hidden="true" />}
+          icon={<TrendingUp className="size-4" aria-hidden="true" />}
         />
         <KpiCard
-          label="Trials ending soon"
+          label="Trials Ending Soon"
           value={formatNumber(platformStats.trialsEndingSoon)}
           hint="next 14 days"
-          icon={<Zap className="size-3.5" aria-hidden="true" />}
+          icon={<Zap className="size-4" aria-hidden="true" />}
         />
         <KpiCard
-          label="Net churn"
+          label="Net Churn Rate"
           value={formatPercent(platformStats.churnRate)}
           hint={`${platformStats.newThisMonth} new schools this month`}
-          icon={<Users className="size-3.5" aria-hidden="true" />}
+          icon={<Users className="size-4" aria-hidden="true" />}
         />
         <KpiCard
-          label="Platform uptime"
+          label="Infrastructure SLA Uptime"
           value={formatPercent(platformStats.uptime, 2)}
           hint="trailing 30 days"
-          icon={<Activity className="size-3.5" aria-hidden="true" />}
+          icon={<ShieldCheck className="size-4" aria-hidden="true" />}
         />
       </div>
 
-      <div className="mt-6 grid gap-4 lg:grid-cols-3">
+      {/* ── Recurring Revenue & Plan Mix ──────────────────────────────── */}
+      <div className="grid gap-6 lg:grid-cols-3">
         <Card
           className="lg:col-span-2"
-          title="Recurring revenue"
-          description="Subscription MRR across all tenants, last 12 months."
+          title="Platform Recurring Revenue (MRR)"
+          description="Consolidated subscription MRR across all institutional tenants over the last 12 months."
           action={
             <Pill tone="positive">
               <TrendingUp className="size-3" aria-hidden="true" />
@@ -173,32 +237,32 @@ export default function PlatformOverviewPage() {
             gradientId="mrr-fill"
             label="Monthly recurring revenue over the last 12 months"
           />
-          <dl className="mt-5 grid grid-cols-2 gap-4 border-t border-line pt-4 sm:grid-cols-3">
-            <div>
-              <dt className="font-mono text-[9px] uppercase tracking-[0.16em] text-ink-muted">
-                Current MRR
+          <dl className="mt-6 grid grid-cols-2 gap-4 border-t border-line pt-5 sm:grid-cols-3">
+            <div className="p-3.5 rounded-xl bg-surface-raised border border-line">
+              <dt className="font-mono text-[9px] font-bold uppercase tracking-wider text-ink-muted">
+                Current Monthly Run-Rate
               </dt>
-              <dd className="mt-1 font-display text-lg">{formatUsd(platformStats.mrr)}</dd>
+              <dd className="mt-1 font-mono text-xl font-extrabold text-ink">{formatUsd(platformStats.mrr)}</dd>
             </div>
-            <div>
-              <dt className="font-mono text-[9px] uppercase tracking-[0.16em] text-ink-muted">
-                ARR run-rate
+            <div className="p-3.5 rounded-xl bg-surface-raised border border-line">
+              <dt className="font-mono text-[9px] font-bold uppercase tracking-wider text-ink-muted">
+                Annual ARR Projected
               </dt>
-              <dd className="mt-1 font-display text-lg">{formatUsd(platformStats.arr)}</dd>
+              <dd className="mt-1 font-mono text-xl font-extrabold text-primary">{formatUsd(platformStats.arr)}</dd>
             </div>
-            <div>
-              <dt className="font-mono text-[9px] uppercase tracking-[0.16em] text-ink-muted">
-                12-month growth
+            <div className="p-3.5 rounded-xl bg-surface-raised border border-line">
+              <dt className="font-mono text-[9px] font-bold uppercase tracking-wider text-ink-muted">
+                12-Month Growth Pace
               </dt>
-              <dd className="mt-1 font-display text-lg">+30.7%</dd>
+              <dd className="mt-1 font-mono text-xl font-extrabold text-success-deep">+30.7%</dd>
             </div>
           </dl>
         </Card>
 
-        <div className="flex flex-col gap-4">
-          <Card title="Plan mix" description="Tenants by subscription plan.">
+        <div className="flex flex-col gap-6">
+          <Card title="Plan Distribution" description="Active tenants by subscription tier.">
             <BarList
-              tone="success"
+              tone="accent"
               items={planMix.map((entry) => ({
                 label: entry.label,
                 value: entry.value,
@@ -207,36 +271,37 @@ export default function PlatformOverviewPage() {
             />
           </Card>
 
-          <Card title="New schools" description="Signups per month.">
+          <Card title="Monthly Acquisition" description="New school onboardings per month.">
             <BarList
               items={newSchoolsSeries.map((entry) => ({
                 label: entry.label,
                 value: entry.value,
-                hint: `${entry.value}`,
+                hint: `${entry.value} schools`,
               }))}
             />
-            <p className="mt-4 flex items-center gap-2 border-t border-line pt-4 text-[11px] text-ink-muted">
-              <TrendingUp className="size-3 text-success" aria-hidden="true" />
-              {platformStats.newThisMonth} new schools this month — up from 31 in September.
+            <p className="mt-4 flex items-center gap-2 border-t border-line pt-3.5 text-xs font-medium text-ink-muted">
+              <TrendingUp className="size-3.5 text-success" aria-hidden="true" />
+              <span>{platformStats.newThisMonth} new schools onboarded this month — pacing ahead of Q1 targets.</span>
             </p>
           </Card>
         </div>
       </div>
 
-      <div className="mt-6 grid gap-4 lg:grid-cols-[1.15fr_1fr]">
+      {/* ── Tenant Lifecycle & Attention Radar ────────────────────────── */}
+      <div className="grid gap-6 lg:grid-cols-[1.15fr_1fr]">
         <Card
-          title="Tenant status"
-          description="Lifecycle state across the estate. Suspensions require a reason and are audited."
+          title="Tenant Lifecycle State"
+          description="Health and compliance status across the 48-school estate."
         >
           <ul className="divide-y divide-line">
             {statusOrder.map((status) => {
               const meta = tenantStatusMeta[status];
               const count = statusCounts[status];
               return (
-                <li key={status} className="flex items-center gap-4 py-3 first:pt-0 last:pb-0">
-                  <span className="flex w-32 shrink-0 items-center gap-2">
+                <li key={status} className="flex items-center gap-4 py-3.5 first:pt-0 last:pb-0">
+                  <span className="flex w-36 shrink-0 items-center gap-2.5">
                     <Dot tone={meta.tone} />
-                    <span className="text-sm">{meta.label}</span>
+                    <span className="text-xs sm:text-sm font-semibold text-ink">{meta.label}</span>
                   </span>
                   <span className="flex-1">
                     <Meter
@@ -251,43 +316,45 @@ export default function PlatformOverviewPage() {
                       }
                     />
                   </span>
-                  <span className="w-14 shrink-0 text-right font-mono text-xs text-ink-soft">
+                  <span className="w-16 shrink-0 text-right font-mono text-xs font-bold text-ink">
                     {formatNumber(count)}
                   </span>
                 </li>
               );
             })}
           </ul>
-          <p className="mt-4 border-t border-line pt-4 text-[11px] text-ink-muted">
+          <p className="mt-5 border-t border-line pt-3.5 text-xs text-ink-muted font-medium">
             {metaSummary()}
           </p>
         </Card>
 
         <Card
-          title="Needs attention"
-          description="Accounts a platform operator should look at today."
+          title="Accounts Requiring Attention"
+          description="Tenants with expiring trials, past due invoices, or flagged alerts."
         >
           <ul className="divide-y divide-line">
             {attention.map((tenant) => {
               const meta = tenantStatusMeta[tenant.status];
               return (
-                <li key={tenant.slug} className="py-3 first:pt-0 last:pb-0">
+                <li key={tenant.slug} className="py-3.5 first:pt-0 last:pb-0">
                   <Link
                     href={`/super-admin/tenants/${tenant.slug}`}
-                    className="flex items-start gap-3 rounded-lg transition-colors hover:opacity-80"
+                    className="flex items-start gap-3 rounded-xl p-2 -mx-2 transition-all hover:bg-surface-raised group"
                   >
                     <span className="min-w-0 flex-1">
                       <span className="flex items-center gap-2">
-                        <span className="truncate text-sm font-medium">{tenant.name}</span>
+                        <span className="truncate text-xs sm:text-sm font-bold text-ink group-hover:text-primary transition-colors">
+                          {tenant.name}
+                        </span>
                         <Pill tone={meta.tone}>{meta.label}</Pill>
                       </span>
-                      <span className="mt-1 block text-[11px] leading-5 text-ink-muted">
+                      <span className="mt-1 block text-xs leading-5 text-ink-muted">
                         {tenant.trialEndsIn
-                          ? `Trial ends in ${tenant.trialEndsIn}`
+                          ? `Trial expires in ${tenant.trialEndsIn}`
                           : tenant.notes}
                       </span>
                     </span>
-                    <ArrowRight className="mt-1 size-4 shrink-0 text-ink-muted" aria-hidden="true" />
+                    <ArrowRight className="mt-1 size-4 shrink-0 text-ink-muted group-hover:text-primary group-hover:translate-x-0.5 transition-all" aria-hidden="true" />
                   </Link>
                 </li>
               );
@@ -296,39 +363,40 @@ export default function PlatformOverviewPage() {
         </Card>
       </div>
 
-      <div className="mt-6 grid gap-4 lg:grid-cols-[1.15fr_1fr]">
+      {/* ── Provisioning Queue & Audit Log ───────────────────────────── */}
+      <div className="grid gap-6 lg:grid-cols-[1.15fr_1fr]">
         <Card
-          title="Onboarding & migration queue"
-          description="Provisioning work in flight across implementation and self-serve."
+          title="School Implementation & Migration Pipeline"
+          description="Provisioning batches currently in flight across self-serve and guided rollout."
           action={
             <Link href="/super-admin/tenants" className={ghostButton}>
-              View schools
+              View All Schools
             </Link>
           }
           padded={false}
         >
           <div className="overflow-x-auto">
-            <table className="w-full min-w-[560px] text-left text-sm">
-              <thead className="bg-sand/50">
-                <tr className="font-mono text-[9px] uppercase tracking-[0.14em] text-ink-muted">
-                  <th className="px-5 py-2.5 font-normal">School</th>
-                  <th className="px-3 py-2.5 font-normal">Stage</th>
-                  <th className="px-3 py-2.5 font-normal">Owner</th>
-                  <th className="px-5 py-2.5 font-normal">Due</th>
+            <table className="w-full min-w-[560px] text-left text-xs sm:text-sm">
+              <thead className="bg-surface-raised border-b border-line">
+                <tr className="font-mono text-[9px] uppercase tracking-widest text-ink-muted">
+                  <th className="px-5 py-3 font-semibold">School Name</th>
+                  <th className="px-3 py-3 font-semibold">Milestone Stage</th>
+                  <th className="px-3 py-3 font-semibold">Account Lead</th>
+                  <th className="px-5 py-3 font-semibold">Go-Live Due</th>
                 </tr>
               </thead>
               <tbody className="divide-y divide-line">
                 {onboardingQueue.map((item) => (
-                  <tr key={item.slug}>
-                    <td className="px-5 py-3">
-                      <span className="block text-sm font-medium">{item.school}</span>
-                      <span className="block text-[11px] text-ink-muted">{item.detail}</span>
+                  <tr key={item.slug} className="hover:bg-surface-raised/50 transition-colors">
+                    <td className="px-5 py-3.5">
+                      <span className="block font-bold text-ink">{item.school}</span>
+                      <span className="block text-xs text-ink-muted">{item.detail}</span>
                     </td>
-                    <td className="px-3 py-3">
+                    <td className="px-3 py-3.5">
                       <Pill tone="neutral">{item.stage}</Pill>
                     </td>
-                    <td className="px-3 py-3 text-xs text-ink-soft">{item.owner}</td>
-                    <td className="px-5 py-3 font-mono text-[10px] uppercase text-ink-muted">
+                    <td className="px-3 py-3.5 text-xs font-medium text-ink-soft">{item.owner}</td>
+                    <td className="px-5 py-3.5 font-mono text-xs font-semibold text-ink-muted">
                       {item.due}
                     </td>
                   </tr>
@@ -338,13 +406,13 @@ export default function PlatformOverviewPage() {
           </div>
         </Card>
 
-        <div className="flex flex-col gap-4">
+        <div className="flex flex-col gap-6">
           <Card
-            title="Recent platform activity"
-            description="Cross-tenant events, newest first."
+            title="Real-Time Platform Activity"
+            description="Cross-tenant audit trail and governance events."
             action={
-              <Link href="/super-admin/audit" className="text-xs text-ink-muted hover:text-ink">
-                Full audit log
+              <Link href="/super-admin/audit" className="text-xs font-bold text-primary hover:underline">
+                Full Audit Trail →
               </Link>
             }
           >
@@ -352,13 +420,13 @@ export default function PlatformOverviewPage() {
               {auditEvents.slice(0, 5).map((event) => {
                 const meta = severityMeta[event.severity];
                 return (
-                  <li key={event.id} className="flex items-start gap-3 py-2.5 first:pt-0 last:pb-0">
+                  <li key={event.id} className="flex items-start gap-3 py-3 first:pt-0 last:pb-0">
                     <Dot tone={meta.tone} />
                     <span className="min-w-0 flex-1">
-                      <span className="block truncate text-xs font-medium">
+                      <span className="block truncate text-xs font-semibold text-ink">
                         {event.action} · {event.target}
                       </span>
-                      <span className="block font-mono text-[10px] text-ink-muted">
+                      <span className="block font-mono text-[10px] text-ink-muted mt-0.5">
                         {event.actor} · {event.time}
                       </span>
                     </span>
@@ -369,18 +437,18 @@ export default function PlatformOverviewPage() {
           </Card>
 
           <Card
-            title="Feature flags live"
-            description={`${activeFlags.length} flags enabled across the estate.`}
+            title="Live Feature Flags"
+            description={`${activeFlags.length} feature flags enabled globally.`}
             action={
-              <Link href="/super-admin/settings" className="text-xs text-ink-muted hover:text-ink">
-                Manage
+              <Link href="/super-admin/settings" className="text-xs font-bold text-primary hover:underline">
+                Manage Flags →
               </Link>
             }
           >
-            <ul className="space-y-2.5">
+            <ul className="space-y-3">
               {activeFlags.map((flag) => (
-                <li key={flag.key} className="flex items-center justify-between gap-3">
-                  <code className="truncate font-mono text-[11px] text-ink-soft">{flag.key}</code>
+                <li key={flag.key} className="flex items-center justify-between gap-3 p-2 rounded-xl bg-surface-raised border border-line">
+                  <code className="truncate font-mono text-[11px] font-semibold text-primary">{flag.key}</code>
                   <Pill tone="muted">{flag.rollout}</Pill>
                 </li>
               ))}
@@ -388,12 +456,12 @@ export default function PlatformOverviewPage() {
           </Card>
         </div>
       </div>
-    </>
+    </div>
   );
 }
 
 function metaSummary() {
-  return `${formatNumber(platformStats.activeTenants)} active · ${formatNumber(
+  return `${formatNumber(platformStats.activeTenants)} active schools · ${formatNumber(
     platformStats.pastDueTenants,
   )} past due · ${formatNumber(platformStats.suspendedTenants)} suspended · ${formatNumber(
     platformStats.openInvoices,
