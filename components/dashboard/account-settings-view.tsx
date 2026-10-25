@@ -883,45 +883,117 @@ export function AccountSettingsView({ currentRole }: AccountSettingsViewProps) {
 
           {/* Role = STUDENT */}
           {currentRole === "student" && (
-            <div className="grid gap-4 sm:grid-cols-2 text-xs">
-              <div className="rounded-2xl border border-line bg-surface-raised p-4 space-y-2">
-                <label className="font-bold text-ink block">Class Timetable Reminder</label>
-                <select
-                  value={String(profile.roleSpecific.classReminderMinutesBefore || "10")}
-                  onChange={(e) => {
-                    const updated = {
-                      ...profile,
-                      roleSpecific: { ...profile.roleSpecific, classReminderMinutesBefore: Number(e.target.value) },
-                    };
-                    setProfile(updated);
-                    saveStoredAccountProfile(currentRole, updated);
-                  }}
-                  className="w-full rounded-xl border border-line bg-surface p-2 font-bold text-ink"
-                >
-                  <option value="5">5 Minutes Before Period</option>
-                  <option value="10">10 Minutes Before Period</option>
-                  <option value="15">15 Minutes Before Period</option>
-                </select>
+            <div className="space-y-4">
+              <div className="grid gap-4 sm:grid-cols-2 text-xs">
+                <div className="rounded-2xl border border-line bg-surface-raised p-4 space-y-2">
+                  <label className="font-bold text-ink block">Class Timetable Reminder</label>
+                  <select
+                    value={String(profile.roleSpecific.classReminderMinutesBefore || "10")}
+                    onChange={(e) => {
+                      const updated = {
+                        ...profile,
+                        roleSpecific: { ...profile.roleSpecific, classReminderMinutesBefore: Number(e.target.value) },
+                      };
+                      setProfile(updated);
+                      saveStoredAccountProfile(currentRole, updated);
+                    }}
+                    className="w-full rounded-xl border border-line bg-surface p-2 font-bold text-ink"
+                  >
+                    <option value="5">5 Minutes Before Period</option>
+                    <option value="10">10 Minutes Before Period</option>
+                    <option value="15">15 Minutes Before Period</option>
+                  </select>
+                </div>
+
+                <div className="rounded-2xl border border-line bg-surface-raised p-4 flex items-center justify-between">
+                  <div>
+                    <h4 className="font-bold text-ink">Exam Countdown Radar</h4>
+                    <p className="text-[11px] text-ink-muted">Display WAEC/Mock countdown clock on desk</p>
+                  </div>
+                  <input
+                    type="checkbox"
+                    checked={Boolean(profile.roleSpecific.examCountdownActive ?? true)}
+                    onChange={(e) => {
+                      const updated = {
+                        ...profile,
+                        roleSpecific: { ...profile.roleSpecific, examCountdownActive: e.target.checked },
+                      };
+                      setProfile(updated);
+                      saveStoredAccountProfile(currentRole, updated);
+                    }}
+                    className="size-4 rounded accent-primary cursor-pointer"
+                  />
+                </div>
               </div>
 
-              <div className="rounded-2xl border border-line bg-surface-raised p-4 flex items-center justify-between">
-                <div>
-                  <h4 className="font-bold text-ink">Exam Countdown Radar</h4>
-                  <p className="text-[11px] text-ink-muted">Display WAEC/Mock countdown clock on desk</p>
+              {/* Student Accessibility & Learning Preferences */}
+              <div className="rounded-2xl border border-line bg-surface-raised p-4 space-y-3">
+                <div className="flex items-center gap-2 border-b border-line pb-2">
+                  <Sparkles className="size-4 text-cyan-600" />
+                  <h4 className="font-bold text-xs text-ink">Learner Accessibility & Visual Adaptation</h4>
                 </div>
-                <input
-                  type="checkbox"
-                  checked={Boolean(profile.roleSpecific.examCountdownActive ?? true)}
-                  onChange={(e) => {
-                    const updated = {
-                      ...profile,
-                      roleSpecific: { ...profile.roleSpecific, examCountdownActive: e.target.checked },
-                    };
-                    setProfile(updated);
-                    saveStoredAccountProfile(currentRole, updated);
-                  }}
-                  className="size-4 rounded accent-primary cursor-pointer"
-                />
+
+                <div className="grid gap-3 sm:grid-cols-3 text-xs">
+                  <div className="p-3 rounded-xl bg-surface border border-line flex items-center justify-between">
+                    <div>
+                      <span className="font-semibold text-ink block">High Contrast Mode</span>
+                      <span className="text-[10px] text-ink-muted">Crisp borders & high text contrast</span>
+                    </div>
+                    <input
+                      type="checkbox"
+                      checked={Boolean(profile.roleSpecific.highContrast ?? false)}
+                      onChange={(e) => {
+                        const updated = {
+                          ...profile,
+                          roleSpecific: { ...profile.roleSpecific, highContrast: e.target.checked },
+                        };
+                        setProfile(updated);
+                        saveStoredAccountProfile(currentRole, updated);
+                      }}
+                      className="size-4 rounded accent-primary cursor-pointer"
+                    />
+                  </div>
+
+                  <div className="p-3 rounded-xl bg-surface border border-line flex items-center justify-between">
+                    <div>
+                      <span className="font-semibold text-ink block">Large Font Scale</span>
+                      <span className="text-[10px] text-ink-muted">115% reading size on lesson notes</span>
+                    </div>
+                    <input
+                      type="checkbox"
+                      checked={Boolean(profile.roleSpecific.largeFont ?? false)}
+                      onChange={(e) => {
+                        const updated = {
+                          ...profile,
+                          roleSpecific: { ...profile.roleSpecific, largeFont: e.target.checked },
+                        };
+                        setProfile(updated);
+                        saveStoredAccountProfile(currentRole, updated);
+                      }}
+                      className="size-4 rounded accent-primary cursor-pointer"
+                    />
+                  </div>
+
+                  <div className="p-3 rounded-xl bg-surface border border-line flex items-center justify-between">
+                    <div>
+                      <span className="font-semibold text-ink block">Reduced Animation</span>
+                      <span className="text-[10px] text-ink-muted">Eliminate pulsating & floating icons</span>
+                    </div>
+                    <input
+                      type="checkbox"
+                      checked={Boolean(profile.roleSpecific.reducedMotion ?? false)}
+                      onChange={(e) => {
+                        const updated = {
+                          ...profile,
+                          roleSpecific: { ...profile.roleSpecific, reducedMotion: e.target.checked },
+                        };
+                        setProfile(updated);
+                        saveStoredAccountProfile(currentRole, updated);
+                      }}
+                      className="size-4 rounded accent-primary cursor-pointer"
+                    />
+                  </div>
+                </div>
               </div>
             </div>
           )}

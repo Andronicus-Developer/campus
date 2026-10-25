@@ -49,6 +49,8 @@ import {
   DollarSign,
   ClipboardCheck,
   FolderOpen,
+  User,
+  ListTodo,
 } from "lucide-react";
 import { RoleConfig, RoleKey, ROLES_CONFIG } from "@/lib/rbac";
 import { RolePrivilegeModal } from "./role-privilege-modal";
@@ -137,6 +139,9 @@ const iconMap: Record<string, React.ElementType> = {
   DollarSign,
   ClipboardCheck,
   FolderOpen,
+  User,
+  ListTodo,
+  Sparkles,
 };
 
 export function DashboardLayout({ currentRole, children }: DashboardLayoutProps) {

@@ -13,6 +13,10 @@ import {
   Star,
   Printer,
   ChevronDown,
+  RotateCcw,
+  AlertCircle,
+  HelpCircle,
+  Send,
 } from "lucide-react";
 
 interface SubjectScore {
@@ -30,6 +34,10 @@ interface SubjectScore {
 export default function StudentResultsPage() {
   const [selectedTerm, setSelectedTerm] = useState("Term 1, 2025/2026");
   const [showQrModal, setShowQrModal] = useState(false);
+  const [reviewModalOpen, setReviewModalOpen] = useState(false);
+  const [reviewSubject, setReviewSubject] = useState("Economics");
+  const [reviewReason, setReviewReason] = useState("");
+  const [reviewSubmitted, setReviewSubmitted] = useState(false);
 
   const scores: SubjectScore[] = [
     { subject: "Mathematics", ca1: 15, ca2: 14, project: 10, exam: 58, total: 97, grade: "A1", classAvg: 74.2, remark: "Exceptional mathematical rigour" },
@@ -46,6 +54,18 @@ export default function StudentResultsPage() {
   const totalPoints = scores.reduce((sum, s) => sum + s.total, 0);
   const averagePercentage = (totalPoints / scores.length).toFixed(1);
 
+  const handleReviewSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!reviewReason.trim()) return;
+    setReviewSubmitted(true);
+    setTimeout(() => {
+      setReviewSubmitted(false);
+      setReviewReason("");
+      setReviewModalOpen(false);
+      alert(`Result remarking request for ${reviewSubject} logged with the Academic Examination Committee (Ticket: REV-491).`);
+    }, 1200);
+  };
+
   return (
     <DashboardLayout currentRole="student">
       <div className="space-y-6">
@@ -53,33 +73,61 @@ export default function StudentResultsPage() {
         <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
           <div>
             <div className="flex items-center gap-2 text-xs font-semibold uppercase tracking-wider text-cyan-600 mb-1">
-              <Award className="w-4 h-4" />
-              Student Portal · Academic Transcripts
+              <Award className="size-4" />
+              Student Portal · Academic Transcripts & Records
             </div>
             <h1 className="text-2xl sm:text-3xl font-extrabold text-foreground tracking-tight">
-              Terminal Results & Broadsheet
+              Results, Broadsheets & Report Cards
             </h1>
             <p className="text-sm text-muted-foreground mt-0.5">
-              Verified term report cards signed by the Principal and Form Master.
+              Verified term report cards signed by the Principal, Form Master, and Examination Board.
             </p>
           </div>
 
           <div className="flex items-center gap-2.5">
             <button
+              onClick={() => setReviewModalOpen(true)}
+              className="inline-flex items-center gap-2 px-3.5 py-2.5 rounded-xl bg-card border border-border hover:bg-muted text-foreground font-medium text-xs sm:text-sm shadow-sm transition"
+            >
+              <RotateCcw className="size-4 text-cyan-600" />
+              Request Result Review
+            </button>
+            <button
               onClick={() => setShowQrModal(true)}
               className="inline-flex items-center gap-2 px-3.5 py-2.5 rounded-xl bg-card border border-border hover:bg-muted text-foreground font-medium text-xs sm:text-sm shadow-sm transition"
             >
-              <QrCode className="w-4 h-4 text-cyan-600" />
-              Verify QR
+              <QrCode className="size-4 text-cyan-600" />
+              Verify QR Seal
             </button>
             <button
-              onClick={() => alert("Downloading Official Signed Terminal Report Card (PDF)")}
+              onClick={() => alert("Downloading Official Signed Terminal Report Card (PDF with SHA-256 seal)")}
               className="inline-flex items-center gap-2 px-4 py-2.5 rounded-xl bg-cyan-600 hover:bg-cyan-700 text-white font-medium text-xs sm:text-sm shadow-sm transition"
             >
-              <Download className="w-4 h-4" />
+              <Download className="size-4" />
               Download Report Card
             </button>
           </div>
+        </div>
+
+        {/* Official Promotion & Standing Banner */}
+        <div className="p-4 rounded-3xl bg-gradient-to-r from-emerald-600/15 via-teal-600/10 to-transparent border border-emerald-500/25 flex flex-col sm:flex-row sm:items-center justify-between gap-3 text-xs">
+          <div className="flex items-center gap-3">
+            <div className="size-10 rounded-2xl bg-emerald-600 text-white flex items-center justify-center font-bold">
+              <ShieldCheck className="size-6" />
+            </div>
+            <div>
+              <div className="font-bold text-emerald-800 dark:text-emerald-300 text-sm sm:text-base">
+                Academic Promotion Status: Approved for SSS 3 (Honors Track)
+              </div>
+              <p className="text-ink-muted">
+                Met all graduation and promotional criteria with Distinction standing (92.4% Cumulative Average).
+              </p>
+            </div>
+          </div>
+
+          <span className="font-mono text-xs font-bold text-emerald-700 dark:text-emerald-300 bg-emerald-500/15 px-3 py-1.5 rounded-xl border border-emerald-500/30 shrink-0">
+            Principal Sign-Off: Confirmed
+          </span>
         </div>
 
         {/* Term Switcher */}
@@ -98,7 +146,7 @@ export default function StudentResultsPage() {
           </div>
 
           <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-bold bg-emerald-50 dark:bg-emerald-950/50 text-emerald-600 border border-emerald-200 dark:border-emerald-800">
-            <ShieldCheck className="w-3.5 h-3.5" />
+            <ShieldCheck className="size-3.5" />
             Officially Released
           </span>
         </div>
@@ -109,7 +157,7 @@ export default function StudentResultsPage() {
             <div className="text-xs font-medium text-muted-foreground">Terminal Average</div>
             <div className="text-3xl font-black text-cyan-600 mt-1">{averagePercentage}%</div>
             <div className="text-[11px] text-emerald-600 font-semibold mt-1 flex items-center gap-1">
-              <TrendingUp className="w-3.5 h-3.5" /> +2.4% vs previous term
+              <TrendingUp className="size-3.5" /> +2.4% vs previous term
             </div>
           </div>
           <div className="p-5 rounded-2xl bg-card border border-border shadow-xs">
@@ -130,7 +178,7 @@ export default function StudentResultsPage() {
         </div>
 
         {/* Result Table */}
-        <div className="rounded-2xl bg-card border border-border overflow-hidden shadow-xs">
+        <div className="rounded-3xl bg-card border border-border overflow-hidden shadow-xs">
           <div className="overflow-x-auto">
             <table className="w-full text-left text-xs sm:text-sm">
               <thead className="bg-canvas border-b border-border text-muted-foreground uppercase text-[11px] font-semibold tracking-wider">
@@ -171,24 +219,24 @@ export default function StudentResultsPage() {
 
         {/* Institutional Assessment Comments */}
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-          <div className="p-5 rounded-2xl bg-card border border-border shadow-xs space-y-2">
+          <div className="p-5 rounded-3xl bg-card border border-border shadow-xs space-y-2">
             <div className="flex items-center gap-2 text-xs uppercase font-bold text-cyan-600 tracking-wider">
-              <Star className="w-4 h-4" /> Form Master's Appraisal
+              <Star className="size-4" /> Form Master&apos;s Appraisal
             </div>
             <p className="text-xs sm:text-sm text-foreground italic leading-relaxed">
-              "Tobi has maintained exemplary academic consistency throughout the term. His analytical dedication in STEM subjects is remarkable, and he demonstrates mature peer leadership in class discussions."
+              &ldquo;Tobi has maintained exemplary academic consistency throughout the term. His analytical dedication in STEM subjects is remarkable, and he demonstrates mature peer leadership in class discussions.&rdquo;
             </p>
             <div className="text-xs font-semibold text-muted-foreground pt-1">
               — Mr. David Alabi, Senior Form Tutor (SSS 2A)
             </div>
           </div>
 
-          <div className="p-5 rounded-2xl bg-card border border-border shadow-xs space-y-2">
+          <div className="p-5 rounded-3xl bg-card border border-border shadow-xs space-y-2">
             <div className="flex items-center gap-2 text-xs uppercase font-bold text-amber-600 tracking-wider">
-              <CheckCircle2 className="w-4 h-4" /> Principal's Executive Endorsement
+              <CheckCircle2 className="size-4" /> Principal&apos;s Executive Endorsement
             </div>
             <p className="text-xs sm:text-sm text-foreground italic leading-relaxed">
-              "An extraordinary performance, leading the senior science cohort with 7 distinctions. Highly commendable character and discipline. Approved for Academic Merit Bursary."
+              &ldquo;An extraordinary performance, leading the senior science cohort with 7 distinctions. Highly commendable character and discipline. Approved for Academic Merit Bursary.&rdquo;
             </p>
             <div className="text-xs font-semibold text-muted-foreground pt-1">
               — Dr. Evelyn Peters, Ph.D., Principal & CAO
@@ -196,12 +244,83 @@ export default function StudentResultsPage() {
           </div>
         </div>
 
+        {/* Result Review Request Modal */}
+        {reviewModalOpen && (
+          <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-xs">
+            <div className="bg-surface border border-line rounded-3xl max-w-lg w-full p-6 shadow-2xl space-y-4">
+              <div className="flex items-center justify-between border-b border-line pb-3">
+                <div className="flex items-center gap-2">
+                  <RotateCcw className="size-5 text-cyan-600" />
+                  <h3 className="text-base font-extrabold text-ink">Request Official Result Review / Remarking</h3>
+                </div>
+                <button
+                  onClick={() => setReviewModalOpen(false)}
+                  className="size-7 rounded-lg hover:bg-surface-raised flex items-center justify-center text-ink-muted"
+                >
+                  ✕
+                </button>
+              </div>
+
+              <p className="text-xs text-ink-muted leading-relaxed">
+                If you believe there is a computational anomaly or omission in your published continuous assessment or examination score,
+                submit a formal review request. The examination committee will re-audit the original mark script.
+              </p>
+
+              <form onSubmit={handleReviewSubmit} className="space-y-3.5 text-xs">
+                <div>
+                  <label className="block text-ink font-semibold mb-1">Subject for Review</label>
+                  <select
+                    value={reviewSubject}
+                    onChange={(e) => setReviewSubject(e.target.value)}
+                    className="w-full px-3 py-2 rounded-xl bg-surface-raised border border-line text-ink font-medium focus:outline-none"
+                  >
+                    {scores.map((sc) => (
+                      <option key={sc.subject} value={sc.subject}>
+                        {sc.subject} (Published: {sc.total} / 100 - Grade {sc.grade})
+                      </option>
+                    ))}
+                  </select>
+                </div>
+
+                <div>
+                  <label className="block text-ink font-semibold mb-1">Reason / Explanation of Discrepancy</label>
+                  <textarea
+                    rows={4}
+                    required
+                    value={reviewReason}
+                    onChange={(e) => setReviewReason(e.target.value)}
+                    placeholder="e.g. In CA2 assessment project, my group score was 10/10 but appears recorded as 8/10 on this broadsheet..."
+                    className="w-full px-3 py-2 rounded-xl bg-surface-raised border border-line text-ink focus:outline-none focus:ring-2 focus:ring-primary/30"
+                  />
+                </div>
+
+                <div className="flex items-center justify-end gap-2 pt-2">
+                  <button
+                    type="button"
+                    onClick={() => setReviewModalOpen(false)}
+                    className="px-4 py-2 rounded-xl border border-line hover:bg-surface-raised font-medium"
+                  >
+                    Cancel
+                  </button>
+                  <button
+                    type="submit"
+                    disabled={reviewSubmitted}
+                    className="px-4 py-2 rounded-xl bg-cyan-600 hover:bg-cyan-700 text-white font-semibold transition"
+                  >
+                    {reviewSubmitted ? "Submitting..." : "Submit Review Request"}
+                  </button>
+                </div>
+              </form>
+            </div>
+          </div>
+        )}
+
         {/* QR Verification Modal */}
         {showQrModal && (
           <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-xs">
             <div className="bg-card border border-border rounded-2xl max-w-sm w-full p-6 shadow-2xl text-center space-y-4">
-              <div className="w-16 h-16 rounded-2xl bg-cyan-500/10 text-cyan-600 flex items-center justify-center mx-auto">
-                <QrCode className="w-10 h-10" />
+              <div className="size-16 rounded-2xl bg-cyan-500/10 text-cyan-600 flex items-center justify-center mx-auto">
+                <QrCode className="size-10" />
               </div>
               <h3 className="text-lg font-bold text-foreground">Cryptographic Result Certificate</h3>
               <p className="text-xs text-muted-foreground">
