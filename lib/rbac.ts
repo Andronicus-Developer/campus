@@ -1,11 +1,13 @@
 export type RoleKey = 'principal' | 'teacher' | 'admin' | 'bursar' | 'student' | 'parent';
 
 export type PermissionCode =
-  // Students
+  // Students & Guardians
   | 'students.read'
   | 'students.create'
   | 'students.update'
   | 'students.delete'
+  | 'parents.create'
+  | 'parents.assign'
   // Admissions
   | 'admissions.read'
   | 'admissions.create'
@@ -17,6 +19,7 @@ export type PermissionCode =
   | 'staff.create'
   | 'staff.update'
   | 'staff.manage'
+  | 'teachers.assign'
   // Attendance
   | 'attendance.read'
   | 'attendance.take'
@@ -45,7 +48,11 @@ export type PermissionCode =
   | 'classes.read'
   | 'classes.create'
   | 'classes.update'
+  | 'subjects.read'
+  | 'subjects.create'
+  | 'subjects.update'
   | 'subjects.manage'
+  | 'subjects.assign'
   | 'timetable.manage'
   // Communication
   | 'announcements.create'
@@ -240,6 +247,8 @@ export const ROLES_CONFIG: Record<RoleKey, RoleConfig> = {
       'students.create',
       'students.update',
       'students.delete',
+      'parents.create',
+      'parents.assign',
       'admissions.read',
       'admissions.create',
       'admissions.update',
@@ -248,9 +257,14 @@ export const ROLES_CONFIG: Record<RoleKey, RoleConfig> = {
       'staff.read',
       'staff.create',
       'staff.update',
+      'teachers.assign',
       'classes.read',
       'classes.create',
       'classes.update',
+      'subjects.read',
+      'subjects.create',
+      'subjects.update',
+      'subjects.assign',
       'timetable.manage',
       'announcements.create',
       'announcements.publish',
@@ -260,12 +274,13 @@ export const ROLES_CONFIG: Record<RoleKey, RoleConfig> = {
     ],
     privileges: [
       {
-        category: 'Registry & Admissions Rights',
+        category: 'Registry, Faculty & User Provisioning',
         items: [
-          { action: 'Review & Process Admissions', allowed: true, description: 'Screen applicants, verify certificates, and issue admission letters' },
-          { action: 'Student Enrollment & Matriculation', allowed: true, description: 'Generate student numbers and assign students into class arms' },
-          { action: 'Academic Calendar & Terms Setup', allowed: true, description: 'Define term start/end dates, mid-term breaks, and vacations' },
-          { action: 'Timetable Bell Schedule Builder', allowed: true, description: 'Configure classroom periods, break times, and teacher assignments' },
+          { action: 'Create Students, Teachers, Bursars & Parents', allowed: true, description: 'Direct authority to onboard students, teachers, bursars, and register parent/guardian profiles' },
+          { action: 'Assign Parents to Students', allowed: true, description: 'Link parent and guardian accounts to their respective student wards with relationship designations' },
+          { action: 'Assign Teachers to Classes & Subjects', allowed: true, description: 'Designate Form Masters and allocate teachers to core and elective subject streams' },
+          { action: 'Assign Students to Class Arms', allowed: true, description: 'Enroll, stream, and reassign students to academic class arms and sets' },
+          { action: 'Create & Manage Classes & Subjects', allowed: true, description: 'Add new class streams/arms, define subject codes, weekly period quotas, and curriculum units' },
         ],
       },
       {
@@ -282,6 +297,7 @@ export const ROLES_CONFIG: Record<RoleKey, RoleConfig> = {
       { label: 'Student Directory', href: '/dashboard/admin/students', icon: 'Contact' },
       { label: 'Staff Management', href: '/dashboard/admin/staff', icon: 'ShieldCheck' },
       { label: 'Classes & Streams', href: '/dashboard/admin/classes', icon: 'DoorOpen' },
+      { label: 'Subjects & Allocations', href: '/dashboard/admin/subjects', icon: 'BookMarked' },
       { label: 'School Settings', href: '/dashboard/admin/settings', icon: 'Sliders' },
     ],
   },

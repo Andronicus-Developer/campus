@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import Link from "next/link";
 import {
   Calendar,
   CheckCircle2,
@@ -16,6 +17,12 @@ import {
   UserCheck,
   UserPlus,
   Users,
+  BookMarked,
+  Landmark,
+  HeartHandshake,
+  ArrowRight,
+  GraduationCap,
+  Layers,
 } from "lucide-react";
 
 interface AdmissionApp {
@@ -91,32 +98,122 @@ export function AdminDashboardView() {
 
   return (
     <div className="space-y-6">
-      {/* Admin Header */}
-      <div className="rounded-3xl border border-line bg-surface p-6 shadow-sm">
+      {/* Admin Header & Authority Station */}
+      <div className="rounded-3xl border border-line bg-surface p-6 shadow-sm space-y-6">
         <div className="flex flex-wrap items-center justify-between gap-4">
           <div>
             <div className="flex items-center gap-2">
               <span className="rounded-full bg-emerald-100 px-3 py-1 font-mono text-[11px] font-bold text-emerald-700">
-                School Operations &amp; Registry
+                School Operations &amp; Registry Authority
               </span>
-              <span className="text-xs text-ink-muted">Engr. Patrick Bassey</span>
+              <span className="text-xs text-ink-muted">Engr. Patrick Bassey — Director of Registry</span>
             </div>
             <h2 className="mt-2 text-2xl font-black text-ink">Administrative Command Center</h2>
             <p className="text-xs text-ink-muted">
-              Admissions workflow, student matriculation, staff scheduling, and class quota management.
+              Centralized authority to create students, staff (teachers &amp; bursars), parents, classes, and subjects, and manage assignments.
             </p>
           </div>
 
-          <div className="flex items-center gap-2">
-            <button
-              type="button"
-              onClick={() => alert("New Student Enrollment Modal opened")}
-              className="inline-flex items-center gap-2 rounded-xl bg-emerald-600 px-4 py-2 text-xs font-bold text-white shadow-sm hover:bg-emerald-700 active:scale-95"
+          <div className="flex flex-wrap items-center gap-2">
+            <Link
+              href="/dashboard/admin/students"
+              className="inline-flex items-center gap-1.5 rounded-xl bg-emerald-600 px-3.5 py-2 text-xs font-bold text-white shadow-sm hover:bg-emerald-700 active:scale-95 transition-all"
             >
               <UserPlus className="size-4" />
-              <span>Enroll New Student</span>
-            </button>
+              <span>+ Add Student</span>
+            </Link>
+
+            <Link
+              href="/dashboard/admin/staff"
+              className="inline-flex items-center gap-1.5 rounded-xl border border-emerald-600 bg-emerald-50 px-3.5 py-2 text-xs font-bold text-emerald-800 shadow-sm hover:bg-emerald-100 active:scale-95 transition-all"
+            >
+              <GraduationCap className="size-4 text-emerald-700" />
+              <span>+ Add Staff</span>
+            </Link>
+
+            <Link
+              href="/dashboard/admin/classes"
+              className="inline-flex items-center gap-1.5 rounded-xl border border-line bg-surface-raised px-3.5 py-2 text-xs font-bold text-ink shadow-sm hover:border-emerald-600 hover:text-emerald-700 active:scale-95 transition-all"
+            >
+              <DoorOpen className="size-4 text-emerald-600" />
+              <span>+ Create Class</span>
+            </Link>
+
+            <Link
+              href="/dashboard/admin/subjects"
+              className="inline-flex items-center gap-1.5 rounded-xl border border-line bg-surface-raised px-3.5 py-2 text-xs font-bold text-ink shadow-sm hover:border-emerald-600 hover:text-emerald-700 active:scale-95 transition-all"
+            >
+              <BookMarked className="size-4 text-emerald-600" />
+              <span>+ Create Subject</span>
+            </Link>
           </div>
+        </div>
+
+        {/* 4 Operations Quick Stations */}
+        <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-4 border-t border-line pt-4">
+          <Link
+            href="/dashboard/admin/students"
+            className="group rounded-2xl border border-line bg-surface-raised p-4 transition-all hover:border-emerald-500 hover:bg-surface hover:shadow-sm"
+          >
+            <div className="flex items-center justify-between">
+              <span className="flex size-8 items-center justify-center rounded-xl bg-emerald-100 text-emerald-800 font-bold">
+                <Users className="size-4" />
+              </span>
+              <ArrowRight className="size-4 text-ink-muted group-hover:text-emerald-600 transition-colors" />
+            </div>
+            <h4 className="mt-2.5 font-bold text-xs text-ink">Students &amp; Guardians</h4>
+            <p className="mt-1 text-[11px] text-ink-muted">
+              Add students, register parents, assign students to classes, and link guardian custody.
+            </p>
+          </Link>
+
+          <Link
+            href="/dashboard/admin/staff"
+            className="group rounded-2xl border border-line bg-surface-raised p-4 transition-all hover:border-emerald-500 hover:bg-surface hover:shadow-sm"
+          >
+            <div className="flex items-center justify-between">
+              <span className="flex size-8 items-center justify-center rounded-xl bg-blue-100 text-blue-800 font-bold">
+                <GraduationCap className="size-4" />
+              </span>
+              <ArrowRight className="size-4 text-ink-muted group-hover:text-emerald-600 transition-colors" />
+            </div>
+            <h4 className="mt-2.5 font-bold text-xs text-ink">Staff &amp; Bursar Onboarding</h4>
+            <p className="mt-1 text-[11px] text-ink-muted">
+              Onboard Teachers, Bursars, and Admins; appoint Form Masters; assign teaching loads.
+            </p>
+          </Link>
+
+          <Link
+            href="/dashboard/admin/classes"
+            className="group rounded-2xl border border-line bg-surface-raised p-4 transition-all hover:border-emerald-500 hover:bg-surface hover:shadow-sm"
+          >
+            <div className="flex items-center justify-between">
+              <span className="flex size-8 items-center justify-center rounded-xl bg-amber-100 text-amber-800 font-bold">
+                <DoorOpen className="size-4" />
+              </span>
+              <ArrowRight className="size-4 text-ink-muted group-hover:text-emerald-600 transition-colors" />
+            </div>
+            <h4 className="mt-2.5 font-bold text-xs text-ink">Class Streams &amp; Quotas</h4>
+            <p className="mt-1 text-[11px] text-ink-muted">
+              Create class arms, set capacity quotas, assign room facilities, and appoint Form Masters.
+            </p>
+          </Link>
+
+          <Link
+            href="/dashboard/admin/subjects"
+            className="group rounded-2xl border border-line bg-surface-raised p-4 transition-all hover:border-emerald-500 hover:bg-surface hover:shadow-sm"
+          >
+            <div className="flex items-center justify-between">
+              <span className="flex size-8 items-center justify-center rounded-xl bg-purple-100 text-purple-800 font-bold">
+                <BookMarked className="size-4" />
+              </span>
+              <ArrowRight className="size-4 text-ink-muted group-hover:text-emerald-600 transition-colors" />
+            </div>
+            <h4 className="mt-2.5 font-bold text-xs text-ink">Subjects &amp; Allocations</h4>
+            <p className="mt-1 text-[11px] text-ink-muted">
+              Create subjects, allocate teachers to subject arms, and assign student electives.
+            </p>
+          </Link>
         </div>
       </div>
 
