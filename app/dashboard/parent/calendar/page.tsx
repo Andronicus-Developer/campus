@@ -13,94 +13,119 @@ import {
   ChevronLeft,
   ChevronRight,
   Sparkles,
+  FileCheck,
+  ShieldCheck,
+  AlertTriangle,
+  Send,
+  Plus,
 } from "lucide-react";
+import { CHILDREN_PROFILES, ChildProfile } from "@/lib/family-data";
 
-interface CalendarEvent {
+interface SchoolEvent {
   id: string;
   title: string;
   date: string;
-  day: string;
   time: string;
   location: string;
-  category: "PTA Meeting" | "Examination" | "Visiting Day" | "Sports" | "Holiday";
+  category: "Excursion / Trip" | "PTA Meeting" | "Examination" | "Sports & Athletics" | "Clubs & Activities";
   description: string;
-  forParents: boolean;
-  reminderSet?: boolean;
+  consentRequired: boolean;
+  consentSigned?: boolean;
+  transportProvided: boolean;
+  eligibility: string;
 }
 
 export default function ParentCalendarPage() {
   const [filter, setFilter] = useState("all");
+  const [selectedEvent, setSelectedEvent] = useState<SchoolEvent | null>(null);
+  const [isConsentModalOpen, setIsConsentModalOpen] = useState(false);
+  const [consentChild, setConsentChild] = useState("Tobi Adeleke");
+  const [medicalClearance, setMedicalClearance] = useState(true);
+  const [parentSignName, setParentSignName] = useState("Mrs. Zainab Adeleke");
+  const [toast, setToast] = useState<string | null>(null);
 
-  const [events, setEvents] = useState<CalendarEvent[]>([
+  const [events, setEvents] = useState<SchoolEvent[]>([
     {
-      id: "ev-1",
-      title: "Term 2 Parent-Teacher Association (PTA) General Assembly",
+      id: "EV-01",
+      title: "Senior STEM Robotics & Space Observatory Excursion",
+      date: "Friday, Feb 20, 2026",
+      time: "08:30 AM - 04:30 PM",
+      location: "National Space Research & Technology Center, Abuja",
+      category: "Excursion / Trip",
+      description: "Hands-on satellite telemetry workshops, rocketry simulations, and planetary observatory tour.",
+      consentRequired: true,
+      consentSigned: false,
+      transportProvided: true,
+      eligibility: "Senior Secondary (Grade 10 - 12)",
+    },
+    {
+      id: "EV-02",
+      title: "Annual Inter-House Athletics & Track Championship",
+      date: "Saturday, Feb 28, 2026",
+      time: "09:00 AM - 05:00 PM",
+      location: "Riverside Main Sports Stadium & Track Arena",
+      category: "Sports & Athletics",
+      description: "Track events, 100m sprint, relay, long jump, and parent-staff novelty race. Tigers (Blue) vs Eagles (Green).",
+      consentRequired: false,
+      transportProvided: true,
+      eligibility: "All Enrolled Students & Families",
+    },
+    {
+      id: "EV-03",
+      title: "Term 2 PTA General Assembly & Executive Election",
       date: "Saturday, Feb 7, 2026",
-      day: "Feb 07",
       time: "10:00 AM - 01:00 PM",
-      location: "Riverside School Main Auditorium & Zoom Stream",
+      location: "School Main Auditorium & Zoom Stream",
       category: "PTA Meeting",
-      description: "Discussion on school infrastructure projects, bus fleet upgrades, and election of parent arm representatives.",
-      forParents: true,
-      reminderSet: true,
+      description: "Deliberation on new science lab building, bus fleet additions, and election of parent arm representatives.",
+      consentRequired: false,
+      transportProvided: false,
+      eligibility: "All Registered Parents & Guardians",
     },
     {
-      id: "ev-2",
-      title: "Mid-Term Continuous Assessment Test Week",
+      id: "EV-04",
+      title: "Mid-Term Formative CA Examination Week",
       date: "Feb 16 - Feb 20, 2026",
-      day: "Feb 16",
       time: "08:00 AM Daily",
-      location: "All Classrooms",
+      location: "All Classrooms & Examination Hall",
       category: "Examination",
-      description: "Formative mid-term examinations covering topics taught in Weeks 1 to 6.",
-      forParents: false,
+      description: "Continuous assessment tests accounting for 40% of term terminal grade marks.",
+      consentRequired: false,
+      transportProvided: true,
+      eligibility: "JSS 1 through SSS 3",
     },
     {
-      id: "ev-3",
-      title: "Senior Boarding House Parents' Visiting Sunday",
-      date: "Sunday, Feb 22, 2026",
-      day: "Feb 22",
-      time: "01:00 PM - 05:30 PM",
-      location: "Boarding Hall Lawns",
-      category: "Visiting Day",
-      description: "Open visitation for parents of residential boarding students. Refreshments and pastoral consultations.",
-      forParents: true,
-    },
-    {
-      id: "ev-4",
-      title: "Annual Inter-House Track & Field Athletic Championship",
-      date: "Friday, March 6, 2026",
-      day: "Mar 06",
-      time: "09:00 AM - 04:00 PM",
-      location: "Main Sports Complex & Track",
-      category: "Sports",
-      description: "Grand athletic finale featuring all four school houses (Red, Blue, Yellow, Green) and parent sprint novelty race.",
-      forParents: true,
-    },
-    {
-      id: "ev-5",
-      title: "Term 2 Final Promotion Examinations",
-      date: "March 23 - April 3, 2026",
-      day: "Mar 23",
-      time: "08:30 AM Daily",
-      location: "Examination Hall A & B",
-      category: "Examination",
-      description: "Comprehensive end-of-term examinations determining term average and promotion broadsheets.",
-      forParents: false,
+      id: "EV-05",
+      title: "Junior French Immersion & Cultural Theatre Day",
+      date: "Wednesday, Mar 4, 2026",
+      time: "11:00 AM - 02:30 PM",
+      location: "Alliance Française Cultural Centre, Ikoyi",
+      category: "Excursion / Trip",
+      description: "Interactive French drama, Francophone poetry competition, and cultural gastronomy showcase.",
+      consentRequired: true,
+      consentSigned: false,
+      transportProvided: true,
+      eligibility: "Junior Secondary (JSS 1 - JSS 3)",
     },
   ]);
 
-  const toggleReminder = (id: string) => {
+  const handleSignConsent = (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!selectedEvent) return;
+
     setEvents((prev) =>
-      prev.map((e) => (e.id === id ? { ...e, reminderSet: !e.reminderSet } : e))
+      prev.map((ev) => (ev.id === selectedEvent.id ? { ...ev, consentSigned: true } : ev))
+    );
+
+    setIsConsentModalOpen(false);
+    setToast(
+      `Electronic Parental Consent Form successfully recorded for ${consentChild} (${selectedEvent.title}). Stamped by ${parentSignName}.`
     );
   };
 
-  const filtered = events.filter((e) => {
-    if (filter === "parents") return e.forParents;
-    if (filter === "exams") return e.category === "Examination";
-    if (filter === "pta") return e.category === "PTA Meeting";
-    return true;
+  const filteredEvents = events.filter((ev) => {
+    if (filter === "all") return true;
+    return ev.category === filter;
   });
 
   return (
@@ -111,135 +136,235 @@ export default function ParentCalendarPage() {
           <div>
             <div className="flex items-center gap-2 text-xs font-semibold uppercase tracking-wider text-pink-600 mb-1">
               <CalendarIcon className="w-4 h-4" />
-              Family Portal · Academic Year Schedule
+              School Calendar &amp; Activities · Section K
             </div>
             <h1 className="text-2xl sm:text-3xl font-extrabold text-foreground tracking-tight">
-              School Calendar & PTA Events
+              School Events, Excursions &amp; Consent
             </h1>
             <p className="text-sm text-muted-foreground mt-0.5">
-              Key school fixtures, examination schedules, visiting days, and PTA community assemblies.
+              School-wide calendar, inter-house sports days, and legally verified digital excursion consent forms.
             </p>
           </div>
 
-          <div className="flex items-center gap-2.5">
+          <div className="flex items-center gap-2">
             <button
-              onClick={() => alert("Syncing school term calendar to Google / Apple Calendar")}
-              className="inline-flex items-center gap-2 px-4 py-2.5 rounded-xl bg-pink-600 hover:bg-pink-700 text-white font-medium text-xs sm:text-sm shadow-sm transition"
+              onClick={() => alert("Exporting Riverside School Calendar (iCal/Google Calendar format)...")}
+              className="inline-flex items-center gap-1.5 px-3.5 py-2.5 rounded-xl bg-card border border-border hover:bg-muted text-foreground text-xs font-semibold shadow-xs transition"
             >
-              <Download className="w-4 h-4" />
-              Sync to Calendar
+              <Download className="w-3.5 h-3.5 text-muted-foreground" />
+              Export to Google Calendar
             </button>
           </div>
         </div>
 
-        {/* Filter Toolbar */}
-        <div className="flex items-center justify-between border-b border-border pb-3">
-          <div className="flex items-center gap-2 bg-canvas border border-border rounded-xl p-1 text-xs">
-            <button
-              onClick={() => setFilter("all")}
-              className={`px-3 py-1.5 rounded-lg font-medium transition ${
-                filter === "all" ? "bg-pink-600 text-white shadow-xs" : "text-muted-foreground hover:text-foreground"
-              }`}
-            >
-              All Events
-            </button>
-            <button
-              onClick={() => setFilter("parents")}
-              className={`px-3 py-1.5 rounded-lg font-medium transition ${
-                filter === "parents" ? "bg-pink-600 text-white shadow-xs" : "text-muted-foreground hover:text-foreground"
-              }`}
-            >
-              Parent Required
-            </button>
-            <button
-              onClick={() => setFilter("exams")}
-              className={`px-3 py-1.5 rounded-lg font-medium transition ${
-                filter === "exams" ? "bg-pink-600 text-white shadow-xs" : "text-muted-foreground hover:text-foreground"
-              }`}
-            >
-              Examinations
-            </button>
-            <button
-              onClick={() => setFilter("pta")}
-              className={`px-3 py-1.5 rounded-lg font-medium transition ${
-                filter === "pta" ? "bg-pink-600 text-white shadow-xs" : "text-muted-foreground hover:text-foreground"
-              }`}
-            >
-              PTA Meetings
+        {/* Toast */}
+        {toast && (
+          <div className="p-4 rounded-xl bg-emerald-50 dark:bg-emerald-950/40 border border-emerald-200 dark:border-emerald-800 text-emerald-800 dark:text-emerald-300 text-xs sm:text-sm flex items-center justify-between">
+            <span className="flex items-center gap-2">
+              <CheckCircle2 className="w-4 h-4 text-emerald-600 flex-shrink-0" />
+              {toast}
+            </span>
+            <button onClick={() => setToast(null)} className="text-emerald-600 hover:underline text-xs ml-4">
+              Dismiss
             </button>
           </div>
+        )}
 
-          <span className="text-xs text-muted-foreground hidden sm:inline">
-            Academic Year: <strong>2025/2026</strong>
-          </span>
+        {/* Safeguarding Alert */}
+        <div className="p-4 rounded-2xl bg-amber-500/10 border border-amber-500/30 flex items-start gap-3">
+          <ShieldCheck className="w-5 h-5 text-amber-600 mt-0.5 flex-shrink-0" />
+          <div className="text-xs sm:text-sm">
+            <span className="font-bold text-foreground">Minor Protection &amp; Excursion Safety Policy:</span>{" "}
+            <span className="text-muted-foreground">
+              Students cannot board school excursion buses without digitally signed parental consent and verified emergency contact credentials on record.
+            </span>
+          </div>
         </div>
 
-        {/* Event Cards */}
-        <div className="space-y-3">
-          {filtered.map((item) => (
+        {/* Category Filters */}
+        <div className="flex flex-wrap items-center gap-1.5 border-b border-border pb-3">
+          {(
+            [
+              { key: "all", label: "All Events" },
+              { key: "Excursion / Trip", label: "Excursions & Field Trips" },
+              { key: "Sports & Athletics", label: "Sports & Inter-House" },
+              { key: "PTA Meeting", label: "PTA Assemblies" },
+              { key: "Examination", label: "Exams & CA Tests" },
+            ] as const
+          ).map((tab) => (
+            <button
+              key={tab.key}
+              onClick={() => setFilter(tab.key)}
+              className={`px-3 py-1.5 rounded-xl text-xs font-semibold transition ${
+                filter === tab.key
+                  ? "bg-pink-600 text-white shadow-xs"
+                  : "bg-card border border-border text-muted-foreground hover:text-foreground"
+              }`}
+            >
+              {tab.label}
+            </button>
+          ))}
+        </div>
+
+        {/* Events Grid */}
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+          {filteredEvents.map((ev) => (
             <div
-              key={item.id}
-              className="p-5 rounded-2xl bg-card border border-border shadow-xs hover:border-pink-500/30 transition flex flex-col md:flex-row md:items-center justify-between gap-4"
+              key={ev.id}
+              className="p-6 rounded-3xl bg-card border border-border hover:border-pink-500/30 transition shadow-xs flex flex-col justify-between space-y-4"
             >
-              <div className="flex items-start gap-4">
-                <div className="w-14 h-14 rounded-2xl bg-pink-500/10 border border-pink-500/20 text-pink-600 font-black text-center flex flex-col items-center justify-center flex-shrink-0">
-                  <span className="text-xs uppercase leading-none font-bold">
-                    {item.day.split(" ")[0]}
+              <div>
+                <div className="flex items-center justify-between text-xs mb-2">
+                  <span className="px-2.5 py-0.5 rounded-md font-bold uppercase text-[10px] bg-canvas border border-border text-foreground">
+                    {ev.category}
                   </span>
-                  <span className="text-lg leading-tight">
-                    {item.day.split(" ")[1]}
-                  </span>
+                  {ev.consentRequired && (
+                    <span
+                      className={`px-2 py-0.5 rounded-full text-[10px] font-bold uppercase ${
+                        ev.consentSigned
+                          ? "bg-emerald-50 dark:bg-emerald-950/50 text-emerald-600 border border-emerald-200 dark:border-emerald-800"
+                          : "bg-amber-50 dark:bg-amber-950/50 text-amber-600 border border-amber-200 dark:border-amber-800"
+                      }`}
+                    >
+                      {ev.consentSigned ? "Consent Signed" : "Consent Required"}
+                    </span>
+                  )}
                 </div>
 
-                <div>
-                  <div className="flex items-center gap-2 flex-wrap mb-1">
-                    <span className="px-2 py-0.5 rounded-md text-[10px] font-bold bg-canvas border border-border text-foreground">
-                      {item.category}
-                    </span>
-                    {item.forParents && (
-                      <span className="px-2 py-0.5 rounded-md text-[10px] font-bold bg-pink-50 dark:bg-pink-950/50 text-pink-600 border border-pink-200 dark:border-pink-800">
-                        Parent Attendance
-                      </span>
-                    )}
+                <h3 className="text-base font-bold text-foreground leading-snug">{ev.title}</h3>
+                <p className="text-xs text-muted-foreground mt-1 leading-relaxed">{ev.description}</p>
+
+                <div className="mt-3 p-3.5 rounded-2xl bg-canvas border border-border space-y-2 text-xs">
+                  <div className="flex items-center gap-2 font-semibold text-foreground">
+                    <Clock className="w-3.5 h-3.5 text-pink-600" />
+                    <span>{ev.date} · {ev.time}</span>
                   </div>
-
-                  <h3 className="text-base font-bold text-foreground mb-1">
-                    {item.title}
-                  </h3>
-
-                  <p className="text-xs text-muted-foreground leading-relaxed max-w-2xl mb-2">
-                    {item.description}
-                  </p>
-
-                  <div className="flex items-center gap-4 text-xs text-muted-foreground flex-wrap">
-                    <span className="flex items-center gap-1">
-                      <Clock className="w-3.5 h-3.5 text-pink-600" />
-                      {item.time}
-                    </span>
-                    <span className="flex items-center gap-1">
-                      <MapPin className="w-3.5 h-3.5 text-pink-600" />
-                      {item.location}
-                    </span>
+                  <div className="flex items-center gap-2 text-muted-foreground">
+                    <MapPin className="w-3.5 h-3.5 text-emerald-600" />
+                    <span>{ev.location}</span>
+                  </div>
+                  <div className="text-[11px] text-muted-foreground">
+                    Eligibility: <strong className="text-foreground">{ev.eligibility}</strong>
+                    {ev.transportProvided && " · School Bus Transport Provided"}
                   </div>
                 </div>
               </div>
 
-              <div className="flex items-center gap-2 self-start md:self-center border-t md:border-t-0 pt-3 md:pt-0 w-full md:w-auto justify-end">
-                <button
-                  onClick={() => toggleReminder(item.id)}
-                  className={`inline-flex items-center gap-1.5 px-3 py-2 rounded-xl text-xs font-semibold border transition ${
-                    item.reminderSet
-                      ? "bg-pink-50 dark:bg-pink-950/50 text-pink-600 border-pink-200 dark:border-pink-800"
-                      : "bg-canvas border-border text-muted-foreground hover:text-foreground hover:bg-muted"
-                  }`}
-                >
-                  <Bell className={`w-3.5 h-3.5 ${item.reminderSet ? "fill-current" : ""}`} />
-                  {item.reminderSet ? "Reminder Set" : "Set Reminder"}
-                </button>
+              <div className="flex items-center justify-between pt-3 border-t border-border text-xs">
+                {ev.consentRequired ? (
+                  ev.consentSigned ? (
+                    <span className="inline-flex items-center gap-1.5 text-emerald-600 font-bold text-xs">
+                      <CheckCircle2 className="w-4 h-4" />
+                      Parental Clearance Active
+                    </span>
+                  ) : (
+                    <button
+                      onClick={() => {
+                        setSelectedEvent(ev);
+                        setIsConsentModalOpen(true);
+                      }}
+                      className="px-4 py-2 rounded-xl bg-pink-600 hover:bg-pink-700 text-white font-bold text-xs shadow-xs transition"
+                    >
+                      Sign Digital Consent Form
+                    </button>
+                  )
+                ) : (
+                  <span className="text-muted-foreground text-[11px]">
+                    Open attendance · No consent form needed
+                  </span>
+                )}
               </div>
             </div>
           ))}
         </div>
+
+        {/* Modal: Digital Consent Form */}
+        {isConsentModalOpen && selectedEvent && (
+          <div className="fixed inset-0 bg-black/60 backdrop-blur-xs flex items-center justify-center p-4 z-50 animate-in fade-in duration-150">
+            <div className="bg-card border border-border rounded-2xl max-w-lg w-full p-6 shadow-2xl space-y-4 max-h-[90vh] overflow-y-auto">
+              <div className="flex items-center justify-between pb-3 border-b border-border">
+                <div className="flex items-center gap-2">
+                  <ShieldCheck className="w-5 h-5 text-pink-600" />
+                  <h3 className="font-bold text-foreground text-base">Parental Excursion Consent</h3>
+                </div>
+                <button
+                  onClick={() => setIsConsentModalOpen(false)}
+                  className="text-muted-foreground hover:text-foreground text-xs p-1"
+                >
+                  ✕
+                </button>
+              </div>
+
+              <form onSubmit={handleSignConsent} className="space-y-3.5 text-xs">
+                <div className="p-3.5 rounded-xl bg-canvas border border-border space-y-1">
+                  <span className="text-[11px] font-bold uppercase text-pink-600">Event Trip Title</span>
+                  <div className="font-bold text-foreground">{selectedEvent.title}</div>
+                  <div className="text-muted-foreground text-[11px]">{selectedEvent.date} · {selectedEvent.location}</div>
+                </div>
+
+                <div>
+                  <label className="font-semibold text-foreground block mb-1">Participating Student</label>
+                  <select
+                    value={consentChild}
+                    onChange={(e) => setConsentChild(e.target.value)}
+                    className="w-full p-2.5 rounded-xl bg-canvas border border-border text-foreground"
+                  >
+                    {CHILDREN_PROFILES.map((c) => (
+                      <option key={c.id} value={c.name}>
+                        {c.name} ({c.classGroup})
+                      </option>
+                    ))}
+                  </select>
+                </div>
+
+                <div className="p-3 rounded-xl bg-canvas border border-border space-y-2">
+                  <label className="flex items-start gap-2.5 cursor-pointer">
+                    <input
+                      type="checkbox"
+                      checked={medicalClearance}
+                      onChange={(e) => setMedicalClearance(e.target.checked)}
+                      className="mt-0.5 rounded text-pink-600 focus:ring-pink-500"
+                      required
+                    />
+                    <span className="text-foreground leading-relaxed">
+                      I confirm that {consentChild} is medically fit to participate in the activities planned for this trip, and authorize school first-aid personnel to administer certified emergency care if required.
+                    </span>
+                  </label>
+                </div>
+
+                <div>
+                  <label className="font-semibold text-foreground block mb-1">Guardian Electronic Signature</label>
+                  <input
+                    type="text"
+                    value={parentSignName}
+                    onChange={(e) => setParentSignName(e.target.value)}
+                    className="w-full p-2.5 rounded-xl bg-canvas border border-border text-foreground font-bold"
+                    required
+                  />
+                  <span className="text-[11px] text-muted-foreground mt-0.5 block">
+                    Type your full legal name as authorized guardian on file.
+                  </span>
+                </div>
+
+                <div className="flex items-center justify-end gap-2 pt-3 border-t border-border">
+                  <button
+                    type="button"
+                    onClick={() => setIsConsentModalOpen(false)}
+                    className="px-3 py-2 rounded-xl border border-border hover:bg-muted text-foreground"
+                  >
+                    Cancel
+                  </button>
+                  <button
+                    type="submit"
+                    className="px-4 py-2 rounded-xl bg-pink-600 hover:bg-pink-700 text-white font-bold"
+                  >
+                    Authorize &amp; Sign Consent
+                  </button>
+                </div>
+              </form>
+            </div>
+          </div>
+        )}
       </div>
     </DashboardLayout>
   );

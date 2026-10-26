@@ -12,45 +12,40 @@ import {
   ChevronRight,
   ShieldCheck,
   User,
+  MessageSquare,
+  HelpCircle,
+  FileCheck,
+  Calendar,
+  Sparkles,
 } from "lucide-react";
-
-interface SubjectResult {
-  name: string;
-  ca: number; // max 40
-  exam: number; // max 60
-  total: number;
-  grade: string;
-  classAvg: number;
-  comment: string;
-}
+import { CHILDREN_PROFILES, ChildProfile } from "@/lib/family-data";
 
 export default function ParentResultsPage() {
-  const [selectedChild, setSelectedChild] = useState<"tobi" | "maryam">("tobi");
+  const [selectedChildId, setSelectedChildId] = useState<string>("child-1");
   const [selectedTerm, setSelectedTerm] = useState("Term 1, 2025/2026");
+  const [toast, setToast] = useState<string | null>(null);
+  const [isReviewModalOpen, setIsReviewModalOpen] = useState(false);
+  const [reviewSubject, setReviewSubject] = useState("Mathematics");
+  const [reviewReason, setReviewReason] = useState("");
+  const [isReportCardModalOpen, setIsReportCardModalOpen] = useState(false);
 
-  const tobiScores: SubjectResult[] = [
-    { name: "Mathematics", ca: 39, exam: 58, total: 97, grade: "A1", classAvg: 74.2, comment: "Exceptional mathematical rigour" },
-    { name: "Further Mathematics", ca: 38, exam: 56, total: 94, grade: "A1", classAvg: 68.5, comment: "Brilliant aptitude in advanced calculus" },
-    { name: "Physics", ca: 37, exam: 55, total: 92, grade: "A1", classAvg: 71.0, comment: "Consistently top practical lab scores" },
-    { name: "Chemistry", ca: 37, exam: 54, total: 91, grade: "A1", classAvg: 72.8, comment: "Excellent understanding of stoichiometry" },
-    { name: "Biology", ca: 35, exam: 53, total: 88, grade: "A1", classAvg: 69.4, comment: "Very strong diagrams and theory" },
-    { name: "English Language", ca: 34, exam: 51, total: 85, grade: "A1", classAvg: 76.1, comment: "Articulate essay structure and vocabulary" },
-    { name: "Computer Science", ca: 40, exam: 58, total: 98, grade: "A1", classAvg: 75.6, comment: "Outstanding Python programming skills" },
-  ];
+  const activeChild =
+    CHILDREN_PROFILES.find((c) => c.id === selectedChildId) || CHILDREN_PROFILES[0];
 
-  const maryamScores: SubjectResult[] = [
-    { name: "Mathematics", ca: 36, exam: 52, total: 88, grade: "A1", classAvg: 70.4, comment: "Strong problem solving skills" },
-    { name: "English Studies", ca: 38, exam: 54, total: 92, grade: "A1", classAvg: 73.1, comment: "Exceptional reading comprehension" },
-    { name: "Basic Science & Technology", ca: 35, exam: 50, total: 85, grade: "A1", classAvg: 68.2, comment: "Curious and active during workshops" },
-    { name: "Social Studies & Civic", ca: 36, exam: 49, total: 85, grade: "A1", classAvg: 71.5, comment: "Very good community awareness" },
-    { name: "Business Studies", ca: 34, exam: 47, total: 81, grade: "B2", classAvg: 65.0, comment: "Good bookkeeping fundamentals" },
-    { name: "French Language", ca: 33, exam: 48, total: 81, grade: "B2", classAvg: 67.8, comment: "Improving conversational vocabulary" },
-  ];
+  const overallAverage = (
+    activeChild.subjects.reduce((sum, s) => sum + s.total, 0) / activeChild.subjects.length
+  ).toFixed(1);
 
-  const currentScores = selectedChild === "tobi" ? tobiScores : maryamScores;
-  const currentChildName = selectedChild === "tobi" ? "Tobi Adeleke (SSS 2A)" : "Maryam Adeleke (JSS 1C)";
-  const currentAvg = (currentScores.reduce((a, b) => a + b.total, 0) / currentScores.length).toFixed(1);
-  const currentRank = selectedChild === "tobi" ? "1st / 38" : "3rd / 42";
+  const handleRequestReview = (e: React.FormEvent) => {
+    e.preventDefault();
+    setIsReviewModalOpen(false);
+    setToast(
+      `Academic Grade Review Request logged for ${activeChild.preferredName} in ${reviewSubject} (#REV-${Math.floor(
+        1000 + Math.random() * 9000
+      )}). Academic Faculty will re-verify exam script marks.`
+    );
+    setReviewReason("");
+  };
 
   return (
     <DashboardLayout currentRole="parent">
@@ -60,118 +55,182 @@ export default function ParentResultsPage() {
           <div>
             <div className="flex items-center gap-2 text-xs font-semibold uppercase tracking-wider text-pink-600 mb-1">
               <Award className="w-4 h-4" />
-              Family Portal · Terminal Progress Reports
+              Academic Performance &amp; Evaluation · Section D
             </div>
             <h1 className="text-2xl sm:text-3xl font-extrabold text-foreground tracking-tight">
-              Children Academic Report Cards
+              Academic Progress &amp; Report Cards
             </h1>
             <p className="text-sm text-muted-foreground mt-0.5">
-              Approved term grades, GPA transcripts, and teacher formative appraisals.
+              Verified terminal evaluations, teacher recommendations, and official downloadable transcripts.
             </p>
           </div>
 
-          <div className="flex items-center gap-2.5">
-            <button
-              onClick={() => alert(`Downloading Official PDF Report Card for ${currentChildName}`)}
-              className="inline-flex items-center gap-2 px-4 py-2.5 rounded-xl bg-pink-600 hover:bg-pink-700 text-white font-medium text-xs sm:text-sm shadow-sm transition"
+          {/* Child Switcher & Term Select */}
+          <div className="flex flex-wrap items-center gap-2.5">
+            <div className="flex items-center gap-1.5 bg-card border border-border rounded-2xl p-1 shadow-xs">
+              {CHILDREN_PROFILES.map((c) => (
+                <button
+                  key={c.id}
+                  onClick={() => setSelectedChildId(c.id)}
+                  className={`px-3 py-1.5 rounded-xl text-xs font-bold transition ${
+                    selectedChildId === c.id
+                      ? "bg-pink-600 text-white shadow-xs"
+                      : "text-muted-foreground hover:text-foreground"
+                  }`}
+                >
+                  {c.preferredName}
+                </button>
+              ))}
+            </div>
+
+            <select
+              value={selectedTerm}
+              onChange={(e) => setSelectedTerm(e.target.value)}
+              className="px-3 py-2 rounded-xl bg-card border border-border text-xs font-semibold text-foreground"
             >
-              <Download className="w-4 h-4" />
-              Download Report Card (PDF)
+              <option value="Term 1, 2025/2026">Term 1, 2025/2026 (Published)</option>
+              <option value="Term 3, 2024/2025">Term 3, 2024/2025 (Archived)</option>
+              <option value="Term 2, 2024/2025">Term 2, 2024/2025 (Archived)</option>
+            </select>
+          </div>
+        </div>
+
+        {/* Toast */}
+        {toast && (
+          <div className="p-4 rounded-xl bg-emerald-50 dark:bg-emerald-950/40 border border-emerald-200 dark:border-emerald-800 text-emerald-800 dark:text-emerald-300 text-xs sm:text-sm flex items-center justify-between">
+            <span className="flex items-center gap-2">
+              <CheckCircle2 className="w-4 h-4 text-emerald-600 flex-shrink-0" />
+              {toast}
+            </span>
+            <button onClick={() => setToast(null)} className="text-emerald-600 hover:underline text-xs ml-4">
+              Dismiss
             </button>
           </div>
-        </div>
+        )}
 
-        {/* Child Selector Tabs */}
-        <div className="flex items-center gap-2 bg-card border border-border p-1.5 rounded-2xl shadow-xs">
-          <button
-            onClick={() => setSelectedChild("tobi")}
-            className={`flex-1 py-2.5 px-4 rounded-xl font-bold text-xs sm:text-sm transition flex items-center justify-center gap-2 ${
-              selectedChild === "tobi"
-                ? "bg-pink-600 text-white shadow-sm"
-                : "text-muted-foreground hover:text-foreground hover:bg-muted"
-            }`}
-          >
-            <span>Tobi Adeleke</span>
-            <span className={`text-[10px] px-2 py-0.5 rounded-md ${selectedChild === "tobi" ? "bg-white/20" : "bg-canvas border border-border"}`}>
-              SSS 2A
+        {/* Privacy Safeguard */}
+        <div className="p-4 rounded-2xl bg-amber-500/10 border border-amber-500/30 flex items-start gap-3">
+          <ShieldCheck className="w-5 h-5 text-amber-600 mt-0.5 flex-shrink-0" />
+          <div className="text-xs sm:text-sm">
+            <span className="font-bold text-foreground">Strict Peer Privacy Protection:</span>{" "}
+            <span className="text-muted-foreground">
+              Under school data governance policies, parents can strictly view the academic scores of their verified linked children. Peer student ranks and score sheets are protected.
             </span>
-          </button>
-
-          <button
-            onClick={() => setSelectedChild("maryam")}
-            className={`flex-1 py-2.5 px-4 rounded-xl font-bold text-xs sm:text-sm transition flex items-center justify-center gap-2 ${
-              selectedChild === "maryam"
-                ? "bg-pink-600 text-white shadow-sm"
-                : "text-muted-foreground hover:text-foreground hover:bg-muted"
-            }`}
-          >
-            <span>Maryam Adeleke</span>
-            <span className={`text-[10px] px-2 py-0.5 rounded-md ${selectedChild === "maryam" ? "bg-white/20" : "bg-canvas border border-border"}`}>
-              JSS 1C
-            </span>
-          </button>
-        </div>
-
-        {/* Overview Stats */}
-        <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
-          <div className="p-5 rounded-2xl bg-card border border-border shadow-xs">
-            <div className="text-xs font-medium text-muted-foreground">Terminal Average</div>
-            <div className="text-3xl font-black text-pink-600 mt-1">{currentAvg}%</div>
-            <div className="text-[11px] text-emerald-600 font-semibold mt-1">Excellent Standing</div>
-          </div>
-          <div className="p-5 rounded-2xl bg-card border border-border shadow-xs">
-            <div className="text-xs font-medium text-muted-foreground">Class Ranking</div>
-            <div className="text-3xl font-black text-amber-500 mt-1">{currentRank}</div>
-            <div className="text-[11px] text-muted-foreground mt-1">Cohort percentile: Top 5%</div>
-          </div>
-          <div className="p-5 rounded-2xl bg-card border border-border shadow-xs">
-            <div className="text-xs font-medium text-muted-foreground">Term Attendance</div>
-            <div className="text-3xl font-black text-foreground mt-1">{selectedChild === "tobi" ? "98.2%" : "97.5%"}</div>
-            <div className="text-[11px] text-emerald-600 font-semibold mt-1">55 of 56 sessions attended</div>
-          </div>
-          <div className="p-5 rounded-2xl bg-card border border-border shadow-xs">
-            <div className="text-xs font-medium text-muted-foreground">Verification Seal</div>
-            <div className="text-3xl font-black text-emerald-600 mt-1">VERIFIED</div>
-            <div className="text-[11px] text-muted-foreground mt-1">Dr. Evelyn Peters, Principal</div>
           </div>
         </div>
 
-        {/* Scores Table */}
+        {/* Performance Overview Banner */}
+        <div className="p-6 rounded-3xl bg-card border border-border shadow-xs space-y-4">
+          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+            <div>
+              <span className="text-xs font-bold uppercase tracking-wider text-pink-600">
+                Official Term Evaluation · {selectedTerm}
+              </span>
+              <h2 className="text-xl font-extrabold text-foreground mt-0.5">
+                {activeChild.name} — {activeChild.classGroup}
+              </h2>
+              <p className="text-xs text-muted-foreground">
+                Class Form Master: <strong>{activeChild.classTeacher.name}</strong> · Admission #{activeChild.admissionNo}
+              </p>
+            </div>
+
+            <div className="flex items-center gap-2">
+              <button
+                onClick={() => setIsReportCardModalOpen(true)}
+                className="inline-flex items-center gap-1.5 px-4 py-2.5 rounded-xl bg-pink-600 hover:bg-pink-700 text-white font-bold text-xs shadow-xs transition"
+              >
+                <Download className="w-4 h-4" />
+                Download Verified PDF Report
+              </button>
+              <button
+                onClick={() => setIsReviewModalOpen(true)}
+                className="inline-flex items-center gap-1.5 px-3.5 py-2.5 rounded-xl bg-canvas border border-border hover:bg-muted text-foreground font-semibold text-xs transition"
+              >
+                <HelpCircle className="w-4 h-4 text-muted-foreground" />
+                Request Score Review
+              </button>
+            </div>
+          </div>
+
+          <div className="grid grid-cols-1 sm:grid-cols-4 gap-4 pt-2">
+            <div className="p-4 rounded-xl bg-canvas border border-border">
+              <span className="text-xs text-muted-foreground block">Term Cumulative Average</span>
+              <span className="text-2xl font-black text-foreground">{overallAverage}%</span>
+              <span className="text-[11px] text-emerald-600 font-semibold block mt-1">Distinction Standing</span>
+            </div>
+
+            <div className="p-4 rounded-xl bg-canvas border border-border">
+              <span className="text-xs text-muted-foreground block">Grade Point Average</span>
+              <span className="text-2xl font-black text-pink-600">{activeChild.gpa}</span>
+              <span className="text-[11px] text-muted-foreground block mt-1">4.0 Academic Grading Scale</span>
+            </div>
+
+            <div className="p-4 rounded-xl bg-canvas border border-border">
+              <span className="text-xs text-muted-foreground block">Enrolled Subjects</span>
+              <span className="text-2xl font-black text-blue-600">{activeChild.subjects.length} Subjects</span>
+              <span className="text-[11px] text-muted-foreground block mt-1">100% Curriculum Completion</span>
+            </div>
+
+            <div className="p-4 rounded-xl bg-canvas border border-border">
+              <span className="text-xs text-muted-foreground block">Promotion Status</span>
+              <span className="text-2xl font-black text-emerald-600">Cleared</span>
+              <span className="text-[11px] text-emerald-600 font-semibold block mt-1">Eligible for Advance Placement</span>
+            </div>
+          </div>
+        </div>
+
+        {/* Subject Score Breakdown Table */}
         <div className="rounded-2xl bg-card border border-border overflow-hidden shadow-xs">
-          <div className="p-4 bg-canvas border-b border-border flex items-center justify-between">
-            <div className="font-bold text-foreground text-sm">{currentChildName} · {selectedTerm}</div>
-            <span className="inline-flex items-center gap-1 text-xs font-bold text-emerald-600">
-              <ShieldCheck className="w-3.5 h-3.5" /> Published by Examination Office
-            </span>
-          </div>
-
           <div className="overflow-x-auto">
             <table className="w-full text-left text-xs sm:text-sm">
               <thead className="bg-canvas border-b border-border text-muted-foreground uppercase text-[11px] font-semibold tracking-wider">
                 <tr>
-                  <th className="py-3 px-4">Subject</th>
-                  <th className="py-3 px-3 text-right">CA Total (40)</th>
-                  <th className="py-3 px-3 text-right">Exam Score (60)</th>
-                  <th className="py-3 px-3 text-right">Aggregate (100)</th>
-                  <th className="py-3 px-3 text-center">Grade</th>
-                  <th className="py-3 px-3 text-right">Class Avg</th>
-                  <th className="py-3 px-4">Subject Teacher Feedback</th>
+                  <th className="py-3 px-4">Subject Name &amp; Instructor</th>
+                  <th className="py-3 px-4 text-center">CA Marks (40)</th>
+                  <th className="py-3 px-4 text-center">Exam Marks (60)</th>
+                  <th className="py-3 px-4 text-center">Total (100)</th>
+                  <th className="py-3 px-4 text-center">Grade</th>
+                  <th className="py-3 px-4">Instructor Remark</th>
+                  <th className="py-3 px-4 text-right">Action</th>
                 </tr>
               </thead>
               <tbody className="divide-y divide-border">
-                {currentScores.map((sc) => (
-                  <tr key={sc.name} className="hover:bg-canvas/50 transition">
-                    <td className="py-3.5 px-4 font-semibold text-foreground">{sc.name}</td>
-                    <td className="py-3.5 px-3 text-right font-medium text-muted-foreground">{sc.ca}</td>
-                    <td className="py-3.5 px-3 text-right font-semibold text-foreground">{sc.exam}</td>
-                    <td className="py-3.5 px-3 text-right font-black text-pink-600">{sc.total}</td>
-                    <td className="py-3.5 px-3 text-center">
-                      <span className="inline-block px-2.5 py-0.5 rounded-md text-xs font-black bg-pink-50 dark:bg-pink-950/50 text-pink-700 dark:text-pink-300 border border-pink-200 dark:border-pink-800">
-                        {sc.grade}
+                {activeChild.subjects.map((sub, idx) => (
+                  <tr key={idx} className="hover:bg-canvas/50 transition">
+                    <td className="py-3.5 px-4">
+                      <div className="font-semibold text-foreground">{sub.name}</div>
+                      <div className="text-xs text-muted-foreground">{sub.teacher}</div>
+                    </td>
+                    <td className="py-3.5 px-4 text-center font-medium text-foreground">
+                      {sub.caScore}
+                    </td>
+                    <td className="py-3.5 px-4 text-center font-medium text-foreground">
+                      {sub.examScore}
+                    </td>
+                    <td className="py-3.5 px-4 text-center font-bold text-foreground text-sm">
+                      {sub.total}%
+                    </td>
+                    <td className="py-3.5 px-4 text-center">
+                      <span className="px-2.5 py-1 rounded-full text-xs font-black bg-emerald-50 dark:bg-emerald-950/50 text-emerald-600 border border-emerald-200 dark:border-emerald-800">
+                        {sub.grade}
                       </span>
                     </td>
-                    <td className="py-3.5 px-3 text-right text-xs text-muted-foreground">{sc.classAvg}%</td>
-                    <td className="py-3.5 px-4 text-xs text-muted-foreground">{sc.comment}</td>
+                    <td className="py-3.5 px-4 text-xs text-muted-foreground italic max-w-xs">
+                      {sub.total >= 90
+                        ? "Exemplary mastery of theoretical and practical concepts."
+                        : "Very good analytical rigor. Commendable effort throughout the term."}
+                    </td>
+                    <td className="py-3.5 px-4 text-right">
+                      <button
+                        onClick={() => {
+                          setReviewSubject(sub.name);
+                          setIsReviewModalOpen(true);
+                        }}
+                        className="px-2.5 py-1.5 rounded-lg border border-border hover:bg-muted text-xs font-medium text-foreground transition"
+                      >
+                        Inquire
+                      </button>
+                    </td>
                   </tr>
                 ))}
               </tbody>
@@ -179,28 +238,164 @@ export default function ParentResultsPage() {
           </div>
         </div>
 
-        {/* Official Faculty Remarks */}
-        <div className="p-6 rounded-2xl bg-card border border-border shadow-xs space-y-4">
-          <div className="flex items-center gap-2 text-xs uppercase font-bold text-pink-600 tracking-wider">
-            <Star className="w-4 h-4" /> Form Master & Principal Term Remarks
-          </div>
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4 text-xs sm:text-sm">
-            <div className="p-4 rounded-xl bg-canvas border border-border">
-              <span className="font-bold text-foreground block mb-1">Form Teacher's Commentary:</span>
-              <p className="text-muted-foreground italic leading-relaxed">
-                {selectedChild === "tobi"
-                  ? '"Tobi has consistently maintained outstanding discipline, focus and analytical brilliance in SSS 2A. A model student for his peers."'
-                  : '"Maryam shows remarkable creativity and linguistic poise. Her teamwork during collaborative projects is commendable."'}
-              </p>
+        {/* Modal: Request Result Review */}
+        {isReviewModalOpen && (
+          <div className="fixed inset-0 bg-black/60 backdrop-blur-xs flex items-center justify-center p-4 z-50 animate-in fade-in duration-150">
+            <div className="bg-card border border-border rounded-2xl max-w-md w-full p-6 shadow-2xl space-y-4">
+              <div className="flex items-center justify-between pb-3 border-b border-border">
+                <div className="flex items-center gap-2">
+                  <HelpCircle className="w-5 h-5 text-pink-600" />
+                  <h3 className="font-bold text-foreground text-base">Request Grade Re-Verification</h3>
+                </div>
+                <button
+                  onClick={() => setIsReviewModalOpen(false)}
+                  className="text-muted-foreground hover:text-foreground text-xs p-1"
+                >
+                  ✕
+                </button>
+              </div>
+
+              <form onSubmit={handleRequestReview} className="space-y-3.5 text-xs">
+                <div>
+                  <label className="font-semibold text-foreground block mb-1">Subject for Remarking</label>
+                  <select
+                    value={reviewSubject}
+                    onChange={(e) => setReviewSubject(e.target.value)}
+                    className="w-full p-2.5 rounded-xl bg-canvas border border-border text-foreground font-medium"
+                  >
+                    {activeChild.subjects.map((s, i) => (
+                      <option key={i} value={s.name}>
+                        {s.name} (Current Mark: {s.total}%)
+                      </option>
+                    ))}
+                  </select>
+                </div>
+
+                <div>
+                  <label className="font-semibold text-foreground block mb-1">Reason for Query</label>
+                  <textarea
+                    rows={3}
+                    placeholder="e.g. Student scored 39/40 on CA tests but exam score appears lower than mock results; request verification of script addition..."
+                    value={reviewReason}
+                    onChange={(e) => setReviewReason(e.target.value)}
+                    className="w-full p-2.5 rounded-xl bg-canvas border border-border text-foreground"
+                    required
+                  />
+                </div>
+
+                <div className="p-3 rounded-xl bg-canvas border border-border text-[11px] text-muted-foreground">
+                  The Head of Department will review the physical examination answer script against the official marking scheme and notify you within 3 working days.
+                </div>
+
+                <div className="flex items-center justify-end gap-2 pt-3 border-t border-border">
+                  <button
+                    type="button"
+                    onClick={() => setIsReviewModalOpen(false)}
+                    className="px-3 py-2 rounded-xl border border-border hover:bg-muted text-foreground"
+                  >
+                    Cancel
+                  </button>
+                  <button
+                    type="submit"
+                    className="px-4 py-2 rounded-xl bg-pink-600 hover:bg-pink-700 text-white font-bold"
+                  >
+                    Submit Review Request
+                  </button>
+                </div>
+              </form>
             </div>
-            <div className="p-4 rounded-xl bg-canvas border border-border">
-              <span className="font-bold text-foreground block mb-1">Principal's Executive Sign-off:</span>
-              <p className="text-muted-foreground italic leading-relaxed">
-                "Promoted with academic distinction standing. Keep up the disciplined standard."
-              </p>
+          </div>
+        )}
+
+        {/* Modal: Official PDF Report Card Preview */}
+        {isReportCardModalOpen && (
+          <div className="fixed inset-0 bg-black/60 backdrop-blur-xs flex items-center justify-center p-4 z-50 animate-in fade-in duration-150">
+            <div className="bg-card border border-border rounded-2xl max-w-2xl w-full p-6 shadow-2xl space-y-4 max-h-[90vh] overflow-y-auto">
+              <div className="flex items-center justify-between pb-3 border-b border-border">
+                <div>
+                  <span className="text-xs font-mono text-pink-600 font-bold">OFFICIAL TRANSCRIPT · QR-VERIFIED</span>
+                  <h3 className="font-bold text-foreground text-base">Terminal Academic Report Card</h3>
+                </div>
+                <button
+                  onClick={() => setIsReportCardModalOpen(false)}
+                  className="text-muted-foreground hover:text-foreground text-xs p-1"
+                >
+                  ✕
+                </button>
+              </div>
+
+              {/* Printable Report Card Sheet */}
+              <div className="p-6 rounded-xl bg-canvas border border-border space-y-4 text-xs">
+                <div className="text-center pb-3 border-b border-border">
+                  <h4 className="font-black text-sm uppercase text-foreground">Riverside International College</h4>
+                  <p className="text-muted-foreground text-[11px]">Academic Registrar &amp; Assessment Directorate</p>
+                  <p className="font-bold text-pink-600 mt-1">
+                    Continuous Assessment &amp; Terminal Report — {selectedTerm}
+                  </p>
+                </div>
+
+                <div className="grid grid-cols-2 gap-4 text-[11px]">
+                  <div>
+                    <span className="text-muted-foreground">Student Name:</span>{" "}
+                    <span className="font-bold text-foreground">{activeChild.name}</span>
+                  </div>
+                  <div className="text-right">
+                    <span className="text-muted-foreground">Admission No:</span>{" "}
+                    <span className="font-mono font-bold text-foreground">{activeChild.admissionNo}</span>
+                  </div>
+                  <div>
+                    <span className="text-muted-foreground">Class &amp; Stream:</span>{" "}
+                    <span className="font-semibold text-foreground">{activeChild.classGroup}</span>
+                  </div>
+                  <div className="text-right">
+                    <span className="text-muted-foreground">Term GPA:</span>{" "}
+                    <span className="font-black text-emerald-600">{activeChild.gpa}</span>
+                  </div>
+                </div>
+
+                <div className="p-3 rounded-xl bg-card border border-border">
+                  <div className="flex justify-between font-bold text-foreground">
+                    <span>Overall Terminal Average:</span>
+                    <span>{overallAverage}%</span>
+                  </div>
+                  <div className="text-[11px] text-muted-foreground mt-1">
+                    Form Master Remark: "An exceptionally dedicated scholar who has demonstrated outstanding academic leadership and exemplary discipline."
+                  </div>
+                  <div className="text-[11px] text-muted-foreground mt-1">
+                    Principal's Executive Endorsement: "Promoted with honors. Keep up the high standard."
+                  </div>
+                </div>
+
+                <div className="pt-2 text-[11px] text-muted-foreground flex justify-between">
+                  <span>Cryptographic Seal: SHA256-RVS-2026-OK</span>
+                  <span>Date Issued: Jan 25, 2026</span>
+                </div>
+              </div>
+
+              <div className="flex items-center justify-end gap-2 pt-3 border-t border-border">
+                <button
+                  onClick={() => {
+                    alert(`Printing official report card for ${activeChild.name}...`);
+                  }}
+                  className="px-3 py-2 rounded-xl text-xs font-semibold border border-border hover:bg-muted text-foreground flex items-center gap-1.5"
+                >
+                  <Printer className="w-3.5 h-3.5" />
+                  Print Official Document
+                </button>
+                <button
+                  onClick={() => {
+                    alert(`Downloading verified PDF report card for ${activeChild.name}...`);
+                    setIsReportCardModalOpen(false);
+                  }}
+                  className="px-4 py-2 rounded-xl text-xs font-bold bg-pink-600 hover:bg-pink-700 text-white flex items-center gap-1.5"
+                >
+                  <Download className="w-3.5 h-3.5" />
+                  Download Verified PDF
+                </button>
+              </div>
             </div>
           </div>
-        </div>
+        )}
       </div>
     </DashboardLayout>
   );

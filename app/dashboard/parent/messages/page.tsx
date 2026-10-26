@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import Link from "next/link";
 import { DashboardLayout } from "@/components/dashboard/dashboard-layout";
 import {
   MessageSquareText,
@@ -13,14 +14,21 @@ import {
   ShieldCheck,
   PhoneCall,
   Clock,
+  HeartHandshake,
+  Building2,
+  Calendar,
+  Lock,
+  CheckCircle2,
 } from "lucide-react";
+import { CHILDREN_PROFILES, FAMILY_DATA } from "@/lib/family-data";
 
-interface TeacherContact {
+interface ContactChannel {
   id: string;
   name: string;
-  role: string;
-  childSubject: string;
+  roleTitle: string;
+  department: string;
   avatar: string;
+  category: "Teacher" | "Bursar" | "Admin" | "Principal";
   lastMessage: string;
   time: string;
   unreadCount?: number;
@@ -28,78 +36,122 @@ interface TeacherContact {
 
 interface MessageBubble {
   id: string;
-  sender: "parent" | "teacher";
+  sender: "parent" | "staff";
   text: string;
   time: string;
 }
 
 export default function ParentMessagesPage() {
-  const [selectedTeacherId, setSelectedTeacherId] = useState("t-1");
+  const [selectedContactId, setSelectedContactId] = useState<string>("contact-1");
   const [inputText, setInputText] = useState("");
+  const [toast, setToast] = useState<string | null>(null);
+  const [searchQuery, setSearchQuery] = useState("");
 
-  const contacts: TeacherContact[] = [
+  const contacts: ContactChannel[] = [
     {
-      id: "t-1",
+      id: "contact-1",
       name: "Mr. David Alabi",
-      role: "Senior Form Master",
-      childSubject: "Tobi's Class Tutor · Further Maths",
+      roleTitle: "Form Master & Further Mathematics",
+      department: "Senior Secondary (Tobi's Tutor)",
       avatar: "DA",
-      lastMessage: "Tobi has done exceptionally well in the WAEC simulation mock.",
+      category: "Teacher",
+      lastMessage: "Tobi scored 94% on the calculus mock simulation. Keep up the high standard!",
       time: "10:30 AM",
       unreadCount: 1,
     },
     {
-      id: "t-2",
+      id: "contact-2",
       name: "Ms. Chioma Okon",
-      role: "Junior Form Teacher",
-      childSubject: "Maryam's Class Tutor · English Studies",
+      roleTitle: "Form Master & English Studies",
+      department: "Junior Secondary (Maryam's Tutor)",
       avatar: "CO",
-      lastMessage: "Good morning Mrs. Adeleke, Maryam submitted her reading journal.",
+      category: "Teacher",
+      lastMessage: "Maryam submitted her reading journal on African folktales. Very articulate reflection.",
       time: "Yesterday",
     },
     {
-      id: "t-3",
-      name: "Mrs. Angela Nnamdi",
-      role: "Bursar & Accounts",
-      childSubject: "Tuition & Receipts Desk",
-      avatar: "AN",
-      lastMessage: "Payment of $100,000 for Maryam verified on Paystack.",
+      id: "contact-3",
+      name: "J. Mensah (Bursary Division)",
+      roleTitle: "Bursar & Head of Financial Accounts",
+      department: "Bursary & Treasury",
+      avatar: "JM",
+      category: "Bursar",
+      lastMessage: "Your sibling 10% discount on Maryam's ledger has been forwarded for credit note approval.",
+      time: "Jan 24",
+    },
+    {
+      id: "contact-4",
+      name: "Engr. Patrick Bassey",
+      roleTitle: "Director of Registry & Operations",
+      department: "School Administration",
+      avatar: "PB",
+      category: "Admin",
+      lastMessage: "Address update verified against the uploaded utility slip in your family file.",
       time: "Jan 22",
+    },
+    {
+      id: "contact-5",
+      name: "Dr. Harrison Peters",
+      roleTitle: "School Principal & Executive Head",
+      department: "Executive Directorate",
+      avatar: "HP",
+      category: "Principal",
+      lastMessage: "Thank you for attending the PTA Executive Committee planning meeting, Mrs. Adeleke.",
+      time: "Jan 18",
     },
   ];
 
-  const [chatMessages, setChatMessages] = useState<Record<string, MessageBubble[]>>({
-    "t-1": [
-      { id: "m-1", sender: "teacher", text: "Good day Mrs. Adeleke! Trust you are having a wonderful week.", time: "10:15 AM" },
-      { id: "m-2", sender: "parent", text: "Good morning Mr. Alabi. How is Tobi settling in with the Olympiad clinic preparation?", time: "10:20 AM" },
-      { id: "m-3", sender: "teacher", text: "Tobi has done exceptionally well in the WAEC simulation mock. He scored 97% in Advanced Mathematics and is leading the science cohort.", time: "10:30 AM" },
+  const [chatThreads, setChatThreads] = useState<Record<string, MessageBubble[]>>({
+    "contact-1": [
+      { id: "m-1", sender: "parent", text: "Good morning Mr. Alabi, please how is Tobi coping with the advanced calculus curriculum?", time: "09:15 AM" },
+      { id: "m-2", sender: "staff", text: "Good morning Mrs. Adeleke! Tobi is performing exceptionally well. He scored 94% on the calculus mock simulation. Keep up the high standard!", time: "10:30 AM" },
     ],
-    "t-2": [
-      { id: "m-4", sender: "teacher", text: "Good morning Mrs. Adeleke, Maryam submitted her reading journal today and did a great job on her creative essay.", time: "Yesterday, 03:15 PM" },
-      { id: "m-5", sender: "parent", text: "Thank you Ms. Okon, she spent the weekend reading the literature novel.", time: "Yesterday, 04:00 PM" },
+    "contact-2": [
+      { id: "m-3", sender: "parent", text: "Hello Ms. Okon, just checking if Maryam submitted her reading journal on time yesterday.", time: "Yesterday, 02:10 PM" },
+      { id: "m-4", sender: "staff", text: "Maryam submitted her reading journal on African folktales. Very articulate reflection.", time: "Yesterday, 03:45 PM" },
     ],
-    "t-3": [
-      { id: "m-6", sender: "teacher", text: "Payment of $100,000 for Maryam verified on Paystack. Balance remaining is $65,000.", time: "Jan 22, 11:10 AM" },
+    "contact-3": [
+      { id: "m-5", sender: "staff", text: "Your sibling 10% discount on Maryam's ledger has been forwarded for credit note approval.", time: "Jan 24, 11:20 AM" },
+    ],
+    "contact-4": [
+      { id: "m-6", sender: "staff", text: "Address update verified against the uploaded utility slip in your family file.", time: "Jan 22, 04:00 PM" },
+    ],
+    "contact-5": [
+      { id: "m-7", sender: "staff", text: "Thank you for attending the PTA Executive Committee planning meeting, Mrs. Adeleke.", time: "Jan 18, 05:30 PM" },
     ],
   });
 
-  const activeContact = contacts.find((c) => c.id === selectedTeacherId) || contacts[0];
-  const activeMessages = chatMessages[activeContact.id] || [];
+  const activeContact = contacts.find((c) => c.id === selectedContactId) || contacts[0];
+  const currentMessages = chatThreads[selectedContactId] || [];
 
-  const handleSend = () => {
+  const handleSendMessage = (e: React.FormEvent) => {
+    e.preventDefault();
     if (!inputText.trim()) return;
-    const newMessage: MessageBubble = {
+
+    const newMsg: MessageBubble = {
       id: `m-${Date.now()}`,
       sender: "parent",
       text: inputText,
       time: "Just now",
     };
-    setChatMessages((prev) => ({
+
+    setChatThreads((prev) => ({
       ...prev,
-      [activeContact.id]: [...(prev[activeContact.id] || []), newMessage],
+      [selectedContactId]: [...(prev[selectedContactId] || []), newMsg],
     }));
+
     setInputText("");
+
+    setTimeout(() => {
+      setToast(`Message delivered to ${activeContact.name}. Staff will reply via portal messages.`);
+    }, 400);
   };
+
+  const filteredContacts = contacts.filter((c) =>
+    c.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
+    c.roleTitle.toLowerCase().includes(searchQuery.toLowerCase()) ||
+    c.department.toLowerCase().includes(searchQuery.toLowerCase())
+  );
 
   return (
     <DashboardLayout currentRole="parent">
@@ -109,143 +161,170 @@ export default function ParentMessagesPage() {
           <div>
             <div className="flex items-center gap-2 text-xs font-semibold uppercase tracking-wider text-pink-600 mb-1">
               <MessageSquareText className="w-4 h-4" />
-              Family Portal · Direct Educator Communication
+              Direct Communication Desk · Section G
             </div>
             <h1 className="text-2xl sm:text-3xl font-extrabold text-foreground tracking-tight">
-              Teacher & Form Master Messages
+              Teacher &amp; Administration Messaging
             </h1>
             <p className="text-sm text-muted-foreground mt-0.5">
-              Direct line to your children's form tutors and school academic administration.
+              Secure messaging with Form Tutors, Subject Teachers, the School Admin, Bursar, and Principal.
             </p>
+          </div>
+
+          <div className="flex items-center gap-2 text-xs text-muted-foreground bg-card border border-border px-3.5 py-2 rounded-xl shadow-xs">
+            <Lock className="w-4 h-4 text-emerald-600 flex-shrink-0" />
+            <span>End-to-End Audited &amp; Confidential Channel</span>
           </div>
         </div>
 
-        {/* Messaging Layout (Split Screen) */}
-        <div className="rounded-2xl bg-card border border-border shadow-xs overflow-hidden grid grid-cols-1 md:grid-cols-3 min-h-[580px]">
-          {/* Contacts Sidebar */}
-          <div className="border-r border-border bg-canvas/40 flex flex-col">
-            <div className="p-3.5 border-b border-border">
+        {/* Toast */}
+        {toast && (
+          <div className="p-4 rounded-xl bg-emerald-50 dark:bg-emerald-950/40 border border-emerald-200 dark:border-emerald-800 text-emerald-800 dark:text-emerald-300 text-xs sm:text-sm flex items-center justify-between">
+            <span className="flex items-center gap-2">
+              <CheckCircle2 className="w-4 h-4 text-emerald-600 flex-shrink-0" />
+              {toast}
+            </span>
+            <button onClick={() => setToast(null)} className="text-emerald-600 hover:underline text-xs ml-4">
+              Dismiss
+            </button>
+          </div>
+        )}
+
+        {/* Governance Notice */}
+        <div className="p-4 rounded-2xl bg-amber-500/10 border border-amber-500/30 flex items-start gap-3">
+          <ShieldCheck className="w-5 h-5 text-amber-600 mt-0.5 flex-shrink-0" />
+          <div className="text-xs sm:text-sm">
+            <span className="font-bold text-foreground">Communication Safeguards:</span>{" "}
+            <span className="text-muted-foreground">
+              Direct messaging connects you with authorized staff members managing your linked children. To maintain student safeguarding and data privacy, parents cannot message arbitrary students or view internal faculty deliberations.
+            </span>
+          </div>
+        </div>
+
+        {/* Messaging Layout (Sidebar Contacts + Chat Window) */}
+        <div className="grid grid-cols-1 lg:grid-cols-12 rounded-3xl bg-card border border-border overflow-hidden shadow-xs min-h-[580px]">
+          {/* Contacts Sidebar (4 cols) */}
+          <div className="lg:col-span-4 border-r border-border flex flex-col bg-canvas/40">
+            <div className="p-4 border-b border-border">
               <div className="relative">
-                <Search className="w-4 h-4 text-muted-foreground absolute left-3 top-1/2 -translate-y-1/2" />
+                <Search className="w-4 h-4 absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground" />
                 <input
                   type="text"
-                  placeholder="Search teachers & tutors..."
-                  className="w-full pl-9 pr-3 py-1.5 text-xs rounded-xl bg-card border border-border focus:outline-none"
+                  placeholder="Search teachers or departments..."
+                  value={searchQuery}
+                  onChange={(e) => setSearchQuery(e.target.value)}
+                  className="w-full pl-9 pr-3 py-2 text-xs rounded-xl bg-card border border-border text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-pink-500/30"
                 />
               </div>
             </div>
 
-            <div className="flex-1 divide-y divide-border overflow-y-auto">
-              {contacts.map((contact) => (
-                <div
-                  key={contact.id}
-                  onClick={() => setSelectedTeacherId(contact.id)}
-                  className={`p-3.5 cursor-pointer transition flex items-start gap-3 ${
-                    selectedTeacherId === contact.id
-                      ? "bg-pink-500/10 border-l-4 border-l-pink-600"
-                      : "hover:bg-muted/40"
-                  }`}
-                >
-                  <div className="w-10 h-10 rounded-xl bg-gradient-to-tr from-pink-600 to-rose-600 text-white font-bold text-xs flex items-center justify-center flex-shrink-0 shadow-xs">
-                    {contact.avatar}
-                  </div>
-                  <div className="flex-1 min-w-0">
-                    <div className="flex items-center justify-between">
-                      <h4 className="font-bold text-foreground text-xs truncate">{contact.name}</h4>
-                      <span className="text-[10px] text-muted-foreground">{contact.time}</span>
+            <div className="divide-y divide-border overflow-y-auto flex-1">
+              {filteredContacts.map((c) => {
+                const isSelected = c.id === selectedContactId;
+                return (
+                  <button
+                    key={c.id}
+                    onClick={() => setSelectedContactId(c.id)}
+                    className={`w-full p-4 text-left transition flex items-start gap-3 ${
+                      isSelected ? "bg-card shadow-xs border-l-4 border-pink-600" : "hover:bg-canvas"
+                    }`}
+                  >
+                    <div className="size-10 rounded-xl bg-pink-600/10 text-pink-600 font-bold flex items-center justify-center flex-shrink-0 text-xs">
+                      {c.avatar}
                     </div>
-                    <div className="text-[11px] font-medium text-pink-600 truncate">{contact.role}</div>
-                    <p className="text-[11px] text-muted-foreground truncate mt-0.5">{contact.lastMessage}</p>
-                  </div>
-                </div>
-              ))}
+                    <div className="flex-1 min-w-0">
+                      <div className="flex items-center justify-between mb-0.5">
+                        <span className="font-bold text-foreground text-xs truncate">{c.name}</span>
+                        <span className="text-[10px] text-muted-foreground">{c.time}</span>
+                      </div>
+                      <span className="text-[11px] text-muted-foreground block truncate">{c.roleTitle}</span>
+                      <p className="text-[11px] text-muted-foreground/80 truncate mt-1">{c.lastMessage}</p>
+                    </div>
+                  </button>
+                );
+              })}
             </div>
           </div>
 
-          {/* Active Conversation Window */}
-          <div className="md:col-span-2 flex flex-col justify-between bg-card">
-            {/* Conversation Header */}
+          {/* Active Chat Conversation Area (8 cols) */}
+          <div className="lg:col-span-8 flex flex-col justify-between bg-card">
+            {/* Chat Header */}
             <div className="p-4 border-b border-border flex items-center justify-between bg-canvas/30">
               <div className="flex items-center gap-3">
-                <div className="w-10 h-10 rounded-xl bg-gradient-to-tr from-pink-600 to-rose-600 text-white font-bold text-xs flex items-center justify-center">
+                <div className="size-10 rounded-xl bg-pink-600/10 text-pink-600 font-bold flex items-center justify-center text-xs">
                   {activeContact.avatar}
                 </div>
                 <div>
-                  <h3 className="font-bold text-foreground text-sm flex items-center gap-1.5">
-                    {activeContact.name}
-                    <span className="inline-block w-2 h-2 rounded-full bg-emerald-500" />
-                  </h3>
-                  <p className="text-xs text-muted-foreground">{activeContact.childSubject}</p>
+                  <h3 className="font-bold text-foreground text-sm">{activeContact.name}</h3>
+                  <span className="text-xs text-muted-foreground">{activeContact.department}</span>
                 </div>
               </div>
 
               <div className="flex items-center gap-2">
-                <button
-                  onClick={() => alert(`Initiating direct voice call to ${activeContact.name}...`)}
-                  className="p-2 rounded-lg border border-border hover:bg-muted text-muted-foreground hover:text-foreground transition"
+                <Link
+                  href="/dashboard/parent/ptm"
+                  className="px-3 py-1.5 rounded-xl bg-canvas border border-border hover:bg-muted text-foreground text-xs font-semibold flex items-center gap-1.5 transition"
                 >
-                  <PhoneCall className="w-4 h-4 text-pink-600" />
-                </button>
+                  <HeartHandshake className="w-3.5 h-3.5 text-pink-600" />
+                  Schedule PTM Consultation
+                </Link>
               </div>
             </div>
 
-            {/* Messages Thread */}
-            <div className="flex-1 p-4 space-y-3 overflow-y-auto max-h-[420px]">
-              {activeMessages.map((msg) => (
+            {/* Conversation Messages Feed */}
+            <div className="p-6 space-y-4 overflow-y-auto flex-1 max-h-[420px]">
+              {currentMessages.map((msg) => (
                 <div
                   key={msg.id}
-                  className={`flex flex-col ${msg.sender === "parent" ? "items-end" : "items-start"}`}
+                  className={`flex ${msg.sender === "parent" ? "justify-end" : "justify-start"}`}
                 >
                   <div
-                    className={`max-w-md p-3.5 rounded-2xl text-xs sm:text-sm leading-relaxed shadow-xs ${
+                    className={`max-w-md p-3.5 rounded-2xl text-xs space-y-1 shadow-2xs ${
                       msg.sender === "parent"
                         ? "bg-pink-600 text-white rounded-br-xs"
                         : "bg-canvas border border-border text-foreground rounded-bl-xs"
                     }`}
                   >
-                    {msg.text}
+                    <p className="leading-relaxed">{msg.text}</p>
+                    <div
+                      className={`text-[10px] flex items-center justify-end gap-1 ${
+                        msg.sender === "parent" ? "text-pink-100" : "text-muted-foreground"
+                      }`}
+                    >
+                      <span>{msg.time}</span>
+                      {msg.sender === "parent" && <CheckCheck className="w-3 h-3 text-pink-200" />}
+                    </div>
                   </div>
-                  <span className="text-[10px] text-muted-foreground mt-1 px-1 flex items-center gap-1">
-                    {msg.time}
-                    {msg.sender === "parent" && <CheckCheck className="w-3 h-3 text-pink-600" />}
-                  </span>
                 </div>
               ))}
             </div>
 
-            {/* Quick Prompt Chips */}
-            <div className="px-4 py-2 border-t border-border flex items-center gap-2 overflow-x-auto text-[11px]">
+            {/* Message Input Bar */}
+            <form onSubmit={handleSendMessage} className="p-4 border-t border-border bg-canvas/30 flex items-center gap-2">
               <button
-                onClick={() => setInputText("Thank you for the update! We appreciate your guidance.")}
-                className="px-2.5 py-1 rounded-full bg-canvas border border-border hover:bg-muted text-muted-foreground whitespace-nowrap"
+                type="button"
+                onClick={() => alert("Simulating document attachment...")}
+                className="p-2.5 rounded-xl border border-border hover:bg-muted text-muted-foreground hover:text-foreground transition"
               >
-                Thank you for the update
+                <Paperclip className="w-4 h-4" />
               </button>
-              <button
-                onClick={() => setInputText("Could we schedule a 10-minute consultation during PTA hour?")}
-                className="px-2.5 py-1 rounded-full bg-canvas border border-border hover:bg-muted text-muted-foreground whitespace-nowrap"
-              >
-                Schedule consultation
-              </button>
-            </div>
 
-            {/* Message Input Box */}
-            <div className="p-3 border-t border-border flex items-center gap-2 bg-canvas/30">
               <input
                 type="text"
+                placeholder={`Type message to ${activeContact.name}...`}
                 value={inputText}
                 onChange={(e) => setInputText(e.target.value)}
-                onKeyDown={(e) => e.key === "Enter" && handleSend()}
-                placeholder="Type your message to Form Master..."
-                className="flex-1 px-4 py-2.5 text-xs sm:text-sm rounded-xl bg-card border border-border focus:outline-none focus:ring-2 focus:ring-pink-500/30 text-foreground"
+                className="flex-1 px-4 py-2.5 rounded-xl bg-card border border-border text-xs text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-pink-500/30"
               />
+
               <button
-                onClick={handleSend}
-                className="p-2.5 rounded-xl bg-pink-600 hover:bg-pink-700 text-white shadow-sm transition"
+                type="submit"
+                className="px-4 py-2.5 rounded-xl bg-pink-600 hover:bg-pink-700 text-white font-bold text-xs flex items-center gap-1.5 transition shadow-xs"
               >
-                <Send className="w-4 h-4" />
+                <Send className="w-3.5 h-3.5" />
+                <span>Send</span>
               </button>
-            </div>
+            </form>
           </div>
         </div>
       </div>
