@@ -1534,6 +1534,1303 @@ export interface RawTables {
           metadata?: Record<string, unknown>;
         };
       };
+
+      lesson_plans: {
+        Row: {
+          id: string;
+          school_id: string;
+          staff_id: string;
+          subject_id: string;
+          class_group_id: string;
+          term_id: string | null;
+          week_number: number;
+          topic: string;
+          objectives: string[];
+          teaching_aids: string[] | null;
+          lab_safety_notes: string | null;
+          content_summary: string | null;
+          status: 'draft' | 'submitted' | 'approved' | 'revision_requested';
+          feedback: string | null;
+          reviewed_by: string | null;
+          reviewed_at: string | null;
+          created_at: string;
+          updated_at: string;
+        };
+        Insert: {
+          id?: string;
+          school_id: string;
+          staff_id: string;
+          subject_id: string;
+          class_group_id: string;
+          term_id?: string | null;
+          week_number: number;
+          topic: string;
+          objectives?: string[];
+          teaching_aids?: string[] | null;
+          lab_safety_notes?: string | null;
+          content_summary?: string | null;
+          status?: 'draft' | 'submitted' | 'approved' | 'revision_requested';
+          feedback?: string | null;
+          reviewed_by?: string | null;
+          reviewed_at?: string | null;
+          created_at?: string;
+          updated_at?: string;
+        };
+        Update: {
+          week_number?: number;
+          topic?: string;
+          objectives?: string[];
+          teaching_aids?: string[] | null;
+          lab_safety_notes?: string | null;
+          content_summary?: string | null;
+          status?: 'draft' | 'submitted' | 'approved' | 'revision_requested';
+          feedback?: string | null;
+          reviewed_by?: string | null;
+          reviewed_at?: string | null;
+          updated_at?: string;
+        };
+      };
+
+      classroom_observations: {
+        Row: {
+          id: string;
+          school_id: string;
+          teacher_id: string;
+          observer_id: string;
+          class_group_id: string | null;
+          subject_id: string | null;
+          observation_date: string;
+          rating: number;
+          pedagogy_notes: string | null;
+          strengths: string | null;
+          recommendations: string | null;
+          created_at: string;
+          updated_at: string;
+        };
+        Insert: {
+          id?: string;
+          school_id: string;
+          teacher_id: string;
+          observer_id: string;
+          class_group_id?: string | null;
+          subject_id?: string | null;
+          observation_date: string;
+          rating: number;
+          pedagogy_notes?: string | null;
+          strengths?: string | null;
+          recommendations?: string | null;
+          created_at?: string;
+          updated_at?: string;
+        };
+        Update: {
+          rating?: number;
+          pedagogy_notes?: string | null;
+          strengths?: string | null;
+          recommendations?: string | null;
+          updated_at?: string;
+        };
+      };
+
+      academic_intervention_plans: {
+        Row: {
+          id: string;
+          school_id: string;
+          student_id: string;
+          mentor_staff_id: string | null;
+          subject_id: string | null;
+          diagnosed_gap: string;
+          action_plan: string;
+          weekly_target: string;
+          target_gpa: number | null;
+          status: 'active' | 'review_required' | 'completed';
+          created_at: string;
+          updated_at: string;
+        };
+        Insert: {
+          id?: string;
+          school_id: string;
+          student_id: string;
+          mentor_staff_id?: string | null;
+          subject_id?: string | null;
+          diagnosed_gap: string;
+          action_plan: string;
+          weekly_target: string;
+          target_gpa?: number | null;
+          status?: 'active' | 'review_required' | 'completed';
+          created_at?: string;
+          updated_at?: string;
+        };
+        Update: {
+          diagnosed_gap?: string;
+          action_plan?: string;
+          weekly_target?: string;
+          target_gpa?: number | null;
+          status?: 'active' | 'review_required' | 'completed';
+          updated_at?: string;
+        };
+      };
+
+      grade_amendment_audits: {
+        Row: {
+          id: string;
+          school_id: string;
+          assessment_score_id: string | null;
+          student_id: string;
+          subject_id: string;
+          teacher_id: string;
+          original_score: number;
+          amended_score: number;
+          justification: string;
+          approved_by: string | null;
+          status: 'pending' | 'approved' | 'rejected';
+          created_at: string;
+          updated_at: string;
+        };
+        Insert: {
+          id?: string;
+          school_id: string;
+          assessment_score_id?: string | null;
+          student_id: string;
+          subject_id: string;
+          teacher_id: string;
+          original_score: number;
+          amended_score: number;
+          justification: string;
+          approved_by?: string | null;
+          status?: 'pending' | 'approved' | 'rejected';
+          created_at?: string;
+          updated_at?: string;
+        };
+        Update: {
+          amended_score?: number;
+          justification?: string;
+          approved_by?: string | null;
+          status?: 'pending' | 'approved' | 'rejected';
+          updated_at?: string;
+        };
+      };
+
+      staff_confirmation_requests: {
+        Row: {
+          id: string;
+          school_id: string;
+          staff_profile_id: string;
+          role_key: string;
+          form_class_id: string | null;
+          qualifications: string | null;
+          onboarded_by: string | null;
+          confirmed_by: string | null;
+          confirmed_at: string | null;
+          status: 'pending' | 'confirmed' | 'rejected';
+          rejection_reason: string | null;
+          created_at: string;
+          updated_at: string;
+        };
+        Insert: {
+          id?: string;
+          school_id: string;
+          staff_profile_id: string;
+          role_key: string;
+          form_class_id?: string | null;
+          qualifications?: string | null;
+          onboarded_by?: string | null;
+          confirmed_by?: string | null;
+          confirmed_at?: string | null;
+          status?: 'pending' | 'confirmed' | 'rejected';
+          rejection_reason?: string | null;
+          created_at?: string;
+          updated_at?: string;
+        };
+        Update: {
+          status?: 'pending' | 'confirmed' | 'rejected';
+          confirmed_by?: string | null;
+          confirmed_at?: string | null;
+          rejection_reason?: string | null;
+          updated_at?: string;
+        };
+      };
+
+      staff_leaves: {
+        Row: {
+          id: string;
+          school_id: string;
+          staff_id: string;
+          substitute_staff_id: string | null;
+          start_date: string;
+          end_date: string;
+          reason: string;
+          periods_covered: string | null;
+          status: 'pending' | 'approved' | 'rejected';
+          approved_by: string | null;
+          created_at: string;
+          updated_at: string;
+        };
+        Insert: {
+          id?: string;
+          school_id: string;
+          staff_id: string;
+          substitute_staff_id?: string | null;
+          start_date: string;
+          end_date: string;
+          reason: string;
+          periods_covered?: string | null;
+          status?: 'pending' | 'approved' | 'rejected';
+          approved_by?: string | null;
+          created_at?: string;
+          updated_at?: string;
+        };
+        Update: {
+          status?: 'pending' | 'approved' | 'rejected';
+          approved_by?: string | null;
+          substitute_staff_id?: string | null;
+          updated_at?: string;
+        };
+      };
+
+      disciplinary_incidents: {
+        Row: {
+          id: string;
+          school_id: string;
+          student_id: string;
+          reported_by: string | null;
+          category: 'routine' | 'escalated' | 'safeguarding';
+          infraction: string;
+          location: string | null;
+          incident_date: string;
+          recommended_action: string | null;
+          principal_decision: string | null;
+          parent_notified: boolean;
+          status: 'pending_review' | 'resolved' | 'conference_booked';
+          created_at: string;
+          updated_at: string;
+        };
+        Insert: {
+          id?: string;
+          school_id: string;
+          student_id: string;
+          reported_by?: string | null;
+          category?: 'routine' | 'escalated' | 'safeguarding';
+          infraction: string;
+          location?: string | null;
+          incident_date?: string;
+          recommended_action?: string | null;
+          principal_decision?: string | null;
+          parent_notified?: boolean;
+          status?: 'pending_review' | 'resolved' | 'conference_booked';
+          created_at?: string;
+          updated_at?: string;
+        };
+        Update: {
+          principal_decision?: string | null;
+          parent_notified?: boolean;
+          status?: 'pending_review' | 'resolved' | 'conference_booked';
+          updated_at?: string;
+        };
+      };
+
+      parent_conferences: {
+        Row: {
+          id: string;
+          school_id: string;
+          student_id: string;
+          guardian_id: string | null;
+          staff_id: string | null;
+          scheduled_time: string;
+          venue: string;
+          agenda: string;
+          meeting_notes: string | null;
+          status: 'scheduled' | 'completed' | 'cancelled';
+          created_at: string;
+          updated_at: string;
+        };
+        Insert: {
+          id?: string;
+          school_id: string;
+          student_id: string;
+          guardian_id?: string | null;
+          staff_id?: string | null;
+          scheduled_time: string;
+          venue: string;
+          agenda: string;
+          meeting_notes?: string | null;
+          status?: 'scheduled' | 'completed' | 'cancelled';
+          created_at?: string;
+          updated_at?: string;
+        };
+        Update: {
+          scheduled_time?: string;
+          venue?: string;
+          meeting_notes?: string | null;
+          status?: 'scheduled' | 'completed' | 'cancelled';
+          updated_at?: string;
+        };
+      };
+
+      safeguarding_records: {
+        Row: {
+          id: string;
+          school_id: string;
+          student_id: string;
+          dsl_staff_id: string | null;
+          case_code: string;
+          incident_summary: string;
+          action_taken: string;
+          external_referrals: string | null;
+          is_restricted: boolean;
+          created_at: string;
+          updated_at: string;
+        };
+        Insert: {
+          id?: string;
+          school_id: string;
+          student_id: string;
+          dsl_staff_id?: string | null;
+          case_code: string;
+          incident_summary: string;
+          action_taken: string;
+          external_referrals?: string | null;
+          is_restricted?: boolean;
+          created_at?: string;
+          updated_at?: string;
+        };
+        Update: {
+          action_taken?: string;
+          external_referrals?: string | null;
+          is_restricted?: boolean;
+          updated_at?: string;
+        };
+      };
+
+      school_events: {
+        Row: {
+          id: string;
+          school_id: string;
+          title: string;
+          category: 'academic' | 'examination' | 'meeting' | 'co-curricular';
+          start_time: string;
+          end_time: string;
+          venue: string;
+          lead_coordinator_id: string | null;
+          description: string | null;
+          published_to_parents: boolean;
+          published_to_students: boolean;
+          status: 'pending' | 'approved';
+          created_at: string;
+          updated_at: string;
+        };
+        Insert: {
+          id?: string;
+          school_id: string;
+          title: string;
+          category?: 'academic' | 'examination' | 'meeting' | 'co-curricular';
+          start_time: string;
+          end_time: string;
+          venue: string;
+          lead_coordinator_id?: string | null;
+          description?: string | null;
+          published_to_parents?: boolean;
+          published_to_students?: boolean;
+          status?: 'pending' | 'approved';
+          created_at?: string;
+          updated_at?: string;
+        };
+        Update: {
+          title?: string;
+          start_time?: string;
+          end_time?: string;
+          venue?: string;
+          published_to_parents?: boolean;
+          published_to_students?: boolean;
+          status?: 'pending' | 'approved';
+          updated_at?: string;
+        };
+      };
+
+      timetable_change_requests: {
+        Row: {
+          id: string;
+          school_id: string;
+          requester_id: string;
+          change_type: 'room_swap' | 'period_adjustment' | 'emergency_cover';
+          details: string;
+          affected_classes: string;
+          status: 'pending' | 'approved' | 'rejected';
+          approved_by: string | null;
+          created_at: string;
+          updated_at: string;
+        };
+        Insert: {
+          id?: string;
+          school_id: string;
+          requester_id: string;
+          change_type: 'room_swap' | 'period_adjustment' | 'emergency_cover';
+          details: string;
+          affected_classes: string;
+          status?: 'pending' | 'approved' | 'rejected';
+          approved_by?: string | null;
+          created_at?: string;
+          updated_at?: string;
+        };
+        Update: {
+          status?: 'pending' | 'approved' | 'rejected';
+          approved_by?: string | null;
+          updated_at?: string;
+        };
+      };
+
+      attendance_corrections: {
+        Row: {
+          id: string;
+          school_id: string;
+          student_id: string;
+          attendance_record_id: string | null;
+          original_status: AttendanceValue;
+          requested_status: AttendanceValue;
+          reason: string;
+          submitted_by: string;
+          approved_by: string | null;
+          status: 'pending' | 'approved' | 'rejected';
+          created_at: string;
+          updated_at: string;
+        };
+        Insert: {
+          id?: string;
+          school_id: string;
+          student_id: string;
+          attendance_record_id?: string | null;
+          original_status: AttendanceValue;
+          requested_status: AttendanceValue;
+          reason: string;
+          submitted_by: string;
+          approved_by?: string | null;
+          status?: 'pending' | 'approved' | 'rejected';
+          created_at?: string;
+          updated_at?: string;
+        };
+        Update: {
+          status?: 'pending' | 'approved' | 'rejected';
+          approved_by?: string | null;
+          updated_at?: string;
+        };
+      };
+
+      expenditure_requisitions: {
+        Row: {
+          id: string;
+          school_id: string;
+          department: string;
+          title: string;
+          amount_cents: number;
+          currency: string;
+          submitted_by: string;
+          purpose: string;
+          within_limit: boolean;
+          status: 'pending' | 'approved' | 'escalated_owner' | 'rejected';
+          approved_by: string | null;
+          created_at: string;
+          updated_at: string;
+        };
+        Insert: {
+          id?: string;
+          school_id: string;
+          department: string;
+          title: string;
+          amount_cents: number;
+          currency?: string;
+          submitted_by: string;
+          purpose: string;
+          within_limit?: boolean;
+          status?: 'pending' | 'approved' | 'escalated_owner' | 'rejected';
+          approved_by?: string | null;
+          created_at?: string;
+          updated_at?: string;
+        };
+        Update: {
+          status?: 'pending' | 'approved' | 'escalated_owner' | 'rejected';
+          approved_by?: string | null;
+          updated_at?: string;
+        };
+      };
+
+      scholarships_and_waivers: {
+        Row: {
+          id: string;
+          school_id: string;
+          student_id: string;
+          invoice_id: string | null;
+          waiver_type: 'academic_merit' | 'staff_child' | 'hardship' | 'sibling';
+          discount_percentage: number;
+          amount_cents: number;
+          currency: string;
+          justification: string;
+          status: 'pending' | 'approved' | 'rejected';
+          approved_by: string | null;
+          created_at: string;
+          updated_at: string;
+        };
+        Insert: {
+          id?: string;
+          school_id: string;
+          student_id: string;
+          invoice_id?: string | null;
+          waiver_type: 'academic_merit' | 'staff_child' | 'hardship' | 'sibling';
+          discount_percentage: number;
+          amount_cents: number;
+          currency?: string;
+          justification: string;
+          status?: 'pending' | 'approved' | 'rejected';
+          approved_by?: string | null;
+          created_at?: string;
+          updated_at?: string;
+        };
+        Update: {
+          status?: 'pending' | 'approved' | 'rejected';
+          approved_by?: string | null;
+          updated_at?: string;
+        };
+      };
+
+      school_bank_accounts: {
+        Row: {
+          id: string;
+          school_id: string;
+          bank_name: string;
+          account_number: string;
+          account_name: string;
+          sort_code: string | null;
+          currency: string;
+          is_active: boolean;
+          is_primary: boolean;
+          created_at: string;
+          updated_at: string;
+        };
+        Insert: {
+          id?: string;
+          school_id: string;
+          bank_name: string;
+          account_number: string;
+          account_name: string;
+          sort_code?: string | null;
+          currency?: string;
+          is_active?: boolean;
+          is_primary?: boolean;
+          created_at?: string;
+          updated_at?: string;
+        };
+        Update: {
+          bank_name?: string;
+          account_number?: string;
+          account_name?: string;
+          is_active?: boolean;
+          is_primary?: boolean;
+          updated_at?: string;
+        };
+      };
+
+      bank_statement_transactions: {
+        Row: {
+          id: string;
+          school_id: string;
+          bank_account_id: string;
+          transaction_date: string;
+          reference: string;
+          description: string;
+          amount_cents: number;
+          currency: string;
+          payment_id: string | null;
+          is_reconciled: boolean;
+          created_at: string;
+          updated_at: string;
+        };
+        Insert: {
+          id?: string;
+          school_id: string;
+          bank_account_id: string;
+          transaction_date: string;
+          reference: string;
+          description: string;
+          amount_cents: number;
+          currency?: string;
+          payment_id?: string | null;
+          is_reconciled?: boolean;
+          created_at?: string;
+          updated_at?: string;
+        };
+        Update: {
+          payment_id?: string | null;
+          is_reconciled?: boolean;
+          updated_at?: string;
+        };
+      };
+
+      petty_cash_disbursements: {
+        Row: {
+          id: string;
+          school_id: string;
+          voucher_number: string;
+          amount_cents: number;
+          currency: string;
+          disbursed_to: string;
+          purpose: string;
+          custodian_id: string | null;
+          approved_by: string | null;
+          disbursed_at: string;
+          created_at: string;
+        };
+        Insert: {
+          id?: string;
+          school_id: string;
+          voucher_number: string;
+          amount_cents: number;
+          currency?: string;
+          disbursed_to: string;
+          purpose: string;
+          custodian_id?: string | null;
+          approved_by?: string | null;
+          disbursed_at?: string;
+          created_at?: string;
+        };
+        Update: {
+          amount_cents?: number;
+          purpose?: string;
+          approved_by?: string | null;
+        };
+      };
+
+      homework_assignments: {
+        Row: {
+          id: string;
+          school_id: string;
+          subject_id: string;
+          class_group_id: string;
+          teacher_id: string;
+          title: string;
+          instructions: string;
+          due_date: string;
+          total_points: number;
+          attachment_url: string | null;
+          created_at: string;
+          updated_at: string;
+        };
+        Insert: {
+          id?: string;
+          school_id: string;
+          subject_id: string;
+          class_group_id: string;
+          teacher_id: string;
+          title: string;
+          instructions: string;
+          due_date: string;
+          total_points?: number;
+          attachment_url?: string | null;
+          created_at?: string;
+          updated_at?: string;
+        };
+        Update: {
+          title?: string;
+          instructions?: string;
+          due_date?: string;
+          total_points?: number;
+          attachment_url?: string | null;
+          updated_at?: string;
+        };
+      };
+
+      homework_submissions: {
+        Row: {
+          id: string;
+          homework_id: string;
+          student_id: string;
+          submission_text: string | null;
+          attachment_url: string | null;
+          submitted_at: string;
+          grade_score: number | null;
+          teacher_feedback: string | null;
+          graded_at: string | null;
+          graded_by: string | null;
+        };
+        Insert: {
+          id?: string;
+          homework_id: string;
+          student_id: string;
+          submission_text?: string | null;
+          attachment_url?: string | null;
+          submitted_at?: string;
+          grade_score?: number | null;
+          teacher_feedback?: string | null;
+          graded_at?: string | null;
+          graded_by?: string | null;
+        };
+        Update: {
+          submission_text?: string | null;
+          attachment_url?: string | null;
+          grade_score?: number | null;
+          teacher_feedback?: string | null;
+          graded_at?: string | null;
+          graded_by?: string | null;
+        };
+      };
+
+      learning_resources: {
+        Row: {
+          id: string;
+          school_id: string;
+          subject_id: string;
+          class_group_id: string;
+          title: string;
+          description: string | null;
+          resource_type: 'pdf' | 'video' | 'slides' | 'past_questions';
+          file_url: string;
+          uploaded_by: string | null;
+          created_at: string;
+        };
+        Insert: {
+          id?: string;
+          school_id: string;
+          subject_id: string;
+          class_group_id: string;
+          title: string;
+          description?: string | null;
+          resource_type?: 'pdf' | 'video' | 'slides' | 'past_questions';
+          file_url: string;
+          uploaded_by?: string | null;
+          created_at?: string;
+        };
+        Update: {
+          title?: string;
+          description?: string | null;
+          file_url?: string;
+        };
+      };
+
+      authorized_pickup_persons: {
+        Row: {
+          id: string;
+          school_id: string;
+          student_id: string;
+          guardian_id: string;
+          name: string;
+          relationship: string;
+          phone: string;
+          pickup_pin_hash: string | null;
+          photo_url: string | null;
+          is_active: boolean;
+          created_at: string;
+          updated_at: string;
+        };
+        Insert: {
+          id?: string;
+          school_id: string;
+          student_id: string;
+          guardian_id: string;
+          name: string;
+          relationship: string;
+          phone: string;
+          pickup_pin_hash?: string | null;
+          photo_url?: string | null;
+          is_active?: boolean;
+          created_at?: string;
+          updated_at?: string;
+        };
+        Update: {
+          name?: string;
+          phone?: string;
+          pickup_pin_hash?: string | null;
+          photo_url?: string | null;
+          is_active?: boolean;
+          updated_at?: string;
+        };
+      };
+
+      transport_routes: {
+        Row: {
+          id: string;
+          school_id: string;
+          route_name: string;
+          driver_name: string;
+          driver_phone: string;
+          vehicle_reg: string;
+          stops: string[];
+          created_at: string;
+        };
+        Insert: {
+          id?: string;
+          school_id: string;
+          route_name: string;
+          driver_name: string;
+          driver_phone: string;
+          vehicle_reg: string;
+          stops?: string[];
+          created_at?: string;
+        };
+        Update: {
+          route_name?: string;
+          driver_name?: string;
+          driver_phone?: string;
+          vehicle_reg?: string;
+          stops?: string[];
+        };
+      };
+
+      student_transport_bookings: {
+        Row: {
+          id: string;
+          route_id: string;
+          student_id: string;
+          pickup_stop: string;
+          dropoff_stop: string;
+          is_active: boolean;
+          created_at: string;
+        };
+        Insert: {
+          id?: string;
+          route_id: string;
+          student_id: string;
+          pickup_stop: string;
+          dropoff_stop: string;
+          is_active?: boolean;
+          created_at?: string;
+        };
+        Update: {
+          pickup_stop?: string;
+          dropoff_stop?: string;
+          is_active?: boolean;
+        };
+      };
+
+      boarding_rooms: {
+        Row: {
+          id: string;
+          school_id: string;
+          hall_name: string;
+          room_number: string;
+          capacity: number;
+          created_at: string;
+        };
+        Insert: {
+          id?: string;
+          school_id: string;
+          hall_name: string;
+          room_number: string;
+          capacity?: number;
+          created_at?: string;
+        };
+        Update: {
+          hall_name?: string;
+          room_number?: string;
+          capacity?: number;
+        };
+      };
+
+      boarding_allocations: {
+        Row: {
+          id: string;
+          room_id: string;
+          student_id: string;
+          bed_number: string;
+          academic_year_id: string | null;
+          created_at: string;
+        };
+        Insert: {
+          id?: string;
+          room_id: string;
+          student_id: string;
+          bed_number: string;
+          academic_year_id?: string | null;
+          created_at?: string;
+        };
+        Update: {
+          bed_number?: string;
+        };
+      };
+
+      parent_inquiries: {
+        Row: {
+          id: string;
+          school_id: string;
+          parent_id: string;
+          student_id: string | null;
+          category: 'academic' | 'financial_dispute' | 'portal_access' | 'transport';
+          subject: string;
+          message: string;
+          assigned_to_role: 'teacher' | 'bursar' | 'admin' | 'principal';
+          status: 'open' | 'in_progress' | 'resolved' | 'delegated_bursar' | 'delegated_admin';
+          resolution_notes: string | null;
+          created_at: string;
+          updated_at: string;
+        };
+        Insert: {
+          id?: string;
+          school_id: string;
+          parent_id: string;
+          student_id?: string | null;
+          category: 'academic' | 'financial_dispute' | 'portal_access' | 'transport';
+          subject: string;
+          message: string;
+          assigned_to_role?: 'teacher' | 'bursar' | 'admin' | 'principal';
+          status?: 'open' | 'in_progress' | 'resolved' | 'delegated_bursar' | 'delegated_admin';
+          resolution_notes?: string | null;
+          created_at?: string;
+          updated_at?: string;
+        };
+        Update: {
+          assigned_to_role?: 'teacher' | 'bursar' | 'admin' | 'principal';
+          status?: 'open' | 'in_progress' | 'resolved' | 'delegated_bursar' | 'delegated_admin';
+          resolution_notes?: string | null;
+          updated_at?: string;
+        };
+      };
+
+      campuses: {
+        Row: {
+          id: string;
+          organization_name: string;
+          headquarters_address: string | null;
+          school_id: string;
+          campus_code: string;
+          is_main_campus: boolean;
+          created_at: string;
+          updated_at: string;
+        };
+        Insert: {
+          id?: string;
+          organization_name: string;
+          headquarters_address?: string | null;
+          school_id: string;
+          campus_code: string;
+          is_main_campus?: boolean;
+          created_at?: string;
+          updated_at?: string;
+        };
+        Update: {
+          organization_name?: string;
+          headquarters_address?: string | null;
+          campus_code?: string;
+          is_main_campus?: boolean;
+          updated_at?: string;
+        };
+      };
+
+      platform_coupons: {
+        Row: {
+          id: string;
+          code: string;
+          description: string | null;
+          discount_type: 'percentage' | 'fixed_amount';
+          discount_value: number;
+          currency: string;
+          valid_from: string;
+          valid_until: string | null;
+          max_redemptions: number | null;
+          times_redeemed: number;
+          is_active: boolean;
+          created_at: string;
+        };
+        Insert: {
+          id?: string;
+          code: string;
+          description?: string | null;
+          discount_type?: 'percentage' | 'fixed_amount';
+          discount_value: number;
+          currency?: string;
+          valid_from?: string;
+          valid_until?: string | null;
+          max_redemptions?: number | null;
+          times_redeemed?: number;
+          is_active?: boolean;
+          created_at?: string;
+        };
+        Update: {
+          is_active?: boolean;
+          times_redeemed?: number;
+          valid_until?: string | null;
+        };
+      };
+
+      support_sessions: {
+        Row: {
+          id: string;
+          operator_id: string;
+          school_id: string;
+          reason: string;
+          ticket_reference: string | null;
+          ip_address: string | null;
+          started_at: string;
+          expires_at: string;
+          revoked_at: string | null;
+          status: 'active' | 'expired' | 'revoked';
+          created_at: string;
+        };
+        Insert: {
+          id?: string;
+          operator_id: string;
+          school_id: string;
+          reason: string;
+          ticket_reference?: string | null;
+          ip_address?: string | null;
+          started_at?: string;
+          expires_at: string;
+          revoked_at?: string | null;
+          status?: 'active' | 'expired' | 'revoked';
+          created_at?: string;
+        };
+        Update: {
+          status?: 'active' | 'expired' | 'revoked';
+          revoked_at?: string | null;
+        };
+      };
+
+      support_tickets: {
+        Row: {
+          id: string;
+          school_id: string;
+          submitted_by: string;
+          ticket_number: string;
+          subject: string;
+          description: string;
+          priority: 'low' | 'normal' | 'high' | 'critical';
+          status: 'open' | 'in_progress' | 'waiting_customer' | 'resolved' | 'closed';
+          assigned_operator_id: string | null;
+          sla_due_at: string | null;
+          created_at: string;
+          updated_at: string;
+        };
+        Insert: {
+          id?: string;
+          school_id: string;
+          submitted_by: string;
+          ticket_number: string;
+          subject: string;
+          description: string;
+          priority?: 'low' | 'normal' | 'high' | 'critical';
+          status?: 'open' | 'in_progress' | 'waiting_customer' | 'resolved' | 'closed';
+          assigned_operator_id?: string | null;
+          sla_due_at?: string | null;
+          created_at?: string;
+          updated_at?: string;
+        };
+        Update: {
+          priority?: 'low' | 'normal' | 'high' | 'critical';
+          status?: 'open' | 'in_progress' | 'waiting_customer' | 'resolved' | 'closed';
+          assigned_operator_id?: string | null;
+          updated_at?: string;
+        };
+      };
+
+      support_ticket_messages: {
+        Row: {
+          id: string;
+          ticket_id: string;
+          author_id: string;
+          message: string;
+          is_internal_note: boolean;
+          created_at: string;
+        };
+        Insert: {
+          id?: string;
+          ticket_id: string;
+          author_id: string;
+          message: string;
+          is_internal_note?: boolean;
+          created_at?: string;
+        };
+        Update: {
+          message?: string;
+          is_internal_note?: boolean;
+        };
+      };
+
+      feature_flags: {
+        Row: {
+          id: string;
+          key: string;
+          name: string;
+          description: string | null;
+          enabled_globally: boolean;
+          rollout_percentage: number;
+          created_at: string;
+          updated_at: string;
+        };
+        Insert: {
+          id?: string;
+          key: string;
+          name: string;
+          description?: string | null;
+          enabled_globally?: boolean;
+          rollout_percentage?: number;
+          created_at?: string;
+          updated_at?: string;
+        };
+        Update: {
+          name?: string;
+          description?: string | null;
+          enabled_globally?: boolean;
+          rollout_percentage?: number;
+          updated_at?: string;
+        };
+      };
+
+      tenant_feature_flags: {
+        Row: {
+          id: string;
+          feature_flag_id: string;
+          school_id: string;
+          enabled: boolean;
+          created_at: string;
+        };
+        Insert: {
+          id?: string;
+          feature_flag_id: string;
+          school_id: string;
+          enabled: boolean;
+          created_at?: string;
+        };
+        Update: {
+          enabled?: boolean;
+        };
+      };
+
+      platform_integrations: {
+        Row: {
+          id: string;
+          provider: string;
+          category: 'payment' | 'sms' | 'email' | 'storage';
+          is_enabled: boolean;
+          config: Record<string, unknown>;
+          health_status: 'healthy' | 'degraded' | 'offline';
+          last_tested_at: string | null;
+          created_at: string;
+          updated_at: string;
+        };
+        Insert: {
+          id?: string;
+          provider: string;
+          category: 'payment' | 'sms' | 'email' | 'storage';
+          is_enabled?: boolean;
+          config?: Record<string, unknown>;
+          health_status?: 'healthy' | 'degraded' | 'offline';
+          last_tested_at?: string | null;
+          created_at?: string;
+          updated_at?: string;
+        };
+        Update: {
+          is_enabled?: boolean;
+          config?: Record<string, unknown>;
+          health_status?: 'healthy' | 'degraded' | 'offline';
+          last_tested_at?: string | null;
+          updated_at?: string;
+        };
+      };
+
+      background_jobs: {
+        Row: {
+          id: string;
+          queue_name: string;
+          job_name: string;
+          school_id: string | null;
+          payload: Record<string, unknown>;
+          status: 'queued' | 'processing' | 'completed' | 'failed' | 'retrying';
+          attempts: number;
+          max_attempts: number;
+          scheduled_for: string;
+          started_at: string | null;
+          completed_at: string | null;
+          error_message: string | null;
+          created_at: string;
+          updated_at: string;
+        };
+        Insert: {
+          id?: string;
+          queue_name: string;
+          job_name: string;
+          school_id?: string | null;
+          payload?: Record<string, unknown>;
+          status?: 'queued' | 'processing' | 'completed' | 'failed' | 'retrying';
+          attempts?: number;
+          max_attempts?: number;
+          scheduled_for?: string;
+          started_at?: string | null;
+          completed_at?: string | null;
+          error_message?: string | null;
+          created_at?: string;
+          updated_at?: string;
+        };
+        Update: {
+          status?: 'queued' | 'processing' | 'completed' | 'failed' | 'retrying';
+          attempts?: number;
+          started_at?: string | null;
+          completed_at?: string | null;
+          error_message?: string | null;
+          updated_at?: string;
+        };
+      };
+
+      system_incidents: {
+        Row: {
+          id: string;
+          title: string;
+          impact: 'none' | 'minor' | 'major' | 'critical';
+          status: 'scheduled' | 'in_progress' | 'resolved';
+          start_time: string;
+          end_time: string | null;
+          description: string;
+          affected_services: string[];
+          created_at: string;
+          updated_at: string;
+        };
+        Insert: {
+          id?: string;
+          title: string;
+          impact?: 'none' | 'minor' | 'major' | 'critical';
+          status?: 'scheduled' | 'in_progress' | 'resolved';
+          start_time: string;
+          end_time?: string | null;
+          description: string;
+          affected_services?: string[];
+          created_at?: string;
+          updated_at?: string;
+        };
+        Update: {
+          impact?: 'none' | 'minor' | 'major' | 'critical';
+          status?: 'scheduled' | 'in_progress' | 'resolved';
+          end_time?: string | null;
+          description?: string;
+          affected_services?: string[];
+          updated_at?: string;
+        };
+      };
+
+      platform_announcements: {
+        Row: {
+          id: string;
+          title: string;
+          content: string;
+          priority: 'normal' | 'urgent' | 'maintenance';
+          target_plans: string[];
+          published_by: string | null;
+          published_at: string;
+          expires_at: string | null;
+          created_at: string;
+        };
+        Insert: {
+          id?: string;
+          title: string;
+          content: string;
+          priority?: 'normal' | 'urgent' | 'maintenance';
+          target_plans?: string[];
+          published_by?: string | null;
+          published_at?: string;
+          expires_at?: string | null;
+          created_at?: string;
+        };
+        Update: {
+          title?: string;
+          content?: string;
+          priority?: 'normal' | 'urgent' | 'maintenance';
+          target_plans?: string[];
+          expires_at?: string | null;
+        };
+      };
 }
 
 export type TablesRecord = {
@@ -1616,3 +2913,54 @@ export type Plan = Tables<'plans'>;
 export type Subscription = Tables<'subscriptions'>;
 export type ReportCard = Tables<'report_cards'>;
 export type StoredFile = Tables<'stored_files'>;
+
+// Academic Leadership & Teaching
+export type LessonPlan = Tables<'lesson_plans'>;
+export type ClassroomObservation = Tables<'classroom_observations'>;
+export type AcademicInterventionPlan = Tables<'academic_intervention_plans'>;
+export type GradeAmendmentAudit = Tables<'grade_amendment_audits'>;
+
+// Staff Administration & Leave
+export type StaffConfirmationRequest = Tables<'staff_confirmation_requests'>;
+export type StaffLeave = Tables<'staff_leaves'>;
+
+// Pastoral, Discipline & Safeguarding
+export type DisciplinaryIncident = Tables<'disciplinary_incidents'>;
+export type ParentConference = Tables<'parent_conferences'>;
+export type SafeguardingRecord = Tables<'safeguarding_records'>;
+
+// Operations & Timetable
+export type SchoolEvent = Tables<'school_events'>;
+export type TimetableChangeRequest = Tables<'timetable_change_requests'>;
+export type AttendanceCorrection = Tables<'attendance_corrections'>;
+
+// Financial Operations & Banking
+export type ExpenditureRequisition = Tables<'expenditure_requisitions'>;
+export type ScholarshipAndWaiver = Tables<'scholarships_and_waivers'>;
+export type SchoolBankAccount = Tables<'school_bank_accounts'>;
+export type BankStatementTransaction = Tables<'bank_statement_transactions'>;
+export type PettyCashDisbursement = Tables<'petty_cash_disbursements'>;
+
+// Student & Parent Experience
+export type HomeworkAssignment = Tables<'homework_assignments'>;
+export type HomeworkSubmission = Tables<'homework_submissions'>;
+export type LearningResource = Tables<'learning_resources'>;
+export type AuthorizedPickupPerson = Tables<'authorized_pickup_persons'>;
+export type TransportRoute = Tables<'transport_routes'>;
+export type StudentTransportBooking = Tables<'student_transport_bookings'>;
+export type BoardingRoom = Tables<'boarding_rooms'>;
+export type BoardingAllocation = Tables<'boarding_allocations'>;
+export type ParentInquiry = Tables<'parent_inquiries'>;
+
+// Platform & Super Admin Multi-Tenancy
+export type Campus = Tables<'campuses'>;
+export type PlatformCoupon = Tables<'platform_coupons'>;
+export type SupportSession = Tables<'support_sessions'>;
+export type SupportTicket = Tables<'support_tickets'>;
+export type SupportTicketMessage = Tables<'support_ticket_messages'>;
+export type FeatureFlag = Tables<'feature_flags'>;
+export type TenantFeatureFlag = Tables<'tenant_feature_flags'>;
+export type PlatformIntegration = Tables<'platform_integrations'>;
+export type BackgroundJob = Tables<'background_jobs'>;
+export type SystemIncident = Tables<'system_incidents'>;
+export type PlatformAnnouncement = Tables<'platform_announcements'>;
