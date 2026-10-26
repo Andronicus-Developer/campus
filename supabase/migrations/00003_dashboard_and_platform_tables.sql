@@ -706,7 +706,8 @@ DECLARE
     'expenditure_requisitions', 'scholarships_and_waivers', 'school_bank_accounts',
     'bank_statement_transactions', 'petty_cash_disbursements', 'homework_assignments',
     'learning_resources', 'authorized_pickup_persons', 'transport_routes',
-    'boarding_rooms', 'parent_inquiries', 'campuses'
+    'student_transport_bookings', 'boarding_rooms', 'boarding_allocations',
+    'parent_inquiries', 'campuses', 'tenant_feature_flags'
   ];
 BEGIN
   FOREACH t IN ARRAY tenant_tables LOOP
@@ -714,6 +715,9 @@ BEGIN
       DROP POLICY IF EXISTS %I_tenant_policy ON %I;
       CREATE POLICY %I_tenant_policy ON %I
         FOR ALL USING (
+          has_school_membership(school_id) OR is_platform_admin()
+        )
+        WITH CHECK (
           has_school_membership(school_id) OR is_platform_admin()
         );
     ', t, t, t, t);
@@ -733,7 +737,8 @@ BEGIN
     EXECUTE format('
       DROP POLICY IF EXISTS %I_operator_policy ON %I;
       CREATE POLICY %I_operator_policy ON %I
-        FOR ALL USING (is_platform_admin());
+        FOR ALL USING (is_platform_admin())
+        WITH CHECK (is_platform_admin());
     ', pt, pt, pt, pt);
   END LOOP;
 END $$;
@@ -741,7 +746,16 @@ END $$;
 -- Support tickets policy (Tenant member can view own school tickets, operator can manage all)
 DROP POLICY IF EXISTS support_tickets_policy ON support_tickets;
 CREATE POLICY support_tickets_policy ON support_tickets
-  FOR ALL USING (has_school_membership(school_id) OR is_platform_admin());
+  FOR ALL USING (
+    requester_id = auth.uid()
+    OR (school_id IS NOT NULL AND has_school_membership(school_id))
+    OR is_platform_admin()
+  )
+  WITH CHECK (
+    requester_id = auth.uid()
+    OR (school_id IS NOT NULL AND has_school_membership(school_id))
+    OR is_platform_admin()
+  );
 
 DROP POLICY IF EXISTS support_messages_policy ON support_ticket_messages;
 CREATE POLICY support_messages_policy ON support_ticket_messages
@@ -749,19 +763,37 @@ CREATE POLICY support_messages_policy ON support_ticket_messages
     EXISTS (
       SELECT 1 FROM support_tickets st
       WHERE st.id = support_ticket_messages.ticket_id
-        AND (has_school_membership(st.school_id) OR is_platform_admin())
+        AND (
+          st.requester_id = auth.uid()
+          OR (st.school_id IS NOT NULL AND has_school_membership(st.school_id))
+          OR is_platform_admin()
+        )
     )
+  )
+  WITH CHECK (
+    sender_id = auth.uid()
   );
 
--- Homework submissions policy (student, teacher, or platform admin)
+-- Homework submissions policy (student accesses own submissions, school staff access class, platform admin accesses all)
 DROP POLICY IF EXISTS homework_submissions_policy ON homework_submissions;
 CREATE POLICY homework_submissions_policy ON homework_submissions
   FOR ALL USING (
-    EXISTS (
+    student_id IN (SELECT id FROM students WHERE user_id = auth.uid())
+    OR EXISTS (
       SELECT 1 FROM homework_assignments ha
       WHERE ha.id = homework_submissions.homework_id
         AND (has_school_membership(ha.school_id) OR is_platform_admin())
     )
+    OR is_platform_admin()
+  )
+  WITH CHECK (
+    student_id IN (SELECT id FROM students WHERE user_id = auth.uid())
+    OR EXISTS (
+      SELECT 1 FROM homework_assignments ha
+      WHERE ha.id = homework_submissions.homework_id
+        AND (has_school_membership(ha.school_id) OR is_platform_admin())
+    )
+    OR is_platform_admin()
   );
 
 -- Platform announcements policy (read by all authenticated users, write by platform admin)
@@ -771,4 +803,5 @@ CREATE POLICY announcements_read_policy ON platform_announcements
 
 DROP POLICY IF EXISTS announcements_admin_policy ON platform_announcements;
 CREATE POLICY announcements_admin_policy ON platform_announcements
-  FOR ALL USING (is_platform_admin());
+  FOR ALL USING (is_platform_admin())
+  WITH CHECK (is_platform_admin());
