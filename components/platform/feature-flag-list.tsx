@@ -20,17 +20,19 @@ export function FeatureFlagList() {
       {flags.map((flag) => (
         <li
           key={flag.key}
-          className="flex items-start justify-between gap-4 py-4 first:pt-0 last:pb-0"
+          className="flex items-start justify-between gap-4 py-4.5 first:pt-0 last:pb-0"
         >
           <div className="min-w-0">
-            <div className="flex flex-wrap items-center gap-2">
-              <code className="font-mono text-xs text-ink">{flag.key}</code>
+            <div className="flex flex-wrap items-center gap-2.5">
+              <code className="font-mono text-sm font-bold text-primary bg-primary-light/50 px-2.5 py-1 rounded-lg border border-primary/20">
+                {flag.key}
+              </code>
               <Pill tone={flag.enabled ? "positive" : "muted"}>
-                {flag.enabled ? "On" : "Off"}
+                {flag.enabled ? "Enabled" : "Disabled"}
               </Pill>
             </div>
-            <p className="mt-1.5 text-xs leading-5 text-ink-muted">{flag.description}</p>
-            <p className="mt-1.5 font-mono text-[10px] uppercase tracking-wide text-ink-muted">
+            <p className="mt-2 text-sm leading-relaxed text-ink-muted">{flag.description}</p>
+            <p className="mt-2 font-sans text-xs font-bold uppercase tracking-wider text-ink-soft">
               {flag.scope} · {flag.rollout}
             </p>
           </div>
@@ -39,14 +41,14 @@ export function FeatureFlagList() {
             role="switch"
             aria-checked={flag.enabled}
             onClick={() => toggle(flag.key)}
-            className={`relative inline-flex h-6 w-11 shrink-0 items-center rounded-full transition-colors ${
-              flag.enabled ? "bg-pine" : "bg-ink/15"
+            className={`relative inline-flex h-7 w-12 shrink-0 items-center rounded-full transition-colors cursor-pointer shadow-xs ${
+              flag.enabled ? "bg-success" : "bg-slate-300"
             }`}
           >
             <span className="sr-only">Toggle {flag.key}</span>
             <span
-              className={`inline-block size-[18px] rounded-full bg-white shadow transition-transform ${
-                flag.enabled ? "translate-x-[23px]" : "translate-x-[3px]"
+              className={`inline-block size-5 rounded-full bg-white shadow-md transition-transform ${
+                flag.enabled ? "translate-x-[25px]" : "translate-x-[3px]"
               }`}
             />
           </button>
@@ -55,3 +57,4 @@ export function FeatureFlagList() {
     </ul>
   );
 }
+

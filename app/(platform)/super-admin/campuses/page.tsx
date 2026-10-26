@@ -6,9 +6,9 @@ import { formatNumber } from "@/lib/platform";
 export const metadata: Metadata = { title: "Campuses & Organisations" };
 
 const ghostButton =
-  "inline-flex h-9 items-center gap-2 rounded-full border border-line bg-surface px-4 text-xs font-medium text-ink-soft transition-colors hover:text-ink";
+  "inline-flex h-11 items-center gap-2 rounded-xl border border-line bg-surface px-5 text-sm font-bold text-ink-soft shadow-xs transition-colors hover:bg-surface-raised hover:text-ink";
 const primaryButton =
-  "inline-flex h-9 items-center gap-2 rounded-full bg-ink px-4 text-xs font-medium text-paper transition-colors hover:bg-ink-soft";
+  "inline-flex h-11 items-center gap-2 rounded-xl bg-primary px-6 text-sm font-bold text-white shadow-xs transition-opacity hover:opacity-95";
 
 type CampusGroup = {
   school: string;
@@ -64,17 +64,17 @@ export default function CampusesPage() {
   return (
     <>
       <PageHeader
-        eyebrow="Schools"
+        eyebrow="Schools & Estates"
         title="Campuses & organisations."
         description="Multi-campus schools, branches and organisational relationships across every active tenant."
         actions={
           <>
             <button type="button" className={ghostButton}>
-              <Download className="size-3.5" aria-hidden="true" />
+              <Download className="size-4" aria-hidden="true" />
               Export
             </button>
             <button type="button" className={primaryButton}>
-              <Plus className="size-3.5" aria-hidden="true" />
+              <Plus className="size-4" aria-hidden="true" />
               Add campus
             </button>
           </>
@@ -86,43 +86,43 @@ export default function CampusesPage() {
           label="Total campuses"
           value={formatNumber(totalCampuses)}
           hint="across all tenants"
-          icon={<Building2 className="size-3.5" aria-hidden="true" />}
+          icon={<Building2 className="size-5" aria-hidden="true" />}
         />
         <KpiCard
           label="Multi-campus schools"
           value={formatNumber(multiCampusSchools)}
           hint="2+ locations"
-          icon={<Briefcase className="size-3.5" aria-hidden="true" />}
+          icon={<Briefcase className="size-5" aria-hidden="true" />}
         />
         <KpiCard
           label="Inactive campuses"
           value={formatNumber(inactiveCampuses)}
           hint="suspended or closed"
-          icon={<MapPin className="size-3.5" aria-hidden="true" />}
+          icon={<MapPin className="size-5" aria-hidden="true" />}
         />
       </div>
 
-      <div className="mt-6 flex flex-col gap-4">
+      <div className="mt-8 flex flex-col gap-6">
         {campusGroups.map((group) => (
           <Card key={group.slug} title={group.school} description={group.region}>
             <ul className="divide-y divide-line">
               {group.campuses.map((campus) => (
                 <li
                   key={campus.name}
-                  className="flex flex-wrap items-center justify-between gap-3 py-3 first:pt-0 last:pb-0"
+                  className="flex flex-wrap items-center justify-between gap-4 py-4 first:pt-0 last:pb-0"
                 >
-                  <div className="flex items-center gap-3">
-                    <MapPin className="size-4 shrink-0 text-ink-muted" aria-hidden="true" />
+                  <div className="flex items-center gap-3.5">
+                    <MapPin className="size-5 shrink-0 text-primary" aria-hidden="true" />
                     <div>
-                      <p className="text-xs font-medium">{campus.name}</p>
-                      <p className="mt-0.5 font-mono text-[10px] uppercase tracking-wide text-ink-muted">
+                      <p className="text-sm sm:text-base font-bold text-ink">{campus.name}</p>
+                      <p className="mt-0.5 font-sans text-xs font-bold uppercase tracking-wider text-ink-soft">
                         {campus.city}
                       </p>
                     </div>
                   </div>
                   <div className="flex items-center gap-4">
-                    <span className="flex items-center gap-1.5 text-xs text-ink-soft">
-                      <Users className="size-3.5 text-ink-muted" aria-hidden="true" />
+                    <span className="flex items-center gap-2 text-sm font-semibold text-ink-soft">
+                      <Users className="size-4 text-ink-muted" aria-hidden="true" />
                       {formatNumber(campus.students)} students
                     </span>
                     <Pill tone={campus.status === "active" ? "positive" : "muted"}>

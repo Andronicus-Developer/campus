@@ -6,7 +6,7 @@ import { formatNumber, formatUsd } from "@/lib/platform";
 export const metadata: Metadata = { title: "Payments & Transactions" };
 
 const ghostButton =
-  "inline-flex h-9 items-center gap-2 rounded-full border border-line bg-surface px-4 text-xs font-medium text-ink-soft transition-colors hover:text-ink";
+  "inline-flex h-11 items-center gap-2 rounded-xl border border-line bg-surface px-5 text-sm font-bold text-ink-soft shadow-xs transition-colors hover:bg-surface-raised hover:text-ink";
 
 type TxStatus = "success" | "failed" | "pending" | "refunded" | "reversed";
 
@@ -58,11 +58,11 @@ export default function PaymentsPage() {
         actions={
           <>
             <button type="button" className={ghostButton}>
-              <RefreshCw className="size-3.5" aria-hidden="true" />
+              <RefreshCw className="size-4" aria-hidden="true" />
               Reconcile
             </button>
             <button type="button" className={ghostButton}>
-              <Download className="size-3.5" aria-hidden="true" />
+              <Download className="size-4" aria-hidden="true" />
               Export
             </button>
           </>
@@ -74,41 +74,41 @@ export default function PaymentsPage() {
           label="Collected (shown)"
           value={formatUsd(totalCollected / 100)}
           hint="successful charges"
-          icon={<Wallet className="size-3.5" aria-hidden="true" />}
+          icon={<Wallet className="size-5" aria-hidden="true" />}
         />
         <KpiCard
           label="Failed payments"
           value={formatNumber(failedCount)}
           hint="requires retry"
-          icon={<AlertTriangle className="size-3.5" aria-hidden="true" />}
+          icon={<AlertTriangle className="size-5" aria-hidden="true" />}
         />
         <KpiCard
           label="Refunded"
           value={formatUsd(refundedTotal / 100)}
           hint="this period"
-          icon={<ArrowDownLeft className="size-3.5" aria-hidden="true" />}
+          icon={<ArrowDownLeft className="size-5" aria-hidden="true" />}
         />
         <KpiCard
           label="Unreconciled"
           value="0"
           hint="webhook events"
-          icon={<ArrowUpRight className="size-3.5" aria-hidden="true" />}
+          icon={<ArrowUpRight className="size-5" aria-hidden="true" />}
         />
       </div>
 
-      <div className="mt-6">
+      <div className="mt-8">
         <Card
           title="Transaction log"
           description="All payment events with provider references. Amounts verified server-side."
         >
-          <div className="overflow-x-auto">
-            <table className="w-full text-xs">
+          <div className="overflow-x-auto -mx-6 -mb-6">
+            <table className="w-full text-sm">
               <thead>
-                <tr className="border-b border-line">
+                <tr className="border-b border-line bg-surface-raised/60">
                   {["Reference", "School", "Amount", "Provider ref", "Type", "Status", "Date"].map((h) => (
                     <th
                       key={h}
-                      className="pb-3 pr-4 text-left font-mono text-[9px] uppercase tracking-[0.15em] text-ink-muted last:pr-0"
+                      className="py-4 px-6 text-left font-sans text-xs font-bold uppercase tracking-wider text-slate-700"
                     >
                       {h}
                     </th>
@@ -117,24 +117,24 @@ export default function PaymentsPage() {
               </thead>
               <tbody className="divide-y divide-line">
                 {transactions.map((tx) => (
-                  <tr key={tx.ref}>
-                    <td className="py-3 pr-4 font-mono text-[10px] text-ink-muted">{tx.ref}</td>
-                    <td className="py-3 pr-4 font-medium">{tx.school}</td>
-                    <td className="py-3 pr-4 font-mono text-ink-soft">
+                  <tr key={tx.ref} className="transition-colors hover:bg-surface-raised/40">
+                    <td className="py-4 px-6 font-mono text-xs font-bold text-primary">{tx.ref}</td>
+                    <td className="py-4 px-6 font-bold text-ink text-sm sm:text-base">{tx.school}</td>
+                    <td className="py-4 px-6 font-mono text-sm font-bold text-ink">
                       {formatUsd(tx.amount / 100)}
                     </td>
-                    <td className="py-3 pr-4 font-mono text-[10px] text-ink-muted">
+                    <td className="py-4 px-6 font-mono text-xs font-semibold text-ink-muted">
                       {tx.providerRef}
                     </td>
-                    <td className="py-3 pr-4">
+                    <td className="py-4 px-6">
                       <Pill tone={tx.type === "charge" ? "neutral" : "muted"}>
                         {tx.type}
                       </Pill>
                     </td>
-                    <td className="py-3 pr-4">
+                    <td className="py-4 px-6">
                       <Pill tone={statusMeta[tx.status].tone}>{tx.status}</Pill>
                     </td>
-                    <td className="py-3 text-ink-muted">{tx.createdAt}</td>
+                    <td className="py-4 px-6 text-xs font-semibold text-ink-muted">{tx.createdAt}</td>
                   </tr>
                 ))}
               </tbody>
@@ -143,9 +143,9 @@ export default function PaymentsPage() {
         </Card>
       </div>
 
-      <div className="mt-6 grid gap-4 lg:grid-cols-2">
+      <div className="mt-8 grid gap-6 lg:grid-cols-2">
         <Card title="Webhook integrity" description="Paystack event verification status.">
-          <ul className="space-y-2.5 text-xs text-ink-soft">
+          <ul className="space-y-3.5 text-sm font-medium text-ink-soft">
             {[
               { label: "Signature verification", value: "Active (HMAC-SHA512)" },
               { label: "Event deduplication", value: "WebhookEvent table" },
@@ -153,15 +153,15 @@ export default function PaymentsPage() {
               { label: "Last webhook received", value: "22 Oct 2026 · 14:31" },
               { label: "Unprocessed events", value: "0" },
             ].map((row) => (
-              <li key={row.label} className="flex items-center justify-between gap-4 border-b border-line pb-2.5 last:border-0 last:pb-0">
+              <li key={row.label} className="flex items-center justify-between gap-4 border-b border-line pb-3 last:border-0 last:pb-0">
                 <span>{row.label}</span>
-                <span className="font-mono text-[10px] text-ink-muted">{row.value}</span>
+                <span className="font-mono text-xs sm:text-sm font-bold text-ink">{row.value}</span>
               </li>
             ))}
           </ul>
         </Card>
         <Card title="Reconciliation policy">
-          <p className="text-xs leading-6 text-ink-muted">
+          <p className="text-sm leading-relaxed text-ink-soft">
             Payments are confirmed exclusively via server-side webhook. Browser redirects
             are informational only and never used to update payment status. Each event is
             verified by signature, deduplicated by provider reference, and amount and

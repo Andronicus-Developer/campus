@@ -9,9 +9,9 @@ export const metadata: Metadata = {
 };
 
 const ghostButton =
-  "inline-flex h-9 items-center gap-2 rounded-full border border-line bg-surface px-4 text-xs font-medium text-ink-soft transition-colors hover:text-ink";
+  "inline-flex h-11 items-center gap-2.5 rounded-xl border border-line bg-surface px-5 text-sm font-bold text-ink-soft transition-all hover:border-primary/40 hover:bg-primary-light hover:text-primary shadow-xs cursor-pointer";
 const primaryButton =
-  "inline-flex h-9 items-center gap-2 rounded-full bg-ink px-4 text-xs font-medium text-paper transition-colors hover:bg-ink-soft";
+  "inline-flex h-11 items-center gap-2.5 rounded-xl bg-primary hover:bg-primary-hover px-6 text-sm font-bold text-white shadow-md shadow-primary/25 transition-all cursor-pointer";
 
 const summary = [
   { label: "Active", value: platformStats.activeTenants, tone: "positive" as const },
@@ -25,31 +25,31 @@ export default function TenantsPage() {
   return (
     <>
       <PageHeader
-        eyebrow="Tenant directory"
-        title="Every school on the platform."
+        eyebrow="Tenant Directory"
+        title="Every School on the Platform"
         description={`${formatNumber(directoryTotal)} tenants in total. Search, filter and drill into any school to inspect its subscription, seats, members and audit history.`}
         actions={
           <>
             <button type="button" className={ghostButton}>
-              <Download className="size-3.5" aria-hidden="true" />
+              <Download className="size-4" aria-hidden="true" />
               Export CSV
             </button>
             <button type="button" className={primaryButton}>
-              <Plus className="size-3.5" aria-hidden="true" />
-              Add school
+              <Plus className="size-4" aria-hidden="true" />
+              Provision School
             </button>
           </>
         }
       />
 
-      <div className="mb-5 flex flex-wrap items-center gap-2">
+      <div className="mb-6 flex flex-wrap items-center gap-3">
         {summary.map((item) => (
           <span
             key={item.label}
-            className="inline-flex items-center gap-2 rounded-full border border-line bg-surface px-3.5 py-2"
+            className="inline-flex items-center gap-3 rounded-2xl border border-line bg-surface px-4 py-2.5 shadow-xs"
           >
             <Pill tone={item.tone}>{item.label}</Pill>
-            <span className="font-mono text-xs text-ink-soft">{formatNumber(item.value)}</span>
+            <span className="font-sans text-sm font-bold text-ink">{formatNumber(item.value)}</span>
           </span>
         ))}
       </div>
@@ -58,3 +58,4 @@ export default function TenantsPage() {
     </>
   );
 }
+

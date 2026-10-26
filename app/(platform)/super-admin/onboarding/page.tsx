@@ -15,9 +15,9 @@ import { formatNumber, platformStats } from "@/lib/platform";
 export const metadata: Metadata = { title: "Onboarding & Approvals" };
 
 const ghostButton =
-  "inline-flex h-9 items-center gap-2 rounded-full border border-line bg-surface px-4 text-xs font-medium text-ink-soft transition-colors hover:text-ink";
+  "inline-flex h-11 items-center gap-2 rounded-xl border border-line bg-surface px-5 text-sm font-bold text-ink-soft shadow-xs transition-colors hover:bg-surface-raised hover:text-ink";
 const primaryButton =
-  "inline-flex h-9 items-center gap-2 rounded-full bg-primary px-4 text-xs font-medium text-white transition-colors hover:bg-primary-hover";
+  "inline-flex h-11 items-center gap-2 rounded-xl bg-primary px-6 text-sm font-bold text-white shadow-xs transition-opacity hover:opacity-95";
 
 type OnboardingStage = "registered" | "verifying" | "provisioning" | "training" | "live";
 
@@ -66,17 +66,17 @@ export default function OnboardingPage() {
   return (
     <>
       <PageHeader
-        eyebrow="Schools"
+        eyebrow="Schools & Onboarding"
         title="Onboarding & approvals."
         description="New-school registrations, onboarding progress, verification and activation queue."
         actions={
           <>
             <button type="button" className={ghostButton}>
-              <Download className="size-3.5" aria-hidden="true" />
+              <Download className="size-4" aria-hidden="true" />
               Export
             </button>
             <button type="button" className={primaryButton}>
-              <Plus className="size-3.5" aria-hidden="true" />
+              <Plus className="size-4" aria-hidden="true" />
               Invite school
             </button>
           </>
@@ -84,20 +84,20 @@ export default function OnboardingPage() {
       />
 
       <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
-        <KpiCard label="In queue"          value={formatNumber(queue.length)}                      hint="awaiting action"       icon={<Timer     className="size-3.5" aria-hidden="true" />} />
-        <KpiCard label="Onboarding"        value={formatNumber(platformStats.onboardingTenants)}   hint="active onboarding"     icon={<Heart     className="size-3.5" aria-hidden="true" />} />
-        <KpiCard label="Trials ending soon"value={formatNumber(platformStats.trialsEndingSoon)}    hint="within 7 days"         icon={<Clock     className="size-3.5" aria-hidden="true" />} />
-        <KpiCard label="Avg. time to live" value="6.4 days"                                        hint="registration → active" icon={<MailCheck className="size-3.5" aria-hidden="true" />} />
+        <KpiCard label="In queue"          value={formatNumber(queue.length)}                      hint="awaiting action"       icon={<Timer     className="size-5" aria-hidden="true" />} />
+        <KpiCard label="Onboarding"        value={formatNumber(platformStats.onboardingTenants)}   hint="active onboarding"     icon={<Heart     className="size-5" aria-hidden="true" />} />
+        <KpiCard label="Trials ending soon"value={formatNumber(platformStats.trialsEndingSoon)}    hint="within 7 days"         icon={<Clock     className="size-5" aria-hidden="true" />} />
+        <KpiCard label="Avg. time to live" value="6.4 days"                                        hint="registration → active" icon={<MailCheck className="size-5" aria-hidden="true" />} />
       </div>
 
-      <div className="mt-6">
+      <div className="mt-8">
         <Card title="Onboarding queue" description="Schools registered and awaiting completion.">
-          <div className="overflow-x-auto">
-            <table className="w-full text-xs">
+          <div className="overflow-x-auto -mx-6 -mb-6">
+            <table className="w-full text-sm">
               <thead>
-                <tr className="border-b border-line">
+                <tr className="border-b border-line bg-surface-raised/60">
                   {["School", "Owner", "Country", "Plan", "Stage", "Progress", "Days open", ""].map((h) => (
-                    <th key={h} className="pb-3 pr-4 text-left font-mono text-[9px] font-bold uppercase tracking-widest text-ink-muted last:pr-0">
+                    <th key={h} className="py-4 px-6 text-left font-sans text-xs font-bold uppercase tracking-wider text-slate-700">
                       {h}
                     </th>
                   ))}
@@ -107,34 +107,34 @@ export default function OnboardingPage() {
                 {queue.map((row) => {
                   const sm = stageMeta[row.stage];
                   return (
-                    <tr key={row.id} className="group">
-                      <td className="py-3 pr-4">
-                        <p className="font-semibold text-ink">{row.school}</p>
-                        <p className="text-ink-muted">{row.email}</p>
+                    <tr key={row.id} className="transition-colors hover:bg-surface-raised/40">
+                      <td className="py-4 px-6">
+                        <p className="font-bold text-ink text-sm sm:text-base">{row.school}</p>
+                        <p className="text-xs font-medium text-ink-muted mt-0.5">{row.email}</p>
                       </td>
-                      <td className="py-3 pr-4 text-ink-soft">{row.owner}</td>
-                      <td className="py-3 pr-4 text-ink-soft">{row.country}</td>
-                      <td className="py-3 pr-4"><Pill tone="neutral">{row.plan}</Pill></td>
-                      <td className="py-3 pr-4"><Pill tone={sm.tone}>{sm.label}</Pill></td>
-                      <td className="py-3 pr-4">
-                        <div className="flex items-center gap-2">
-                          <div className="h-1.5 w-20 overflow-hidden rounded-full bg-line">
+                      <td className="py-4 px-6 text-sm font-semibold text-ink-soft">{row.owner}</td>
+                      <td className="py-4 px-6 text-sm font-medium text-ink-soft">{row.country}</td>
+                      <td className="py-4 px-6"><Pill tone="neutral">{row.plan}</Pill></td>
+                      <td className="py-4 px-6"><Pill tone={sm.tone}>{sm.label}</Pill></td>
+                      <td className="py-4 px-6">
+                        <div className="flex items-center gap-3">
+                          <div className="h-2 w-24 overflow-hidden rounded-full bg-line">
                             <div
                               className="h-full rounded-full bg-primary"
                               style={{ width: `${row.progress}%` }}
                               aria-hidden="true"
                             />
                           </div>
-                          <span className="font-mono text-[10px] text-ink-muted">{row.progress}%</span>
+                          <span className="font-mono text-xs font-semibold text-ink-soft">{row.progress}%</span>
                         </div>
                       </td>
-                      <td className="py-3 pr-4">
-                        <span className={`font-mono text-[10px] font-semibold ${row.daysOpen > 3 ? "text-danger" : "text-ink-muted"}`}>
+                      <td className="py-4 px-6">
+                        <span className={`font-mono text-xs font-bold ${row.daysOpen > 3 ? "text-danger" : "text-ink-soft"}`}>
                           {row.daysOpen}d
                         </span>
                       </td>
-                      <td className="py-3 text-right">
-                        <button type="button" className="rounded-lg border border-line bg-surface px-3 py-1 text-[11px] font-medium text-ink-soft transition-colors hover:border-primary/30 hover:text-primary">
+                      <td className="py-4 px-6 text-right">
+                        <button type="button" className="rounded-xl border border-line bg-surface px-4 py-1.5 text-xs font-bold text-ink-soft shadow-xs transition-colors hover:bg-surface-raised hover:text-ink">
                           Review
                         </button>
                       </td>
@@ -147,15 +147,15 @@ export default function OnboardingPage() {
         </Card>
       </div>
 
-      <div className="mt-6">
+      <div className="mt-8">
         <Card title="Standard onboarding checklist" description="Steps every new school completes before going live.">
-          <ol className="space-y-2.5">
+          <ol className="space-y-3.5">
             {onboardingSteps.map((step, i) => (
-              <li key={step} className="flex items-center gap-3 text-xs text-ink-soft">
+              <li key={step} className="flex items-center gap-3.5 text-sm font-medium text-ink-soft">
                 {i < 4 ? (
-                  <CheckCircle2 className="size-4 shrink-0 text-success" aria-hidden="true" />
+                  <CheckCircle2 className="size-5 shrink-0 text-success" aria-hidden="true" />
                 ) : (
-                  <Circle className="size-4 shrink-0 text-ink-muted" aria-hidden="true" />
+                  <Circle className="size-5 shrink-0 text-ink-muted/50" aria-hidden="true" />
                 )}
                 {step}
               </li>

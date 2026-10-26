@@ -6,7 +6,7 @@ import { formatNumber, formatUsd, platformStats } from "@/lib/platform";
 export const metadata: Metadata = { title: "Billing & Invoices" };
 
 const ghostButton =
-  "inline-flex h-9 items-center gap-2 rounded-full border border-line bg-surface px-4 text-xs font-medium text-ink-soft transition-colors hover:text-ink";
+  "inline-flex h-11 items-center gap-2 rounded-xl border border-line bg-surface px-5 text-sm font-bold text-ink-soft shadow-xs transition-colors hover:bg-surface-raised hover:text-ink";
 
 type InvoiceStatus = "paid" | "open" | "overdue" | "voided";
 
@@ -53,11 +53,11 @@ export default function BillingPage() {
         actions={
           <>
             <button type="button" className={ghostButton}>
-              <RefreshCw className="size-3.5" aria-hidden="true" />
+              <RefreshCw className="size-4" aria-hidden="true" />
               Sync
             </button>
             <button type="button" className={ghostButton}>
-              <Download className="size-3.5" aria-hidden="true" />
+              <Download className="size-4" aria-hidden="true" />
               Export
             </button>
           </>
@@ -69,38 +69,38 @@ export default function BillingPage() {
           label="Open invoices"
           value={formatNumber(platformStats.openInvoices)}
           hint="awaiting payment"
-          icon={<Receipt className="size-3.5" aria-hidden="true" />}
+          icon={<Receipt className="size-5" aria-hidden="true" />}
         />
         <KpiCard
           label="Overdue balance"
           value={formatUsd(totalOverdue / 100)}
           hint="past due date"
-          icon={<AlertTriangle className="size-3.5" aria-hidden="true" />}
+          icon={<AlertTriangle className="size-5" aria-hidden="true" />}
         />
         <KpiCard
           label="Past due schools"
           value={formatNumber(platformStats.pastDueTenants)}
           hint="dunning active"
-          icon={<AlertTriangle className="size-3.5" aria-hidden="true" />}
+          icon={<AlertTriangle className="size-5" aria-hidden="true" />}
         />
         <KpiCard
           label="Collected (Oct)"
           value={formatUsd(platformStats.mrr * 0.94)}
           hint="vs target MRR"
-          icon={<Receipt className="size-3.5" aria-hidden="true" />}
+          icon={<Receipt className="size-5" aria-hidden="true" />}
         />
       </div>
 
-      <div className="mt-6">
+      <div className="mt-8">
         <Card title="Invoice list" description="Recent SaaS platform invoices across all tenants.">
-          <div className="overflow-x-auto">
-            <table className="w-full text-xs">
+          <div className="overflow-x-auto -mx-6 -mb-6">
+            <table className="w-full text-sm">
               <thead>
-                <tr className="border-b border-line">
+                <tr className="border-b border-line bg-surface-raised/60">
                   {["Invoice", "School", "Plan", "Period", "Amount", "Due", "Status", ""].map((h) => (
                     <th
                       key={h}
-                      className="pb-3 pr-4 text-left font-mono text-[9px] uppercase tracking-[0.15em] text-ink-muted last:pr-0"
+                      className="py-4 px-6 text-left font-sans text-xs font-bold uppercase tracking-wider text-slate-700"
                     >
                       {h}
                     </th>
@@ -109,26 +109,26 @@ export default function BillingPage() {
               </thead>
               <tbody className="divide-y divide-line">
                 {invoices.map((inv) => (
-                  <tr key={inv.id}>
-                    <td className="py-3 pr-4 font-mono text-[10px] text-ink-muted">{inv.id}</td>
-                    <td className="py-3 pr-4 font-medium">{inv.school}</td>
-                    <td className="py-3 pr-4">
+                  <tr key={inv.id} className="transition-colors hover:bg-surface-raised/40">
+                    <td className="py-4 px-6 font-mono text-xs font-bold text-primary">{inv.id}</td>
+                    <td className="py-4 px-6 font-bold text-ink text-sm sm:text-base">{inv.school}</td>
+                    <td className="py-4 px-6">
                       <Pill tone="neutral">{inv.plan}</Pill>
                     </td>
-                    <td className="py-3 pr-4 text-ink-soft">{inv.period}</td>
-                    <td className="py-3 pr-4 font-mono text-ink-soft">
+                    <td className="py-4 px-6 text-sm font-medium text-ink-soft">{inv.period}</td>
+                    <td className="py-4 px-6 font-mono text-sm font-bold text-ink">
                       {formatUsd(inv.amount / 100)}
                     </td>
-                    <td className="py-3 pr-4 text-ink-muted">{inv.dueDate}</td>
-                    <td className="py-3 pr-4">
+                    <td className="py-4 px-6 text-xs font-semibold text-ink-muted">{inv.dueDate}</td>
+                    <td className="py-4 px-6">
                       <Pill tone={statusMeta[inv.status].tone}>
                         {inv.status}
                       </Pill>
                     </td>
-                    <td className="py-3 text-right">
+                    <td className="py-4 px-6 text-right">
                       <button
                         type="button"
-                        className="rounded-full border border-line bg-surface px-3 py-1 text-[11px] text-ink-soft transition-colors hover:text-ink"
+                        className="rounded-xl border border-line bg-surface px-4 py-1.5 text-xs font-bold text-ink-soft shadow-xs transition-colors hover:bg-surface-raised hover:text-ink"
                       >
                         View
                       </button>
@@ -141,9 +141,9 @@ export default function BillingPage() {
         </Card>
       </div>
 
-      <div className="mt-6 grid gap-4 lg:grid-cols-2">
+      <div className="mt-8 grid gap-6 lg:grid-cols-2">
         <Card title="Dunning policy" description="Automatic retry schedule for failed payments.">
-          <ol className="space-y-3">
+          <ol className="space-y-3.5">
             {[
               { day: "Day 0", action: "Payment fails — retry immediately" },
               { day: "Day 3", action: "Second retry + email reminder to owner" },
@@ -151,8 +151,8 @@ export default function BillingPage() {
               { day: "Day 14", action: "Subscription suspended — data kept, exportable" },
               { day: "Day 90", action: "Tenant eligible for permanent closure" },
             ].map((step) => (
-              <li key={step.day} className="flex gap-3 text-xs">
-                <span className="w-14 shrink-0 font-mono text-[10px] font-medium text-ink-muted">
+              <li key={step.day} className="flex items-center gap-4 text-sm font-medium">
+                <span className="w-18 shrink-0 font-mono text-xs font-bold text-primary bg-primary-light/50 px-2 py-0.5 rounded-md">
                   {step.day}
                 </span>
                 <span className="text-ink-soft">{step.action}</span>
@@ -162,7 +162,7 @@ export default function BillingPage() {
         </Card>
 
         <Card title="Credits & adjustments" description="Manual billing adjustments this period.">
-          <p className="text-xs text-ink-muted">
+          <p className="text-sm leading-relaxed text-ink-soft">
             No manual credits or adjustments have been issued this billing period. Credits
             applied to an invoice reduce the outstanding balance and appear on the invoice
             line-item history.

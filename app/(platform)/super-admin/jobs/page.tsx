@@ -6,7 +6,7 @@ import { formatNumber } from "@/lib/platform";
 export const metadata: Metadata = { title: "Background Jobs" };
 
 const ghostButton =
-  "inline-flex h-9 items-center gap-2 rounded-full border border-line bg-surface px-4 text-xs font-medium text-ink-soft transition-colors hover:text-ink";
+  "inline-flex h-11 items-center gap-2 rounded-xl border border-line bg-surface px-5 text-sm font-bold text-ink-soft shadow-xs transition-colors hover:bg-surface-raised hover:text-ink";
 
 type JobStatus = "completed" | "running" | "failed" | "queued" | "retrying";
 
@@ -62,48 +62,48 @@ export default function JobsPage() {
         description="Scheduled tasks, email jobs, reminders, retries, job failures and execution history."
         actions={
           <button type="button" className={ghostButton}>
-            <RefreshCw className="size-3.5" aria-hidden="true" />
+            <RefreshCw className="size-4" aria-hidden="true" />
             Refresh
           </button>
         }
       />
 
       <div className="grid gap-4 sm:grid-cols-3">
-        <KpiCard label="Completed (24h)" value={formatNumber(completedCount)} hint="successful runs" icon={<CheckCircle2 className="size-3.5" aria-hidden="true" />} />
-        <KpiCard label="Active / retrying" value={formatNumber(runningCount)} hint="in progress" icon={<Timer className="size-3.5" aria-hidden="true" />} />
-        <KpiCard label="Failed" value={formatNumber(failedCount)} hint="needs investigation" icon={<XCircle className="size-3.5" aria-hidden="true" />} />
+        <KpiCard label="Completed (24h)" value={formatNumber(completedCount)} hint="successful runs" icon={<CheckCircle2 className="size-5" aria-hidden="true" />} />
+        <KpiCard label="Active / retrying" value={formatNumber(runningCount)} hint="in progress" icon={<Timer className="size-5" aria-hidden="true" />} />
+        <KpiCard label="Failed" value={formatNumber(failedCount)} hint="needs investigation" icon={<XCircle className="size-5" aria-hidden="true" />} />
       </div>
 
-      <div className="mt-6 grid gap-4 lg:grid-cols-[1.6fr_1fr]">
+      <div className="mt-8 grid gap-6 lg:grid-cols-[1.6fr_1fr]">
         {/* Job run log */}
         <Card title="Recent job runs" description="Last 24 hours of job execution history.">
-          <div className="overflow-x-auto">
-            <table className="w-full text-xs">
+          <div className="overflow-x-auto -mx-6 -mb-6">
+            <table className="w-full text-sm">
               <thead>
-                <tr className="border-b border-line">
+                <tr className="border-b border-line bg-surface-raised/60">
                   {["Job", "School", "Status", "Duration", "Attempts", "Started", ""].map((h) => (
-                    <th key={h} className="pb-3 pr-4 text-left font-mono text-[9px] uppercase tracking-[0.15em] text-ink-muted last:pr-0">{h}</th>
+                    <th key={h} className="py-4 px-6 text-left font-sans text-xs font-bold uppercase tracking-wider text-slate-700">{h}</th>
                   ))}
                 </tr>
               </thead>
               <tbody className="divide-y divide-line">
                 {jobs.map((job) => (
-                  <tr key={job.id}>
-                    <td className="py-3 pr-4 font-medium">{job.name}</td>
-                    <td className="py-3 pr-4 text-ink-muted">{job.school ?? "Platform"}</td>
-                    <td className="py-3 pr-4">
+                  <tr key={job.id} className="transition-colors hover:bg-surface-raised/40">
+                    <td className="py-4 px-6 font-bold text-ink text-sm sm:text-base">{job.name}</td>
+                    <td className="py-4 px-6 text-sm font-medium text-ink-soft">{job.school ?? "Platform"}</td>
+                    <td className="py-4 px-6">
                       <Pill tone={statusMeta[job.status].tone}>{job.status}</Pill>
                     </td>
-                    <td className="py-3 pr-4 font-mono text-ink-muted">{job.duration ?? "—"}</td>
-                    <td className="py-3 pr-4 font-mono text-ink-muted">{job.attempts}</td>
-                    <td className="py-3 pr-4 text-ink-muted">{job.startedAt}</td>
-                    <td className="py-3 text-right">
+                    <td className="py-4 px-6 font-mono text-xs font-semibold text-ink-soft">{job.duration ?? "—"}</td>
+                    <td className="py-4 px-6 font-mono text-xs font-semibold text-ink-soft">{job.attempts}</td>
+                    <td className="py-4 px-6 text-xs font-medium text-ink-muted">{job.startedAt}</td>
+                    <td className="py-4 px-6 text-right">
                       {job.status === "failed" && (
                         <button
                           type="button"
-                          className="flex items-center gap-1 rounded-full border border-line bg-surface px-3 py-1 text-[11px] text-ink-soft transition-colors hover:text-ink"
+                          className="inline-flex items-center gap-1.5 rounded-xl border border-line bg-surface px-4 py-1.5 text-xs font-bold text-ink-soft shadow-xs transition-colors hover:bg-surface-raised hover:text-ink"
                         >
-                          <Play className="size-3" aria-hidden="true" />
+                          <Play className="size-3.5" aria-hidden="true" />
                           Retry
                         </button>
                       )}
@@ -119,13 +119,13 @@ export default function JobsPage() {
         <Card title="Scheduled jobs" description="Recurring Inngest jobs and their next run times.">
           <ul className="divide-y divide-line">
             {scheduledJobs.map((job) => (
-              <li key={job.name} className="py-3 first:pt-0 last:pb-0">
+              <li key={job.name} className="py-4 first:pt-0 last:pb-0">
                 <div className="flex items-start justify-between gap-2">
-                  <p className="text-xs font-medium">{job.name}</p>
-                  <span className="shrink-0 font-mono text-[10px] text-ink-muted">{job.cron}</span>
+                  <p className="text-sm sm:text-base font-bold text-ink">{job.name}</p>
+                  <span className="shrink-0 font-mono text-xs font-bold text-primary bg-primary-light/50 px-2 py-0.5 rounded-md">{job.cron}</span>
                 </div>
-                <p className="mt-1 flex items-center gap-1.5 text-[11px] text-ink-muted">
-                  <Clock className="size-3" aria-hidden="true" />
+                <p className="mt-1.5 flex items-center gap-1.5 text-xs sm:text-sm text-ink-soft">
+                  <Clock className="size-3.5" aria-hidden="true" />
                   Next: {job.nextRun}
                 </p>
               </li>
@@ -135,12 +135,12 @@ export default function JobsPage() {
       </div>
 
       {/* Safety note */}
-      <div className="mt-6 rounded-2xl border border-line bg-surface p-5">
-        <div className="flex items-start gap-3">
-          <AlertTriangle className="mt-0.5 size-4 shrink-0 text-ink-muted" aria-hidden="true" />
+      <div className="mt-8 rounded-2xl border border-line bg-surface p-6 shadow-xs">
+        <div className="flex items-start gap-3.5">
+          <AlertTriangle className="mt-0.5 size-5 shrink-0 text-warning" aria-hidden="true" />
           <div>
-            <p className="text-xs font-medium">Job safety guarantees</p>
-            <p className="mt-1 text-xs leading-6 text-ink-muted">
+            <p className="text-sm sm:text-base font-bold text-ink">Job safety guarantees</p>
+            <p className="mt-1.5 text-sm leading-relaxed text-ink-soft">
               All jobs are tenant-aware and idempotent — re-running a completed job will not
               duplicate invoices, emails or audit entries. Retry-safe side effects are enforced
               at the handler level. Failed jobs are retried up to 3 times with exponential

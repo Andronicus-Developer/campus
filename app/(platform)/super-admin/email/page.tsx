@@ -6,7 +6,7 @@ import { formatNumber } from "@/lib/platform";
 export const metadata: Metadata = { title: "Email Templates & Delivery" };
 
 const ghostButton =
-  "inline-flex h-9 items-center gap-2 rounded-full border border-line bg-surface px-4 text-xs font-medium text-ink-soft transition-colors hover:text-ink";
+  "inline-flex h-11 items-center gap-2 rounded-xl border border-line bg-surface px-5 text-sm font-bold text-ink hover:bg-surface-raised transition-all shadow-xs";
 
 type TemplateStatus = "active" | "draft" | "deprecated";
 type DeliveryStatus = "delivered" | "bounced" | "failed" | "pending";
@@ -78,64 +78,64 @@ export default function EmailPage() {
         description="Transactional email templates, delivery status, bounces, retries and Resend provider status."
         actions={
           <button type="button" className={ghostButton}>
-            <RefreshCw className="size-3.5" aria-hidden="true" />
+            <RefreshCw className="size-4" aria-hidden="true" />
             Sync Resend
           </button>
         }
       />
 
       <div className="grid gap-4 sm:grid-cols-3">
-        <KpiCard label="Active templates" value={formatNumber(activeTemplates)} hint="live and sending" icon={<Mail className="size-3.5" aria-hidden="true" />} />
-        <KpiCard label="Delivered (7d)" value={formatNumber(deliveredCount)} hint="confirmed received" icon={<Send className="size-3.5" aria-hidden="true" />} />
-        <KpiCard label="Bounces" value={formatNumber(bouncedCount)} hint="require review" icon={<AlertTriangle className="size-3.5" aria-hidden="true" />} />
+        <KpiCard label="Active templates" value={formatNumber(activeTemplates)} hint="live and sending" icon={<Mail className="size-5" aria-hidden="true" />} />
+        <KpiCard label="Delivered (7d)" value={formatNumber(deliveredCount)} hint="confirmed received" icon={<Send className="size-5" aria-hidden="true" />} />
+        <KpiCard label="Bounces" value={formatNumber(bouncedCount)} hint="require review" icon={<AlertTriangle className="size-5" aria-hidden="true" />} />
       </div>
 
       {/* Provider status */}
-      <div className="mt-6 rounded-2xl border border-line bg-surface p-5">
+      <div className="mt-8 rounded-2xl border border-line bg-surface p-6 shadow-xs">
         <div className="flex flex-wrap items-center justify-between gap-4">
-          <div className="flex items-center gap-3">
-            <Mail className="size-5 text-ink-muted" aria-hidden="true" />
+          <div className="flex items-center gap-3.5">
+            <Mail className="size-6 text-primary shrink-0" aria-hidden="true" />
             <div>
-              <p className="text-xs font-medium">Resend — email provider</p>
-              <p className="mt-0.5 text-[11px] text-ink-muted">Transactional + bulk delivery · domain verified</p>
+              <p className="text-sm sm:text-base font-bold text-ink">Resend — email provider</p>
+              <p className="mt-0.5 text-xs font-semibold text-ink-muted">Transactional + bulk delivery · domain verified</p>
             </div>
           </div>
-          <div className="flex items-center gap-3">
-            <div className="flex items-center gap-1.5 text-xs text-pine">
+          <div className="flex items-center gap-4">
+            <div className="flex items-center gap-2 text-sm font-bold text-pine">
               <CheckCircle2 className="size-4" aria-hidden="true" />
               Operational
             </div>
-            <span className="font-mono text-[10px] text-ink-muted">99.4% delivery · 0 queued</span>
+            <span className="font-mono text-xs font-bold text-ink-muted">99.4% delivery · 0 queued</span>
           </div>
         </div>
       </div>
 
-      <div className="mt-6 grid gap-4 lg:grid-cols-[1.4fr_1fr]">
+      <div className="mt-8 grid gap-6 lg:grid-cols-[1.4fr_1fr]">
         {/* Templates */}
         <Card title="Email templates" description="All transactional templates and their trigger events.">
           <div className="overflow-x-auto">
-            <table className="w-full text-xs">
+            <table className="w-full text-left">
               <thead>
-                <tr className="border-b border-line">
+                <tr className="border-b border-line bg-surface-raised/60">
                   {["Template", "Trigger", "Status", "Last sent", ""].map((h) => (
-                    <th key={h} className="pb-3 pr-4 text-left font-mono text-[9px] uppercase tracking-[0.15em] text-ink-muted last:pr-0">{h}</th>
+                    <th key={h} className="py-4 px-6 font-sans text-xs font-bold uppercase tracking-wider text-slate-700 last:text-right">{h}</th>
                   ))}
                 </tr>
               </thead>
               <tbody className="divide-y divide-line">
                 {templates.map((tpl) => (
-                  <tr key={tpl.id}>
-                    <td className="py-2.5 pr-4">
-                      <p className="font-medium">{tpl.name}</p>
-                      <p className="text-ink-muted">{tpl.subject}</p>
+                  <tr key={tpl.id} className="hover:bg-sand/20 transition-colors">
+                    <td className="py-4 px-6">
+                      <p className="text-sm sm:text-base font-bold text-ink">{tpl.name}</p>
+                      <p className="text-xs font-medium text-ink-muted mt-0.5">{tpl.subject}</p>
                     </td>
-                    <td className="py-2.5 pr-4 text-ink-muted">{tpl.trigger}</td>
-                    <td className="py-2.5 pr-4">
+                    <td className="py-4 px-6 text-sm font-semibold text-ink-soft">{tpl.trigger}</td>
+                    <td className="py-4 px-6">
                       <Pill tone={templateStatusMeta[tpl.status].tone}>{tpl.status}</Pill>
                     </td>
-                    <td className="py-2.5 pr-4 text-ink-muted">{tpl.lastSent ?? "—"}</td>
-                    <td className="py-2.5 text-right">
-                      <button type="button" className="rounded-full border border-line bg-surface px-3 py-1 text-[11px] text-ink-soft transition-colors hover:text-ink">
+                    <td className="py-4 px-6 text-sm font-medium text-ink-muted">{tpl.lastSent ?? "—"}</td>
+                    <td className="py-4 px-6 text-right">
+                      <button type="button" className="rounded-xl border border-line bg-surface px-4 py-2 text-xs font-bold text-ink hover:bg-surface-raised transition-colors shadow-xs">
                         Edit
                       </button>
                     </td>
@@ -150,15 +150,15 @@ export default function EmailPage() {
         <Card title="Recent delivery log" description="Last email events with status and retry count.">
           <ul className="divide-y divide-line">
             {deliveryLogs.map((log) => (
-              <li key={log.id} className="py-3 first:pt-0 last:pb-0">
+              <li key={log.id} className="py-4 first:pt-0 last:pb-0">
                 <div className="flex items-start justify-between gap-2">
-                  <p className="text-xs font-medium">{log.template}</p>
+                  <p className="text-sm font-bold text-ink">{log.template}</p>
                   <Pill tone={deliveryStatusMeta[log.status].tone}>{log.status}</Pill>
                 </div>
-                <p className="mt-0.5 text-[11px] text-ink-muted">
+                <p className="mt-1 text-xs font-semibold text-ink-soft">
                   {log.recipient} · {log.school}
                 </p>
-                <p className="mt-0.5 font-mono text-[10px] text-ink-muted">
+                <p className="mt-1 font-mono text-xs font-medium text-ink-muted">
                   {log.sentAt} · {log.attempts} attempt{log.attempts !== 1 ? "s" : ""}
                 </p>
               </li>

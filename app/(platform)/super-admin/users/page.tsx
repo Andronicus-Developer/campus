@@ -6,9 +6,9 @@ import { formatNumber } from "@/lib/platform";
 export const metadata: Metadata = { title: "Platform Users" };
 
 const ghostButton =
-  "inline-flex h-9 items-center gap-2 rounded-full border border-line bg-surface px-4 text-xs font-medium text-ink-soft transition-colors hover:text-ink";
+  "inline-flex h-11 items-center gap-2 rounded-xl border border-line bg-surface px-5 text-sm font-bold text-ink-soft shadow-xs transition-colors hover:bg-surface-raised hover:text-ink";
 const primaryButton =
-  "inline-flex h-9 items-center gap-2 rounded-full bg-ink px-4 text-xs font-medium text-paper transition-colors hover:bg-ink-soft";
+  "inline-flex h-11 items-center gap-2 rounded-xl bg-primary px-6 text-sm font-bold text-white shadow-xs transition-opacity hover:opacity-95";
 
 type OperatorStatus = "active" | "invited" | "suspended";
 type OperatorRole = "Super Admin" | "Support Agent" | "Finance Ops" | "Read Only";
@@ -53,11 +53,11 @@ export default function UsersPage() {
         actions={
           <>
             <button type="button" className={ghostButton}>
-              <Download className="size-3.5" aria-hidden="true" />
+              <Download className="size-4" aria-hidden="true" />
               Export
             </button>
             <button type="button" className={primaryButton}>
-              <Plus className="size-3.5" aria-hidden="true" />
+              <Plus className="size-4" aria-hidden="true" />
               Invite operator
             </button>
           </>
@@ -69,32 +69,32 @@ export default function UsersPage() {
           label="Active operators"
           value={formatNumber(activeCount)}
           hint="can access console"
-          icon={<Users className="size-3.5" aria-hidden="true" />}
+          icon={<Users className="size-5" aria-hidden="true" />}
         />
         <KpiCard
           label="MFA enrolled"
           value={`${mfaCount} / ${operators.length}`}
           hint="2-factor active"
-          icon={<ShieldCheck className="size-3.5" aria-hidden="true" />}
+          icon={<ShieldCheck className="size-5" aria-hidden="true" />}
         />
         <KpiCard
           label="Pending invites"
           value={formatNumber(invitedCount)}
           hint="awaiting sign-up"
-          icon={<UserCog className="size-3.5" aria-hidden="true" />}
+          icon={<UserCog className="size-5" aria-hidden="true" />}
         />
       </div>
 
-      <div className="mt-6">
+      <div className="mt-8">
         <Card title="Operator accounts" description="All platform-level user accounts and their current status.">
-          <div className="overflow-x-auto">
-            <table className="w-full text-xs">
+          <div className="overflow-x-auto -mx-6 -mb-6">
+            <table className="w-full text-sm">
               <thead>
-                <tr className="border-b border-line">
+                <tr className="border-b border-line bg-surface-raised/60">
                   {["Operator", "Role", "MFA", "Status", "Last login", "Member since", ""].map((h) => (
                     <th
                       key={h}
-                      className="pb-3 pr-4 text-left font-mono text-[9px] uppercase tracking-[0.15em] text-ink-muted last:pr-0"
+                      className="py-4 px-6 text-left font-sans text-xs font-bold uppercase tracking-wider text-slate-700"
                     >
                       {h}
                     </th>
@@ -103,38 +103,38 @@ export default function UsersPage() {
               </thead>
               <tbody className="divide-y divide-line">
                 {operators.map((op) => (
-                  <tr key={op.id}>
-                    <td className="py-3 pr-4">
-                      <div className="flex items-center gap-3">
-                        <Avatar name={op.name} className="size-7 shrink-0" />
+                  <tr key={op.id} className="transition-colors hover:bg-surface-raised/40">
+                    <td className="py-4 px-6">
+                      <div className="flex items-center gap-3.5">
+                        <Avatar name={op.name} className="size-9 shrink-0" />
                         <div>
-                          <p className="font-medium">{op.name}</p>
-                          <p className="text-ink-muted">{op.email}</p>
+                          <p className="font-bold text-ink text-sm sm:text-base">{op.name}</p>
+                          <p className="text-xs font-medium text-ink-muted mt-0.5">{op.email}</p>
                         </div>
                       </div>
                     </td>
-                    <td className="py-3 pr-4">
+                    <td className="py-4 px-6">
                       <Pill tone="neutral">{op.role}</Pill>
                     </td>
-                    <td className="py-3 pr-4">
+                    <td className="py-4 px-6">
                       {op.mfa ? (
-                        <span className="flex items-center gap-1 text-pine">
-                          <ShieldCheck className="size-3.5" aria-hidden="true" />
+                        <span className="flex items-center gap-1.5 text-xs font-bold text-success">
+                          <ShieldCheck className="size-4" aria-hidden="true" />
                           On
                         </span>
                       ) : (
-                        <span className="text-vermilion-deep">Off</span>
+                        <span className="text-xs font-bold text-danger">Off</span>
                       )}
                     </td>
-                    <td className="py-3 pr-4">
+                    <td className="py-4 px-6">
                       <Pill tone={statusMeta[op.status].tone}>{op.status}</Pill>
                     </td>
-                    <td className="py-3 pr-4 text-ink-muted">{op.lastLogin}</td>
-                    <td className="py-3 pr-4 text-ink-muted">{op.createdAt}</td>
-                    <td className="py-3 text-right">
+                    <td className="py-4 px-6 text-xs font-medium text-ink-muted">{op.lastLogin}</td>
+                    <td className="py-4 px-6 text-xs font-medium text-ink-muted">{op.createdAt}</td>
+                    <td className="py-4 px-6 text-right">
                       <button
                         type="button"
-                        className="rounded-full border border-line bg-surface px-3 py-1 text-[11px] text-ink-soft transition-colors hover:text-ink"
+                        className="rounded-xl border border-line bg-surface px-4 py-1.5 text-xs font-bold text-ink-soft shadow-xs transition-colors hover:bg-surface-raised hover:text-ink"
                       >
                         Manage
                       </button>
@@ -147,14 +147,14 @@ export default function UsersPage() {
         </Card>
       </div>
 
-      <div className="mt-6 rounded-2xl border border-amber-500/20 bg-amber-500/5 p-4">
-        <div className="flex items-start gap-3">
-          <ShieldCheck className="mt-0.5 size-4 shrink-0 text-amber-700" aria-hidden="true" />
-          <p className="text-xs leading-6 text-ink-soft">
-            <span className="font-medium text-ink">MFA not enforced for all operators.</span>{" "}
+      <div className="mt-8 rounded-2xl border border-amber-500/20 bg-amber-500/5 p-5 shadow-xs">
+        <div className="flex items-start gap-3.5">
+          <ShieldCheck className="mt-0.5 size-5 shrink-0 text-amber-700" aria-hidden="true" />
+          <p className="text-sm leading-relaxed text-ink-soft">
+            <span className="font-bold text-ink">MFA not enforced for all operators.</span>{" "}
             {operators.length - mfaCount} operator{operators.length - mfaCount !== 1 ? "s do" : " does"} not have
             multi-factor authentication enabled. Consider requiring MFA for all platform accounts
-            in <a href="/super-admin/security" className="underline hover:text-ink">Security & Access</a>.
+            in <a href="/super-admin/security" className="font-bold underline hover:text-ink">Security & Access</a>.
           </p>
         </div>
       </div>

@@ -6,7 +6,7 @@ import { formatNumber } from "@/lib/platform";
 export const metadata: Metadata = { title: "Roles & Permissions" };
 
 const primaryButton =
-  "inline-flex h-9 items-center gap-2 rounded-full bg-ink px-4 text-xs font-medium text-paper transition-colors hover:bg-ink-soft";
+  "inline-flex h-11 items-center gap-2 rounded-xl bg-primary px-6 text-sm font-bold text-white shadow-xs transition-opacity hover:opacity-95";
 
 type PlatformRole = {
   name: string;
@@ -97,7 +97,7 @@ export default function RolesPage() {
         description="Platform roles, permission catalogue and access policies for operator accounts."
         actions={
           <button type="button" className={primaryButton}>
-            <Plus className="size-3.5" aria-hidden="true" />
+            <Plus className="size-4" aria-hidden="true" />
             New role
           </button>
         }
@@ -108,55 +108,57 @@ export default function RolesPage() {
           label="Platform roles"
           value={formatNumber(platformRoles.length)}
           hint="system + custom"
-          icon={<UserCog className="size-3.5" aria-hidden="true" />}
+          icon={<UserCog className="size-5" aria-hidden="true" />}
         />
         <KpiCard
           label="Permissions defined"
           value={formatNumber(allPermissions.length)}
           hint="granular actions"
-          icon={<ShieldCheck className="size-3.5" aria-hidden="true" />}
+          icon={<ShieldCheck className="size-5" aria-hidden="true" />}
         />
         <KpiCard
           label="Custom roles"
           value={formatNumber(platformRoles.filter((r) => !r.system).length)}
           hint="non-system roles"
-          icon={<UserCog className="size-3.5" aria-hidden="true" />}
+          icon={<UserCog className="size-5" aria-hidden="true" />}
         />
       </div>
 
       {/* Role cards */}
-      <div className="mt-6 grid gap-4 lg:grid-cols-2">
+      <div className="mt-8 grid gap-6 lg:grid-cols-2">
         {platformRoles.map((role) => (
-          <div key={role.name} className="rounded-2xl border border-line bg-surface p-5">
-            <div className="flex items-start justify-between gap-3">
-              <div>
-                <div className="flex items-center gap-2">
-                  <h2 className="text-sm font-medium">{role.name}</h2>
-                  {role.system && (
-                    <Pill tone="neutral">System</Pill>
-                  )}
+          <div key={role.name} className="rounded-2xl border border-line bg-surface p-6 shadow-xs flex flex-col justify-between">
+            <div>
+              <div className="flex items-start justify-between gap-3">
+                <div>
+                  <div className="flex items-center gap-2.5">
+                    <h2 className="text-base sm:text-lg font-bold text-ink">{role.name}</h2>
+                    {role.system && (
+                      <Pill tone="neutral">System</Pill>
+                    )}
+                  </div>
+                  <p className="mt-1.5 text-sm leading-relaxed text-ink-soft">{role.description}</p>
                 </div>
-                <p className="mt-1 text-xs leading-5 text-ink-muted">{role.description}</p>
-              </div>
-              <span className="shrink-0 font-mono text-[10px] text-ink-muted">
-                {role.memberCount} member{role.memberCount !== 1 ? "s" : ""}
-              </span>
-            </div>
-            <div className="mt-4 flex flex-wrap gap-1.5">
-              {role.permissions.map((perm) => (
-                <span
-                  key={perm}
-                  className="rounded-full border border-line bg-sand/50 px-2 py-0.5 font-mono text-[9px] text-ink-muted"
-                >
-                  {perm}
+                <span className="shrink-0 font-mono text-xs font-semibold text-ink-soft bg-surface-raised px-2.5 py-1 rounded-md">
+                  {role.memberCount} member{role.memberCount !== 1 ? "s" : ""}
                 </span>
-              ))}
+              </div>
+              <div className="mt-5 flex flex-wrap gap-2">
+                {role.permissions.map((perm) => (
+                  <span
+                    key={perm}
+                    className="rounded-lg border border-line bg-surface-raised px-2.5 py-1 font-mono text-xs font-semibold text-ink-soft"
+                  >
+                    {perm}
+                  </span>
+                ))}
+              </div>
             </div>
             {!role.system && (
-              <div className="mt-4 border-t border-line pt-4 text-right">
+              <div className="mt-6 border-t border-line pt-4 text-right">
                 <button
                   type="button"
-                  className="rounded-full border border-line bg-surface px-3 py-1 text-[11px] text-ink-soft transition-colors hover:text-ink"
+                  className="rounded-xl border border-line bg-surface px-4 py-1.5 text-xs font-bold text-ink-soft shadow-xs transition-colors hover:bg-surface-raised hover:text-ink"
                 >
                   Edit role
                 </button>
@@ -167,19 +169,19 @@ export default function RolesPage() {
       </div>
 
       {/* Permission catalogue */}
-      <div className="mt-6">
+      <div className="mt-8">
         <Card
           title="Permission catalogue"
           description="All granular permissions available to platform roles."
         >
-          <div className="overflow-x-auto">
-            <table className="w-full text-xs">
+          <div className="overflow-x-auto -mx-6 -mb-6">
+            <table className="w-full text-sm">
               <thead>
-                <tr className="border-b border-line">
+                <tr className="border-b border-line bg-surface-raised/60">
                   {["Permission key", "Description", "Assigned to"].map((h) => (
                     <th
                       key={h}
-                      className="pb-3 pr-4 text-left font-mono text-[9px] uppercase tracking-[0.15em] text-ink-muted last:pr-0"
+                      className="py-4 px-6 text-left font-sans text-xs font-bold uppercase tracking-wider text-slate-700"
                     >
                       {h}
                     </th>
@@ -192,13 +194,13 @@ export default function RolesPage() {
                     .filter((r) => r.permissions.includes(perm.key))
                     .map((r) => r.name);
                   return (
-                    <tr key={perm.key}>
-                      <td className="py-2.5 pr-4">
-                        <span className="font-mono text-[10px] text-ink">{perm.key}</span>
+                    <tr key={perm.key} className="transition-colors hover:bg-surface-raised/40">
+                      <td className="py-4 px-6">
+                        <span className="font-mono text-xs font-bold text-primary">{perm.key}</span>
                       </td>
-                      <td className="py-2.5 pr-4 text-ink-muted">{perm.description}</td>
-                      <td className="py-2.5">
-                        <div className="flex flex-wrap gap-1">
+                      <td className="py-4 px-6 text-sm font-medium text-ink-soft">{perm.description}</td>
+                      <td className="py-4 px-6">
+                        <div className="flex flex-wrap gap-1.5">
                           {assignedRoles.map((r) => (
                             <Pill key={r} tone="muted">{r}</Pill>
                           ))}

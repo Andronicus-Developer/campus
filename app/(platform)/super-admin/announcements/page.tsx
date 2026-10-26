@@ -6,9 +6,9 @@ import { formatNumber } from "@/lib/platform";
 export const metadata: Metadata = { title: "Announcements" };
 
 const ghostButton =
-  "inline-flex h-9 items-center gap-2 rounded-full border border-line bg-surface px-4 text-xs font-medium text-ink-soft transition-colors hover:text-ink";
+  "inline-flex h-11 items-center gap-2 rounded-xl border border-line bg-surface px-5 text-sm font-bold text-ink hover:bg-surface-raised transition-all shadow-xs";
 const primaryButton =
-  "inline-flex h-9 items-center gap-2 rounded-full bg-ink px-4 text-xs font-medium text-paper transition-colors hover:bg-ink-soft";
+  "inline-flex h-11 items-center gap-2 rounded-xl bg-ink px-5 text-sm font-bold text-paper transition-all hover:bg-ink-soft shadow-xs";
 
 type AnnouncementStatus   = "published" | "draft" | "scheduled" | "archived";
 type AnnouncementAudience = "All tenants" | "Trial tenants" | "Enterprise" | "Growth" | "Specific schools" | "Platform operators";
@@ -53,11 +53,11 @@ export default function AnnouncementsPage() {
         actions={
           <>
             <button type="button" className={ghostButton}>
-              <Eye className="size-3.5" aria-hidden="true" />
+              <Eye className="size-4" aria-hidden="true" />
               Preview
             </button>
             <button type="button" className={primaryButton}>
-              <Plus className="size-3.5" aria-hidden="true" />
+              <Plus className="size-4" aria-hidden="true" />
               New announcement
             </button>
           </>
@@ -65,33 +65,33 @@ export default function AnnouncementsPage() {
       />
 
       <div className="grid gap-4 sm:grid-cols-3">
-        <KpiCard label="Published" value={formatNumber(publishedCount)} hint="live announcements" icon={<Megaphone className="size-3.5" aria-hidden="true" />} />
-        <KpiCard label="Scheduled" value={formatNumber(scheduledCount)} hint="pending publish" icon={<Send className="size-3.5" aria-hidden="true" />} />
-        <KpiCard label="Total views" value={formatNumber(totalViews)} hint="published posts" icon={<Eye className="size-3.5" aria-hidden="true" />} />
+        <KpiCard label="Published" value={formatNumber(publishedCount)} hint="live announcements" icon={<Megaphone className="size-5" aria-hidden="true" />} />
+        <KpiCard label="Scheduled" value={formatNumber(scheduledCount)} hint="pending publish" icon={<Send className="size-5" aria-hidden="true" />} />
+        <KpiCard label="Total views" value={formatNumber(totalViews)} hint="published posts" icon={<Eye className="size-5" aria-hidden="true" />} />
       </div>
 
-      <div className="mt-6">
+      <div className="mt-8">
         <Card title="Announcement log" description="All platform announcements across all audiences.">
           <div className="overflow-x-auto">
-            <table className="w-full text-xs">
+            <table className="w-full text-left">
               <thead>
-                <tr className="border-b border-line">
+                <tr className="border-b border-line bg-surface-raised/60">
                   {["Title", "Audience", "Status", "Author", "Published", "Views", ""].map((h) => (
-                    <th key={h} className="pb-3 pr-4 text-left font-mono text-[9px] uppercase tracking-[0.15em] text-ink-muted last:pr-0">{h}</th>
+                    <th key={h} className="py-4 px-6 font-sans text-xs font-bold uppercase tracking-wider text-slate-700 last:text-right">{h}</th>
                   ))}
                 </tr>
               </thead>
               <tbody className="divide-y divide-line">
                 {announcements.map((ann) => (
-                  <tr key={ann.id}>
-                    <td className="py-3 pr-4 font-medium">{ann.title}</td>
-                    <td className="py-3 pr-4"><Pill tone="neutral">{ann.audience}</Pill></td>
-                    <td className="py-3 pr-4"><Pill tone={statusMeta[ann.status].tone}>{ann.status}</Pill></td>
-                    <td className="py-3 pr-4 text-ink-soft">{ann.author}</td>
-                    <td className="py-3 pr-4 text-ink-muted">{ann.publishedAt ?? "—"}</td>
-                    <td className="py-3 pr-4 font-mono text-ink-muted">{ann.views != null ? formatNumber(ann.views) : "—"}</td>
-                    <td className="py-3 text-right">
-                      <button type="button" className="rounded-full border border-line bg-surface px-3 py-1 text-[11px] text-ink-soft transition-colors hover:text-ink">
+                  <tr key={ann.id} className="hover:bg-sand/20 transition-colors">
+                    <td className="py-4 px-6 text-sm sm:text-base font-bold text-ink">{ann.title}</td>
+                    <td className="py-4 px-6"><Pill tone="neutral">{ann.audience}</Pill></td>
+                    <td className="py-4 px-6"><Pill tone={statusMeta[ann.status].tone}>{ann.status}</Pill></td>
+                    <td className="py-4 px-6 text-sm font-bold text-ink-soft">{ann.author}</td>
+                    <td className="py-4 px-6 text-sm font-medium text-ink-muted">{ann.publishedAt ?? "—"}</td>
+                    <td className="py-4 px-6 font-mono text-xs font-bold text-ink">{ann.views != null ? formatNumber(ann.views) : "—"}</td>
+                    <td className="py-4 px-6 text-right">
+                      <button type="button" className="rounded-xl border border-line bg-surface px-4 py-2 text-xs font-bold text-ink hover:bg-surface-raised transition-colors shadow-xs">
                         Edit
                       </button>
                     </td>

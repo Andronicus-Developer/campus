@@ -6,9 +6,9 @@ import { formatNumber } from "@/lib/platform";
 export const metadata: Metadata = { title: "Coupons & Promotions" };
 
 const ghostButton =
-  "inline-flex h-9 items-center gap-2 rounded-full border border-line bg-surface px-4 text-xs font-medium text-ink-soft transition-colors hover:text-ink";
+  "inline-flex h-11 items-center gap-2 rounded-xl border border-line bg-surface px-5 text-sm font-bold text-ink-soft shadow-xs transition-colors hover:bg-surface-raised hover:text-ink";
 const primaryButton =
-  "inline-flex h-9 items-center gap-2 rounded-full bg-ink px-4 text-xs font-medium text-paper transition-colors hover:bg-ink-soft";
+  "inline-flex h-11 items-center gap-2 rounded-xl bg-primary px-6 text-sm font-bold text-white shadow-xs transition-opacity hover:opacity-95";
 
 type CouponStatus = "active" | "expired" | "scheduled" | "paused";
 
@@ -52,11 +52,11 @@ export default function CouponsPage() {
         actions={
           <>
             <button type="button" className={ghostButton}>
-              <Download className="size-3.5" aria-hidden="true" />
+              <Download className="size-4" aria-hidden="true" />
               Export
             </button>
             <button type="button" className={primaryButton}>
-              <Plus className="size-3.5" aria-hidden="true" />
+              <Plus className="size-4" aria-hidden="true" />
               Create coupon
             </button>
           </>
@@ -68,32 +68,32 @@ export default function CouponsPage() {
           label="Active coupons"
           value={formatNumber(activeCoupons)}
           hint="currently redeemable"
-          icon={<Tag className="size-3.5" aria-hidden="true" />}
+          icon={<Tag className="size-5" aria-hidden="true" />}
         />
         <KpiCard
           label="Total redemptions"
           value={formatNumber(totalUses)}
           hint="all time"
-          icon={<Users className="size-3.5" aria-hidden="true" />}
+          icon={<Users className="size-5" aria-hidden="true" />}
         />
         <KpiCard
           label="Expiring this month"
           value="2"
           hint="need review"
-          icon={<Calendar className="size-3.5" aria-hidden="true" />}
+          icon={<Calendar className="size-5" aria-hidden="true" />}
         />
       </div>
 
-      <div className="mt-6">
+      <div className="mt-8">
         <Card title="Coupon catalogue" description="All discount codes across all promotions.">
-          <div className="overflow-x-auto">
-            <table className="w-full text-xs">
+          <div className="overflow-x-auto -mx-6 -mb-6">
+            <table className="w-full text-sm">
               <thead>
-                <tr className="border-b border-line">
+                <tr className="border-b border-line bg-surface-raised/60">
                   {["Code", "Description", "Discount", "Applies to", "Uses", "Expires", "Status"].map((h) => (
                     <th
                       key={h}
-                      className="pb-3 pr-4 text-left font-mono text-[9px] uppercase tracking-[0.15em] text-ink-muted last:pr-0"
+                      className="py-4 px-6 text-left font-sans text-xs font-bold uppercase tracking-wider text-slate-700"
                     >
                       {h}
                     </th>
@@ -102,28 +102,28 @@ export default function CouponsPage() {
               </thead>
               <tbody className="divide-y divide-line">
                 {coupons.map((coupon) => (
-                  <tr key={coupon.code}>
-                    <td className="py-3 pr-4">
-                      <span className="rounded-lg border border-line bg-paper px-2 py-1 font-mono text-[10px] font-medium">
+                  <tr key={coupon.code} className="transition-colors hover:bg-surface-raised/40">
+                    <td className="py-4 px-6">
+                      <span className="rounded-lg border border-primary/20 bg-primary-light/50 px-2.5 py-1 font-mono text-xs font-bold text-primary">
                         {coupon.code}
                       </span>
                     </td>
-                    <td className="py-3 pr-4 text-ink-soft">{coupon.description}</td>
-                    <td className="py-3 pr-4">
-                      <span className="flex items-center gap-1 font-mono text-[11px] font-medium text-ink">
-                        <Percent className="size-3 text-ink-muted" aria-hidden="true" />
+                    <td className="py-4 px-6 text-sm font-semibold text-ink">{coupon.description}</td>
+                    <td className="py-4 px-6">
+                      <span className="flex items-center gap-1.5 font-mono text-sm font-bold text-ink">
+                        <Percent className="size-3.5 text-ink-muted" aria-hidden="true" />
                         {coupon.discount}
                       </span>
                     </td>
-                    <td className="py-3 pr-4 text-ink-muted">{coupon.appliesTo}</td>
-                    <td className="py-3 pr-4 font-mono text-ink-soft">
+                    <td className="py-4 px-6 text-sm text-ink-soft">{coupon.appliesTo}</td>
+                    <td className="py-4 px-6 font-mono text-xs font-bold text-ink">
                       {coupon.uses}
                       {coupon.maxUses ? ` / ${coupon.maxUses}` : " / ∞"}
                     </td>
-                    <td className="py-3 pr-4 text-ink-muted">
+                    <td className="py-4 px-6 text-xs font-medium text-ink-muted">
                       {coupon.expires ?? "No expiry"}
                     </td>
-                    <td className="py-3">
+                    <td className="py-4 px-6">
                       <Pill tone={statusMeta[coupon.status].tone}>{coupon.status}</Pill>
                     </td>
                   </tr>

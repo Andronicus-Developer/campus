@@ -6,7 +6,7 @@ import { formatNumber } from "@/lib/platform";
 export const metadata: Metadata = { title: "Storage & Data" };
 
 const ghostButton =
-  "inline-flex h-9 items-center gap-2 rounded-full border border-line bg-surface px-4 text-xs font-medium text-ink-soft transition-colors hover:text-ink";
+  "inline-flex h-11 items-center gap-2 rounded-xl border border-line bg-surface px-5 text-sm font-bold text-ink hover:bg-surface-raised transition-all shadow-xs";
 
 type FileCategory = "report-card" | "export" | "document" | "avatar" | "backup";
 
@@ -56,7 +56,7 @@ export default function StoragePage() {
         description="Supabase Storage usage, private file metadata, retention policies and storage diagnostics."
         actions={
           <button type="button" className={ghostButton}>
-            <Download className="size-3.5" aria-hidden="true" />
+            <Download className="size-4" aria-hidden="true" />
             Export manifest
           </button>
         }
@@ -67,37 +67,37 @@ export default function StoragePage() {
           label="Total used"
           value={`${totalUsed.toFixed(1)} GB`}
           hint="across all buckets"
-          icon={<HardDrive className="size-3.5" aria-hidden="true" />}
+          icon={<HardDrive className="size-5" aria-hidden="true" />}
         />
         <KpiCard
           label="Files stored"
           value={formatNumber(files.length)}
           hint="private objects only"
-          icon={<FileText className="size-3.5" aria-hidden="true" />}
+          icon={<FileText className="size-5" aria-hidden="true" />}
         />
         <KpiCard
           label="Expiring (7d)"
           value={formatNumber(files.filter((f) => f.expiresAt).length)}
           hint="signed URL exports"
-          icon={<Trash2 className="size-3.5" aria-hidden="true" />}
+          icon={<Trash2 className="size-5" aria-hidden="true" />}
         />
       </div>
 
       {/* Bucket usage */}
-      <div className="mt-6">
+      <div className="mt-8">
         <Card title="Bucket breakdown" description="Storage consumption by bucket across all tenants.">
           <ul className="space-y-4">
             {bucketBreakdown.map((bucket) => {
               const pct = Math.min(100, (bucket.used / bucket.total) * 100);
               return (
-                <li key={bucket.name}>
-                  <div className="mb-1.5 flex items-center justify-between text-xs">
-                    <span className="font-mono text-ink">{bucket.name}</span>
-                    <span className="text-ink-muted">
-                      {bucket.used} GB / {bucket.total} GB
+                <li key={bucket.name} className="space-y-2">
+                  <div className="flex items-center justify-between text-sm">
+                    <span className="font-mono text-xs sm:text-sm font-bold text-ink">{bucket.name}</span>
+                    <span className="font-mono text-xs sm:text-sm font-semibold text-ink-muted">
+                      <strong className="text-ink font-bold">{bucket.used} GB</strong> / {bucket.total} GB
                     </span>
                   </div>
-                  <div className="h-2 overflow-hidden rounded-full bg-sand">
+                  <div className="h-2.5 overflow-hidden rounded-full bg-sand">
                     <div
                       className={`h-full rounded-full transition-all ${pct > 80 ? "bg-vermilion" : "bg-pine"}`}
                       style={{ width: `${pct}%` }}
@@ -112,39 +112,39 @@ export default function StoragePage() {
       </div>
 
       {/* File table */}
-      <div className="mt-6">
+      <div className="mt-8">
         <Card title="Stored files" description="Private Supabase Storage objects. Access via signed URLs only.">
           <div className="overflow-x-auto">
-            <table className="w-full text-xs">
+            <table className="w-full text-left">
               <thead>
-                <tr className="border-b border-line">
+                <tr className="border-b border-line bg-surface-raised/60">
                   {["File", "School", "Type", "Size", "Uploaded", "Expires", ""].map((h) => (
-                    <th key={h} className="pb-3 pr-4 text-left font-mono text-[9px] uppercase tracking-[0.15em] text-ink-muted last:pr-0">{h}</th>
+                    <th key={h} className="py-4 px-6 font-sans text-xs font-bold uppercase tracking-wider text-slate-700 last:text-right">{h}</th>
                   ))}
                 </tr>
               </thead>
               <tbody className="divide-y divide-line">
                 {files.map((file) => (
-                  <tr key={file.id}>
-                    <td className="py-3 pr-4">
-                      <div className="flex items-center gap-2">
-                        <Lock className="size-3.5 shrink-0 text-ink-muted" aria-hidden="true" />
-                        <span className="font-medium">{file.name}</span>
+                  <tr key={file.id} className="hover:bg-sand/20 transition-colors">
+                    <td className="py-4 px-6">
+                      <div className="flex items-center gap-3">
+                        <Lock className="size-4 shrink-0 text-ink-muted" aria-hidden="true" />
+                        <span className="text-sm sm:text-base font-bold text-ink">{file.name}</span>
                       </div>
                     </td>
-                    <td className="py-3 pr-4 text-ink-soft">{file.school}</td>
-                    <td className="py-3 pr-4">
+                    <td className="py-4 px-6 text-sm font-bold text-ink-soft">{file.school}</td>
+                    <td className="py-4 px-6">
                       <Pill tone={categoryMeta[file.category].tone}>
                         {categoryMeta[file.category].label}
                       </Pill>
                     </td>
-                    <td className="py-3 pr-4 font-mono text-ink-muted">{file.sizeMb} MB</td>
-                    <td className="py-3 pr-4 text-ink-muted">{file.uploadedAt}</td>
-                    <td className="py-3 pr-4 text-ink-muted">{file.expiresAt ?? "No expiry"}</td>
-                    <td className="py-3 text-right">
+                    <td className="py-4 px-6 font-mono text-xs font-bold text-ink">{file.sizeMb} MB</td>
+                    <td className="py-4 px-6 text-sm font-medium text-ink-muted">{file.uploadedAt}</td>
+                    <td className="py-4 px-6 text-sm font-medium text-ink-muted">{file.expiresAt ?? "No expiry"}</td>
+                    <td className="py-4 px-6 text-right">
                       <button
                         type="button"
-                        className="rounded-full border border-line bg-surface px-3 py-1 text-[11px] text-ink-soft transition-colors hover:text-ink"
+                        className="rounded-xl border border-line bg-surface px-4 py-2 text-xs font-bold text-ink hover:bg-surface-raised transition-colors shadow-xs"
                       >
                         Signed URL
                       </button>
@@ -157,12 +157,12 @@ export default function StoragePage() {
         </Card>
       </div>
 
-      <div className="mt-6 rounded-2xl border border-line bg-surface p-5">
-        <div className="flex items-start gap-3">
-          <Lock className="mt-0.5 size-4 shrink-0 text-ink-muted" aria-hidden="true" />
+      <div className="mt-8 rounded-2xl border border-line bg-surface-raised/40 p-6 shadow-xs">
+        <div className="flex items-start gap-3.5">
+          <Lock className="mt-0.5 size-5 shrink-0 text-primary" aria-hidden="true" />
           <div>
-            <p className="text-xs font-medium">Storage security policy</p>
-            <p className="mt-1 text-xs leading-6 text-ink-muted">
+            <p className="text-sm sm:text-base font-bold text-ink">Storage security policy</p>
+            <p className="mt-1.5 text-sm leading-relaxed text-ink-soft">
               All objects are stored in private Supabase Storage buckets. Direct public URLs are
               disabled. Access is granted only through short-lived signed URLs generated after
               server-side authorization. File type and size are validated at upload. Tenant

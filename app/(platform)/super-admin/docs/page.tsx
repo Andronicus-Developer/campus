@@ -5,7 +5,7 @@ import { Card, PageHeader } from "@/components/platform/ui";
 export const metadata: Metadata = { title: "Docs & Help Center" };
 
 const ghostButton =
-  "inline-flex h-9 items-center gap-2 rounded-full border border-line bg-surface px-4 text-xs font-medium text-ink-soft transition-colors hover:text-ink";
+  "inline-flex h-11 items-center gap-2 rounded-xl border border-line bg-surface px-5 text-sm font-bold text-ink hover:bg-surface-raised transition-all shadow-xs";
 
 type DocCategory = {
   title: string;
@@ -80,38 +80,38 @@ export default function DocsPage() {
         description="Internal operator guidance, runbooks and procedural documentation."
         actions={
           <button type="button" className={ghostButton}>
-            <ExternalLink className="size-3.5" aria-hidden="true" />
+            <ExternalLink className="size-4" aria-hidden="true" />
             Open public docs
           </button>
         }
       />
 
       {/* Search */}
-      <div className="mb-6 flex h-12 items-center gap-3 rounded-2xl border border-line bg-surface px-4">
-        <Search className="size-4 shrink-0 text-ink-muted" aria-hidden="true" />
+      <div className="mb-8 flex h-12 items-center gap-3.5 rounded-2xl border border-line bg-surface-raised/40 px-5 shadow-xs">
+        <Search className="size-5 shrink-0 text-primary" aria-hidden="true" />
         <input
           type="search"
           placeholder="Search operator documentation…"
-          className="flex-1 bg-transparent text-sm outline-none placeholder:text-ink-muted"
+          className="flex-1 bg-transparent text-sm font-semibold outline-none placeholder:text-ink-muted placeholder:font-normal"
         />
       </div>
 
-      <div className="grid gap-4 lg:grid-cols-2 xl:grid-cols-3">
+      <div className="grid gap-6 lg:grid-cols-2 xl:grid-cols-3">
         {categories.map((cat) => (
           <Card key={cat.title} title={cat.title} description={cat.description}>
-            <ul className="space-y-2.5">
+            <ul className="space-y-3">
               {cat.articles.map((article) => (
                 <li key={article.title}>
                   <a
                     href={article.href}
-                    className="group flex items-start gap-2 text-xs text-ink-soft transition-colors hover:text-ink"
+                    className="group flex items-start gap-3 text-sm font-semibold text-ink-soft transition-colors hover:text-ink"
                   >
                     <FileText
-                      className="mt-0.5 size-3.5 shrink-0 text-ink-muted group-hover:text-ink-soft"
+                      className="mt-0.5 size-4 shrink-0 text-primary group-hover:text-primary-deep"
                       aria-hidden="true"
                     />
-                    <span className="flex-1 leading-5">{article.title}</span>
-                    <span className="shrink-0 font-mono text-[9px] text-ink-muted">
+                    <span className="flex-1 leading-snug">{article.title}</span>
+                    <span className="shrink-0 font-mono text-xs font-semibold text-ink-muted">
                       {article.updated}
                     </span>
                   </a>
@@ -122,14 +122,14 @@ export default function DocsPage() {
         ))}
       </div>
 
-      <div className="mt-6 rounded-2xl border border-line bg-surface p-5">
-        <div className="flex items-start gap-3">
-          <BookOpen className="mt-0.5 size-4 shrink-0 text-ink-muted" aria-hidden="true" />
+      <div className="mt-8 rounded-2xl border border-line bg-surface-raised/40 p-6 shadow-xs">
+        <div className="flex items-start gap-3.5">
+          <BookOpen className="mt-0.5 size-5 shrink-0 text-primary" aria-hidden="true" />
           <div>
-            <p className="text-xs font-medium">Contributing to operator docs</p>
-            <p className="mt-1 text-xs leading-6 text-ink-muted">
+            <p className="text-sm sm:text-base font-bold text-ink">Contributing to operator docs</p>
+            <p className="mt-1.5 text-sm leading-relaxed text-ink-soft">
               Runbooks and guides live in the repository at{" "}
-              <code className="rounded bg-sand px-1 font-mono text-[10px]">docs/operator/</code>.
+              <code className="rounded-md bg-primary-light/50 px-2 py-0.5 font-mono text-xs font-bold text-primary">docs/operator/</code>.
               Submit a PR with updates — all docs are reviewed before merging to ensure they
               reflect the current production behaviour.
             </p>

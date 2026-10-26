@@ -6,9 +6,9 @@ import { formatNumber } from "@/lib/platform";
 export const metadata: Metadata = { title: "Support Tickets" };
 
 const ghostButton =
-  "inline-flex h-9 items-center gap-2 rounded-full border border-line bg-surface px-4 text-xs font-medium text-ink-soft transition-colors hover:text-ink";
+  "inline-flex h-11 items-center gap-2 rounded-xl border border-line bg-surface px-5 text-sm font-bold text-ink hover:bg-surface-raised transition-all shadow-xs";
 const primaryButton =
-  "inline-flex h-9 items-center gap-2 rounded-full bg-ink px-4 text-xs font-medium text-paper transition-colors hover:bg-ink-soft";
+  "inline-flex h-11 items-center gap-2 rounded-xl bg-ink px-5 text-sm font-bold text-paper transition-all hover:bg-ink-soft shadow-xs";
 
 type TicketStatus   = "open" | "pending" | "resolved" | "escalated";
 type TicketPriority = "low" | "normal" | "high" | "urgent";
@@ -65,11 +65,11 @@ export default function TicketsPage() {
         actions={
           <>
             <button type="button" className={ghostButton}>
-              <Download className="size-3.5" aria-hidden="true" />
+              <Download className="size-4" aria-hidden="true" />
               Export
             </button>
             <button type="button" className={primaryButton}>
-              <Plus className="size-3.5" aria-hidden="true" />
+              <Plus className="size-4" aria-hidden="true" />
               New ticket
             </button>
           </>
@@ -77,39 +77,39 @@ export default function TicketsPage() {
       />
 
       <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
-        <KpiCard label="Open" value={formatNumber(openCount)} hint="awaiting response" icon={<MessageSquare className="size-3.5" aria-hidden="true" />} />
-        <KpiCard label="Pending" value={formatNumber(pendingCount)} hint="awaiting school" icon={<MessageSquare className="size-3.5" aria-hidden="true" />} />
-        <KpiCard label="Escalated" value={formatNumber(escalated)} hint="needs senior review" icon={<MessageSquare className="size-3.5" aria-hidden="true" />} />
-        <KpiCard label="Unassigned" value={formatNumber(unassigned)} hint="no agent yet" icon={<MessageSquare className="size-3.5" aria-hidden="true" />} />
+        <KpiCard label="Open" value={formatNumber(openCount)} hint="awaiting response" icon={<MessageSquare className="size-5" aria-hidden="true" />} />
+        <KpiCard label="Pending" value={formatNumber(pendingCount)} hint="awaiting school" icon={<MessageSquare className="size-5" aria-hidden="true" />} />
+        <KpiCard label="Escalated" value={formatNumber(escalated)} hint="needs senior review" icon={<MessageSquare className="size-5" aria-hidden="true" />} />
+        <KpiCard label="Unassigned" value={formatNumber(unassigned)} hint="no agent yet" icon={<MessageSquare className="size-5" aria-hidden="true" />} />
       </div>
 
-      <div className="mt-6">
+      <div className="mt-8">
         <Card title="Ticket queue" description="All tickets sorted by last activity.">
           <div className="overflow-x-auto">
-            <table className="w-full text-xs">
+            <table className="w-full text-left">
               <thead>
-                <tr className="border-b border-line">
+                <tr className="border-b border-line bg-surface-raised/60">
                   {["ID", "Subject", "School", "Priority", "Status", "Assigned to", "Updated", ""].map((h) => (
-                    <th key={h} className="pb-3 pr-4 text-left font-mono text-[9px] uppercase tracking-[0.15em] text-ink-muted last:pr-0">{h}</th>
+                    <th key={h} className="py-4 px-6 font-sans text-xs font-bold uppercase tracking-wider text-slate-700 last:text-right">{h}</th>
                   ))}
                 </tr>
               </thead>
               <tbody className="divide-y divide-line">
                 {tickets.map((ticket) => (
-                  <tr key={ticket.id}>
-                    <td className="py-3 pr-4 font-mono text-[10px] text-ink-muted">{ticket.id}</td>
-                    <td className="py-3 pr-4 font-medium">{ticket.subject}</td>
-                    <td className="py-3 pr-4 text-ink-soft">{ticket.school}</td>
-                    <td className="py-3 pr-4">
+                  <tr key={ticket.id} className="hover:bg-sand/20 transition-colors">
+                    <td className="py-4 px-6 font-mono text-xs font-bold text-primary">{ticket.id}</td>
+                    <td className="py-4 px-6 text-sm sm:text-base font-bold text-ink">{ticket.subject}</td>
+                    <td className="py-4 px-6 text-sm font-bold text-ink-soft">{ticket.school}</td>
+                    <td className="py-4 px-6">
                       <Pill tone={priorityMeta[ticket.priority].tone}>{ticket.priority}</Pill>
                     </td>
-                    <td className="py-3 pr-4">
+                    <td className="py-4 px-6">
                       <Pill tone={statusMeta[ticket.status].tone}>{ticket.status}</Pill>
                     </td>
-                    <td className="py-3 pr-4 text-ink-muted">{ticket.assignedTo ?? "—"}</td>
-                    <td className="py-3 pr-4 text-ink-muted">{ticket.updatedAt}</td>
-                    <td className="py-3 text-right">
-                      <button type="button" className="rounded-full border border-line bg-surface px-3 py-1 text-[11px] text-ink-soft transition-colors hover:text-ink">
+                    <td className="py-4 px-6 text-sm font-semibold text-ink-muted">{ticket.assignedTo ?? "—"}</td>
+                    <td className="py-4 px-6 text-sm font-medium text-ink-muted">{ticket.updatedAt}</td>
+                    <td className="py-4 px-6 text-right">
+                      <button type="button" className="rounded-xl border border-line bg-surface px-4 py-2 text-xs font-bold text-ink hover:bg-surface-raised transition-colors shadow-xs">
                         Open
                       </button>
                     </td>

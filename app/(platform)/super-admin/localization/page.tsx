@@ -6,9 +6,9 @@ import { formatNumber } from "@/lib/platform";
 export const metadata: Metadata = { title: "Localization & Regional Settings" };
 
 const ghostButton =
-  "inline-flex h-9 items-center gap-2 rounded-full border border-line bg-surface px-4 text-xs font-medium text-ink-soft transition-colors hover:text-ink";
+  "inline-flex h-11 items-center gap-2 rounded-xl border border-line bg-surface px-5 text-sm font-bold text-ink hover:bg-surface-raised transition-all shadow-xs";
 const primaryButton =
-  "inline-flex h-9 items-center gap-2 rounded-full bg-ink px-4 text-xs font-medium text-paper transition-colors hover:bg-ink-soft";
+  "inline-flex h-11 items-center gap-2 rounded-xl bg-ink px-5 text-sm font-bold text-paper transition-all hover:bg-ink-soft shadow-xs";
 
 type LocaleStatus = "active" | "beta" | "planned";
 
@@ -59,11 +59,11 @@ export default function LocalizationPage() {
         actions={
           <>
             <button type="button" className={ghostButton}>
-              <Plus className="size-3.5" aria-hidden="true" />
+              <Plus className="size-4" aria-hidden="true" />
               Add locale
             </button>
             <button type="button" className={primaryButton}>
-              <Save className="size-3.5" aria-hidden="true" />
+              <Save className="size-4" aria-hidden="true" />
               Save defaults
             </button>
           </>
@@ -75,46 +75,46 @@ export default function LocalizationPage() {
           label="Active locales"
           value={formatNumber(locales.filter((l) => l.status === "active").length)}
           hint="fully supported"
-          icon={<Globe2 className="size-3.5" aria-hidden="true" />}
+          icon={<Globe2 className="size-5" aria-hidden="true" />}
         />
         <KpiCard
           label="Beta locales"
           value={formatNumber(locales.filter((l) => l.status === "beta").length)}
           hint="in testing"
-          icon={<Globe2 className="size-3.5" aria-hidden="true" />}
+          icon={<Globe2 className="size-5" aria-hidden="true" />}
         />
         <KpiCard
           label="Planned locales"
           value={formatNumber(locales.filter((l) => l.status === "planned").length)}
           hint="on roadmap"
-          icon={<Globe2 className="size-3.5" aria-hidden="true" />}
+          icon={<Globe2 className="size-5" aria-hidden="true" />}
         />
       </div>
 
-      <div className="mt-6 grid gap-4 lg:grid-cols-[1.5fr_1fr]">
+      <div className="mt-8 grid gap-6 lg:grid-cols-[1.5fr_1fr]">
         {/* Locale table */}
         <Card title="Supported locales" description="Regions and languages available to tenant schools.">
           <div className="overflow-x-auto">
-            <table className="w-full text-xs">
+            <table className="w-full text-left">
               <thead>
-                <tr className="border-b border-line">
+                <tr className="border-b border-line bg-surface-raised/60">
                   {["Locale", "Region", "Currency", "Date format", "Schools", "Status"].map((h) => (
-                    <th key={h} className="pb-3 pr-4 text-left font-mono text-[9px] uppercase tracking-[0.15em] text-ink-muted last:pr-0">{h}</th>
+                    <th key={h} className="py-4 px-6 font-sans text-xs font-bold uppercase tracking-wider text-slate-700">{h}</th>
                   ))}
                 </tr>
               </thead>
               <tbody className="divide-y divide-line">
                 {locales.map((locale) => (
-                  <tr key={locale.code}>
-                    <td className="py-3 pr-4">
-                      <p className="font-medium">{locale.name}</p>
-                      <p className="font-mono text-[10px] text-ink-muted">{locale.code}</p>
+                  <tr key={locale.code} className="hover:bg-sand/20 transition-colors">
+                    <td className="py-4 px-6">
+                      <p className="text-sm sm:text-base font-bold text-ink">{locale.name}</p>
+                      <p className="font-mono text-xs font-bold text-primary mt-0.5">{locale.code}</p>
                     </td>
-                    <td className="py-3 pr-4 text-ink-soft">{locale.region}</td>
-                    <td className="py-3 pr-4 font-mono text-[11px] text-ink-muted">{locale.currency}</td>
-                    <td className="py-3 pr-4 font-mono text-[11px] text-ink-muted">{locale.dateFormat}</td>
-                    <td className="py-3 pr-4 font-mono text-ink-muted">{locale.schools}</td>
-                    <td className="py-3">
+                    <td className="py-4 px-6 text-sm font-bold text-ink-soft">{locale.region}</td>
+                    <td className="py-4 px-6 font-mono text-xs font-bold text-ink">{locale.currency}</td>
+                    <td className="py-4 px-6 font-mono text-xs font-semibold text-ink-muted">{locale.dateFormat}</td>
+                    <td className="py-4 px-6 font-mono text-xs font-bold text-ink">{locale.schools}</td>
+                    <td className="py-4 px-6">
                       <Pill tone={localeStatusMeta[locale.status].tone}>{locale.status}</Pill>
                     </td>
                   </tr>
@@ -126,14 +126,14 @@ export default function LocalizationPage() {
 
         {/* Platform defaults */}
         <Card title="Platform defaults" description="Settings new tenants inherit at provisioning.">
-          <dl className="space-y-3">
+          <dl className="space-y-4">
             {platformDefaults.map((item) => (
               <div
                 key={item.label}
-                className="flex items-center justify-between gap-4 border-b border-line pb-3 last:border-0 last:pb-0"
+                className="flex items-center justify-between gap-4 border-b border-line pb-4 last:border-0 last:pb-0"
               >
-                <dt className="text-xs text-ink-soft">{item.label}</dt>
-                <dd className="rounded-lg border border-line bg-paper px-2.5 py-1 font-mono text-[10px] text-ink-soft">
+                <dt className="text-sm font-bold text-ink-soft">{item.label}</dt>
+                <dd className="rounded-lg border border-line bg-paper px-3 py-1 font-mono text-xs font-bold text-primary">
                   {item.value}
                 </dd>
               </div>

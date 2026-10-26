@@ -18,7 +18,7 @@ import { formatPercent, platformStats } from "@/lib/platform";
 export const metadata: Metadata = { title: "System Health" };
 
 const ghostButton =
-  "inline-flex h-9 items-center gap-2 rounded-full border border-line bg-surface px-4 text-xs font-medium text-ink-soft transition-colors hover:text-ink";
+  "inline-flex h-11 items-center gap-2 rounded-xl border border-line bg-surface px-5 text-sm font-bold text-ink-soft shadow-xs transition-colors hover:bg-surface-raised hover:text-ink";
 
 type ServiceStatus = "operational" | "degraded" | "outage";
 
@@ -81,12 +81,12 @@ export default function HealthPage() {
   return (
     <>
       <PageHeader
-        eyebrow="Overview"
+        eyebrow="Platform Reliability"
         title="System health."
         description="Application availability, database health, storage, email delivery, failed jobs, payment webhook health and error rates."
         actions={
           <button type="button" className={ghostButton}>
-            <RefreshCw className="size-3.5" aria-hidden="true" />
+            <RefreshCw className="size-4" aria-hidden="true" />
             Refresh now
           </button>
         }
@@ -97,51 +97,53 @@ export default function HealthPage() {
           label="Platform uptime"
           value={formatPercent(platformStats.uptime, 2)}
           hint="rolling 30 days"
-          icon={<Activity className="size-3.5" aria-hidden="true" />}
+          icon={<Activity className="size-5" aria-hidden="true" />}
         />
         <KpiCard
           label="Services operational"
           value={`${operationalCount} / ${services.length}`}
           hint="all regions"
-          icon={<CheckCircle2 className="size-3.5" aria-hidden="true" />}
+          icon={<CheckCircle2 className="size-5" aria-hidden="true" />}
         />
         <KpiCard
           label="Degraded"
           value={String(degradedCount)}
           hint="requires attention"
-          icon={<AlertTriangle className="size-3.5" aria-hidden="true" />}
+          icon={<AlertTriangle className="size-5" aria-hidden="true" />}
         />
         <KpiCard
           label="Outages"
           value={String(outageCount)}
           hint="last 30 days"
-          icon={<Server className="size-3.5" aria-hidden="true" />}
+          icon={<Server className="size-5" aria-hidden="true" />}
         />
       </div>
 
-      <div className="mt-6">
+      <div className="mt-8">
         <Card title="Connected services" description="Live status of every platform dependency.">
           <ul className="divide-y divide-line">
             {services.map((service) => {
               const meta = statusMeta[service.status];
               return (
-                <li key={service.name} className="flex flex-wrap items-center gap-x-4 gap-y-1 py-3.5 first:pt-0 last:pb-0">
-                  <service.icon className="size-4 shrink-0 text-ink-muted" aria-hidden="true" />
-                  <div className="min-w-0 flex-1">
-                    <div className="flex flex-wrap items-center gap-2">
-                      <span className="text-xs font-semibold">{service.name}</span>
-                      <span className={`inline-flex items-center rounded-full px-2 py-0.5 font-mono text-[9px] font-semibold uppercase tracking-wide ${meta.bg}`}>
-                        {meta.label}
-                      </span>
-                      <span className="font-mono text-[10px] uppercase tracking-wide text-ink-muted">
-                        {service.category}
-                      </span>
+                <li key={service.name} className="flex flex-wrap items-center justify-between gap-x-4 gap-y-2 py-4.5 first:pt-0 last:pb-0">
+                  <div className="flex items-start gap-3.5 min-w-0 flex-1">
+                    <service.icon className="mt-1 size-5 shrink-0 text-primary" aria-hidden="true" />
+                    <div className="min-w-0 flex-1">
+                      <div className="flex flex-wrap items-center gap-2.5">
+                        <span className="text-sm sm:text-base font-bold text-ink">{service.name}</span>
+                        <span className={`inline-flex items-center rounded-full px-2.5 py-0.5 font-sans text-xs font-bold uppercase tracking-wider ${meta.bg}`}>
+                          {meta.label}
+                        </span>
+                        <span className="font-sans text-xs font-semibold uppercase tracking-wider text-ink-soft bg-surface-raised px-2.5 py-0.5 rounded-md">
+                          {service.category}
+                        </span>
+                      </div>
+                      <p className="mt-1 text-xs sm:text-sm leading-relaxed text-ink-soft">{service.meta}</p>
                     </div>
-                    <p className="mt-0.5 text-[11px] leading-5 text-ink-muted">{service.meta}</p>
                   </div>
-                  <div className="flex shrink-0 gap-4 font-mono text-[10px] text-ink-muted">
-                    {service.latency ? <span>{service.latency}</span> : null}
-                    {service.uptime  ? <span>{service.uptime} uptime</span> : null}
+                  <div className="flex shrink-0 items-center gap-4 font-mono text-xs font-semibold text-ink-soft">
+                    {service.latency ? <span className="bg-surface-raised px-2.5 py-1 rounded-md">{service.latency}</span> : null}
+                    {service.uptime  ? <span className="bg-surface-raised px-2.5 py-1 rounded-md text-ink">{service.uptime} uptime</span> : null}
                   </div>
                 </li>
               );
@@ -150,25 +152,25 @@ export default function HealthPage() {
         </Card>
       </div>
 
-      <div className="mt-6">
+      <div className="mt-8">
         <Card title="Recent incidents" description="Events in the last 7 days that required operator attention.">
           {recentIncidents.length === 0 ? (
-            <p className="text-xs text-ink-muted">No incidents in the last 7 days.</p>
+            <p className="text-sm text-ink-muted">No incidents in the last 7 days.</p>
           ) : (
             <ul className="space-y-4">
               {recentIncidents.map((incident) => (
-                <li key={incident.title} className="rounded-xl border border-line bg-canvas p-4">
-                  <div className="flex flex-wrap items-start justify-between gap-2">
-                    <div className="flex items-center gap-2">
-                      <AlertTriangle className="mt-0.5 size-3.5 shrink-0 text-ink-muted" aria-hidden="true" />
-                      <p className="text-xs font-semibold">{incident.title}</p>
+                <li key={incident.title} className="rounded-2xl border border-line bg-surface p-5 shadow-xs transition-all hover:border-line-strong">
+                  <div className="flex flex-wrap items-start justify-between gap-3">
+                    <div className="flex items-start gap-3">
+                      <AlertTriangle className="mt-0.5 size-4.5 shrink-0 text-warning" aria-hidden="true" />
+                      <p className="text-sm sm:text-base font-bold text-ink">{incident.title}</p>
                     </div>
-                    <div className="flex items-center gap-2">
+                    <div className="flex items-center gap-3">
                       <Pill tone={incident.tone}>{incident.status}</Pill>
-                      <span className="font-mono text-[10px] text-ink-muted">{incident.time}</span>
+                      <span className="font-mono text-xs font-semibold text-ink-soft">{incident.time}</span>
                     </div>
                   </div>
-                  <p className="mt-2 pl-5 text-[11px] leading-5 text-ink-muted">{incident.detail}</p>
+                  <p className="mt-2.5 pl-7.5 text-xs sm:text-sm leading-relaxed text-ink-soft">{incident.detail}</p>
                 </li>
               ))}
             </ul>
@@ -176,66 +178,66 @@ export default function HealthPage() {
         </Card>
       </div>
 
-      <div className="mt-6 grid gap-4 lg:grid-cols-3">
+      <div className="mt-8 grid gap-5 lg:grid-cols-3">
         <Card title="Backup status">
-          <ul className="space-y-2.5 text-xs text-ink-soft">
-            <li className="flex items-center justify-between gap-2 border-b border-line pb-2.5">
+          <ul className="space-y-3.5 text-sm font-medium text-ink-soft">
+            <li className="flex items-center justify-between gap-2 border-b border-line pb-3">
               <span>Last backup</span>
-              <span className="font-mono text-ink-muted">Today · 07:00</span>
+              <span className="font-mono text-xs sm:text-sm font-bold text-ink">Today · 07:00</span>
             </li>
-            <li className="flex items-center justify-between gap-2 border-b border-line pb-2.5">
+            <li className="flex items-center justify-between gap-2 border-b border-line pb-3">
               <span>Region</span>
-              <span className="font-mono text-ink-muted">eu-west-1</span>
+              <span className="font-mono text-xs sm:text-sm font-bold text-ink">eu-west-1</span>
             </li>
-            <li className="flex items-center justify-between gap-2 border-b border-line pb-2.5">
+            <li className="flex items-center justify-between gap-2 border-b border-line pb-3">
               <span>Frequency</span>
-              <span className="font-mono text-ink-muted">Daily · 30-day PITR</span>
+              <span className="font-mono text-xs sm:text-sm font-bold text-ink">Daily · 30-day PITR</span>
             </li>
             <li className="flex items-center justify-between gap-2">
               <span>Last restore drill</span>
-              <span className="font-mono text-success">Passed · 6 days ago</span>
+              <span className="font-mono text-xs sm:text-sm font-bold text-success">Passed · 6 days ago</span>
             </li>
           </ul>
         </Card>
 
         <Card title="Error rate (Sentry)">
-          <ul className="space-y-2.5 text-xs text-ink-soft">
-            <li className="flex items-center justify-between gap-2 border-b border-line pb-2.5">
+          <ul className="space-y-3.5 text-sm font-medium text-ink-soft">
+            <li className="flex items-center justify-between gap-2 border-b border-line pb-3">
               <span>Open issues</span>
-              <span className="font-mono text-ink-muted">2</span>
+              <span className="font-mono text-xs sm:text-sm font-bold text-ink">2</span>
             </li>
-            <li className="flex items-center justify-between gap-2 border-b border-line pb-2.5">
+            <li className="flex items-center justify-between gap-2 border-b border-line pb-3">
               <span>Errors (24h)</span>
-              <span className="font-mono text-ink-muted">14</span>
+              <span className="font-mono text-xs sm:text-sm font-bold text-ink">14</span>
             </li>
-            <li className="flex items-center justify-between gap-2 border-b border-line pb-2.5">
+            <li className="flex items-center justify-between gap-2 border-b border-line pb-3">
               <span>Transactions (24h)</span>
-              <span className="font-mono text-ink-muted">48,320</span>
+              <span className="font-mono text-xs sm:text-sm font-bold text-ink">48,320</span>
             </li>
             <li className="flex items-center justify-between gap-2">
               <span>PII scrubbing</span>
-              <span className="font-mono text-success">Active</span>
+              <span className="font-mono text-xs sm:text-sm font-bold text-success">Active</span>
             </li>
           </ul>
         </Card>
 
         <Card title="Job queue (Inngest)">
-          <ul className="space-y-2.5 text-xs text-ink-soft">
-            <li className="flex items-center justify-between gap-2 border-b border-line pb-2.5">
+          <ul className="space-y-3.5 text-sm font-medium text-ink-soft">
+            <li className="flex items-center justify-between gap-2 border-b border-line pb-3">
               <span>Pending jobs</span>
-              <span className="font-mono text-warning">1 backlog</span>
+              <span className="font-mono text-xs sm:text-sm font-bold text-warning">1 backlog</span>
             </li>
-            <li className="flex items-center justify-between gap-2 border-b border-line pb-2.5">
+            <li className="flex items-center justify-between gap-2 border-b border-line pb-3">
               <span>Completed (24h)</span>
-              <span className="font-mono text-ink-muted">2,841</span>
+              <span className="font-mono text-xs sm:text-sm font-bold text-ink">2,841</span>
             </li>
-            <li className="flex items-center justify-between gap-2 border-b border-line pb-2.5">
+            <li className="flex items-center justify-between gap-2 border-b border-line pb-3">
               <span>Failed (24h)</span>
-              <span className="font-mono text-ink-muted">0</span>
+              <span className="font-mono text-xs sm:text-sm font-bold text-ink">0</span>
             </li>
             <li className="flex items-center justify-between gap-2">
               <span>Avg. duration</span>
-              <span className="font-mono text-ink-muted">1.4 s</span>
+              <span className="font-mono text-xs sm:text-sm font-bold text-ink">1.4 s</span>
             </li>
           </ul>
         </Card>

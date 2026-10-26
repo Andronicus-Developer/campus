@@ -6,9 +6,9 @@ import { formatNumber } from "@/lib/platform";
 export const metadata: Metadata = { title: "Webhooks" };
 
 const ghostButton =
-  "inline-flex h-9 items-center gap-2 rounded-full border border-line bg-surface px-4 text-xs font-medium text-ink-soft transition-colors hover:text-ink";
+  "inline-flex h-11 items-center gap-2 rounded-xl border border-line bg-surface px-5 text-sm font-bold text-ink hover:bg-surface-raised transition-all shadow-xs";
 const primaryButton =
-  "inline-flex h-9 items-center gap-2 rounded-full bg-ink px-4 text-xs font-medium text-paper transition-colors hover:bg-ink-soft";
+  "inline-flex h-11 items-center gap-2 rounded-xl bg-ink px-5 text-sm font-bold text-paper transition-all hover:bg-ink-soft shadow-xs";
 
 type WebhookStatus  = "active" | "failing" | "paused" | "disabled";
 type WebhookEventStatus = "processed" | "failed" | "retrying" | "duplicate";
@@ -93,11 +93,11 @@ export default function WebhooksPage() {
         actions={
           <>
             <button type="button" className={ghostButton}>
-              <RefreshCw className="size-3.5" aria-hidden="true" />
+              <RefreshCw className="size-4" aria-hidden="true" />
               Refresh
             </button>
             <button type="button" className={primaryButton}>
-              <Plus className="size-3.5" aria-hidden="true" />
+              <Plus className="size-4" aria-hidden="true" />
               Add endpoint
             </button>
           </>
@@ -105,33 +105,33 @@ export default function WebhooksPage() {
       />
 
       <div className="grid gap-4 sm:grid-cols-3">
-        <KpiCard label="Processed (7d)" value={formatNumber(processedCount)} hint="verified and applied" icon={<CheckCircle2 className="size-3.5" aria-hidden="true" />} />
-        <KpiCard label="Failed / retrying" value={formatNumber(failedCount)} hint="needs investigation" icon={<AlertTriangle className="size-3.5" aria-hidden="true" />} />
-        <KpiCard label="Duplicates rejected" value={formatNumber(duplicateCount)} hint="idempotency working" icon={<Webhook className="size-3.5" aria-hidden="true" />} />
+        <KpiCard label="Processed (7d)" value={formatNumber(processedCount)} hint="verified and applied" icon={<CheckCircle2 className="size-5" aria-hidden="true" />} />
+        <KpiCard label="Failed / retrying" value={formatNumber(failedCount)} hint="needs investigation" icon={<AlertTriangle className="size-5" aria-hidden="true" />} />
+        <KpiCard label="Duplicates rejected" value={formatNumber(duplicateCount)} hint="idempotency working" icon={<Webhook className="size-5" aria-hidden="true" />} />
       </div>
 
       {/* Endpoints */}
-      <div className="mt-6 flex flex-col gap-4">
+      <div className="mt-8 flex flex-col gap-5">
         {endpoints.map((ep) => (
-          <div key={ep.id} className="rounded-2xl border border-line bg-surface p-5">
-            <div className="flex flex-wrap items-start justify-between gap-3">
+          <div key={ep.id} className="rounded-2xl border border-line bg-surface p-6 shadow-xs">
+            <div className="flex flex-wrap items-start justify-between gap-4">
               <div>
-                <div className="flex items-center gap-2">
-                  <p className="text-sm font-medium">{ep.name}</p>
+                <div className="flex items-center gap-3">
+                  <p className="text-base sm:text-lg font-bold text-ink">{ep.name}</p>
                   <Pill tone={endpointStatusMeta[ep.status].tone}>{ep.status}</Pill>
                 </div>
-                <p className="mt-0.5 font-mono text-[11px] text-ink-muted">{ep.url}</p>
+                <p className="mt-1 font-mono text-xs font-semibold text-primary">{ep.url}</p>
               </div>
-              <div className="flex gap-4 font-mono text-[10px] text-ink-muted">
-                <span>Success: {ep.successRate}</span>
-                <span>Last: {ep.lastReceived}</span>
+              <div className="flex gap-4 font-mono text-xs font-semibold text-ink-muted">
+                <span>Success: <strong className="text-ink font-bold">{ep.successRate}</strong></span>
+                <span>Last: <strong className="text-ink font-bold">{ep.lastReceived}</strong></span>
               </div>
             </div>
-            <div className="mt-3 flex flex-wrap gap-1.5">
+            <div className="mt-4 flex flex-wrap gap-2">
               {ep.events.map((ev) => (
                 <span
                   key={ev}
-                  className="rounded-full border border-line bg-sand/50 px-2 py-0.5 font-mono text-[9px] text-ink-muted"
+                  className="rounded-lg border border-line bg-surface-raised px-2.5 py-1 font-mono text-xs font-medium text-ink-soft"
                 >
                   {ev}
                 </span>
@@ -142,26 +142,26 @@ export default function WebhooksPage() {
       </div>
 
       {/* Event log */}
-      <div className="mt-6">
+      <div className="mt-8">
         <Card title="Recent webhook events" description="Last inbound events across all endpoints.">
           <div className="overflow-x-auto">
-            <table className="w-full text-xs">
+            <table className="w-full text-left">
               <thead>
-                <tr className="border-b border-line">
+                <tr className="border-b border-line bg-surface-raised/60">
                   {["Event ID", "Source", "Event type", "Status", "Received", "Attempts"].map((h) => (
-                    <th key={h} className="pb-3 pr-4 text-left font-mono text-[9px] uppercase tracking-[0.15em] text-ink-muted last:pr-0">{h}</th>
+                    <th key={h} className="py-4 px-6 font-sans text-xs font-bold uppercase tracking-wider text-slate-700">{h}</th>
                   ))}
                 </tr>
               </thead>
               <tbody className="divide-y divide-line">
                 {recentEvents.map((ev) => (
-                  <tr key={ev.id}>
-                    <td className="py-3 pr-4 font-mono text-[10px] text-ink-muted">{ev.id}</td>
-                    <td className="py-3 pr-4 text-ink-soft">{ev.source}</td>
-                    <td className="py-3 pr-4 font-mono text-[11px]">{ev.event}</td>
-                    <td className="py-3 pr-4"><Pill tone={eventStatusMeta[ev.status].tone}>{ev.status}</Pill></td>
-                    <td className="py-3 pr-4 text-ink-muted">{ev.receivedAt}</td>
-                    <td className="py-3 font-mono text-ink-muted">{ev.attempts}</td>
+                  <tr key={ev.id} className="hover:bg-sand/20 transition-colors">
+                    <td className="py-4 px-6 font-mono text-xs font-bold text-primary">{ev.id}</td>
+                    <td className="py-4 px-6 text-sm font-bold text-ink">{ev.source}</td>
+                    <td className="py-4 px-6 font-mono text-xs font-semibold text-ink-soft">{ev.event}</td>
+                    <td className="py-4 px-6"><Pill tone={eventStatusMeta[ev.status].tone}>{ev.status}</Pill></td>
+                    <td className="py-4 px-6 text-sm font-medium text-ink-muted">{ev.receivedAt}</td>
+                    <td className="py-4 px-6 font-mono text-xs font-bold text-ink">{ev.attempts}</td>
                   </tr>
                 ))}
               </tbody>

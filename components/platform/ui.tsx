@@ -26,7 +26,7 @@ export function Pill({
 }) {
   return (
     <span
-      className={`inline-flex items-center gap-1.5 rounded-full px-2.5 py-0.5 font-mono text-[10px] font-bold uppercase tracking-wider ${pillTone[tone]} ${className}`}
+      className={`inline-flex items-center gap-1.5 rounded-full px-3 py-1 font-sans text-xs font-bold uppercase tracking-wider ${pillTone[tone]} ${className}`}
     >
       {children}
     </span>
@@ -44,7 +44,7 @@ export function Dot({ tone = "muted" }: { tone?: PillTone }) {
   };
   return (
     <span
-      className={`inline-block size-2 shrink-0 rounded-full ${map[tone]}`}
+      className={`inline-block size-2.5 shrink-0 rounded-full ${map[tone]}`}
       aria-hidden="true"
     />
   );
@@ -66,23 +66,23 @@ export function PageHeader({
   actions?: ReactNode;
 }) {
   return (
-    <div className="mb-8 flex flex-wrap items-end justify-between gap-4">
-      <div className="max-w-2xl">
+    <div className="mb-8 flex flex-wrap items-end justify-between gap-5">
+      <div className="max-w-3xl">
         {eyebrow ? (
-          <div className="inline-flex items-center gap-1.5 rounded-full border border-primary/20 bg-primary-light px-3 py-1 font-mono text-[10px] font-bold uppercase tracking-wider text-primary">
-            <Sparkles className="size-3" aria-hidden="true" />
+          <div className="inline-flex items-center gap-2 rounded-full border border-primary/25 bg-primary-light px-3.5 py-1.5 font-sans text-xs font-bold uppercase tracking-wider text-primary shadow-xs">
+            <Sparkles className="size-3.5" aria-hidden="true" />
             <span>{eyebrow}</span>
           </div>
         ) : null}
-        <h1 className="mt-2.5 text-2xl font-extrabold tracking-tight text-ink sm:text-[2rem] leading-tight">
+        <h1 className="mt-3 text-3xl font-black tracking-tight text-ink sm:text-4xl leading-tight">
           {title}
         </h1>
         {description ? (
-          <p className="mt-2 text-sm leading-relaxed text-ink-muted">{description}</p>
+          <p className="mt-2.5 text-base leading-relaxed text-ink-soft">{description}</p>
         ) : null}
       </div>
       {actions ? (
-        <div className="flex flex-wrap items-center gap-2.5">{actions}</div>
+        <div className="flex flex-wrap items-center gap-3">{actions}</div>
       ) : null}
     </div>
   );
@@ -108,19 +108,19 @@ export function Card({
       className={`card-lift overflow-hidden rounded-2xl border border-line bg-surface shadow-xs transition-all ${className}`}
     >
       {title || action ? (
-        <header className="flex flex-wrap items-center justify-between gap-3 border-b border-line bg-surface-raised px-5 py-4">
+        <header className="flex flex-wrap items-center justify-between gap-3 border-b border-line bg-surface-raised/80 px-6 py-4.5">
           <div className="min-w-0">
             {title ? (
-              <h2 className="text-sm font-bold text-ink leading-tight">{title}</h2>
+              <h2 className="text-base sm:text-lg font-bold text-ink leading-tight">{title}</h2>
             ) : null}
             {description ? (
-              <p className="mt-0.5 text-xs leading-5 text-ink-muted">{description}</p>
+              <p className="mt-1 text-sm leading-relaxed text-ink-muted">{description}</p>
             ) : null}
           </div>
           {action}
         </header>
       ) : null}
-      <div className={padded ? "p-5" : ""}>{children}</div>
+      <div className={padded ? "p-6" : ""}>{children}</div>
     </section>
   );
 }
@@ -142,7 +142,7 @@ export function Avatar({
 
   return (
     <span
-      className={`grid shrink-0 place-items-center rounded-xl bg-gradient-to-br from-primary to-accent text-[11px] font-black text-white size-8 shadow-xs ${className}`}
+      className={`grid shrink-0 place-items-center rounded-xl bg-gradient-to-br from-primary to-accent text-xs font-bold text-white size-9 shadow-xs ${className}`}
       aria-hidden="true"
     >
       {label}
@@ -159,8 +159,8 @@ export function EmptyState({
 }) {
   return (
     <div className="rounded-2xl border border-dashed border-line bg-surface-raised px-6 py-12 text-center">
-      <p className="text-sm font-bold text-ink">{title}</p>
-      <p className="mx-auto mt-1.5 max-w-sm text-xs text-ink-muted leading-relaxed">{description}</p>
+      <p className="text-base font-bold text-ink">{title}</p>
+      <p className="mx-auto mt-2 max-w-sm text-sm text-ink-muted leading-relaxed">{description}</p>
     </div>
   );
 }
@@ -184,37 +184,37 @@ export function KpiCard({
 }) {
   const up = delta !== undefined && delta >= 0;
   return (
-    <div className="card-lift rounded-2xl border border-line bg-surface p-5 shadow-xs transition-all">
+    <div className="card-lift rounded-2xl border border-line bg-surface p-6 shadow-xs transition-all">
       <div className="flex items-center justify-between gap-3">
-        <p className="font-mono text-[9px] font-bold uppercase tracking-widest text-ink-muted">
+        <p className="font-sans text-xs font-bold uppercase tracking-wider text-ink-soft">
           {label}
         </p>
         {icon ? (
-          <span className="grid size-9 place-items-center rounded-xl bg-gradient-to-br from-primary-light to-accent-light text-primary shadow-xs">
+          <span className="grid size-11 place-items-center rounded-2xl bg-gradient-to-br from-primary-light to-accent-light text-primary shadow-xs">
             {icon}
           </span>
         ) : null}
       </div>
-      <p className="mt-3 font-mono text-2xl sm:text-3xl font-extrabold tracking-tight text-ink">{value}</p>
-      <div className="mt-2.5 flex min-h-[18px] items-center gap-2">
+      <p className="mt-3.5 font-sans text-3xl sm:text-4xl font-black tracking-tight text-ink">{value}</p>
+      <div className="mt-3 flex min-h-[22px] items-center gap-2.5">
         {delta !== undefined ? (
           <span
-            className={`inline-flex items-center gap-0.5 rounded-full px-2 py-0.5 text-xs font-bold ${
+            className={`inline-flex items-center gap-1 rounded-full px-2.5 py-1 text-xs font-bold ${
               up
                 ? "bg-success-light text-success-deep border border-success/30"
                 : "bg-danger-light text-danger-deep border border-danger/30"
             }`}
           >
             {up ? (
-              <ArrowUpRight className="size-3" aria-hidden="true" />
+              <ArrowUpRight className="size-3.5" aria-hidden="true" />
             ) : (
-              <ArrowDownRight className="size-3" aria-hidden="true" />
+              <ArrowDownRight className="size-3.5" aria-hidden="true" />
             )}
             {Math.abs(delta)}%
           </span>
         ) : null}
         {hint ? (
-          <span className="text-xs font-medium text-ink-muted">{hint}</span>
+          <span className="text-sm font-medium text-ink-muted">{hint}</span>
         ) : null}
       </div>
     </div>
@@ -242,7 +242,7 @@ export function Meter({
   const percent = max ? Math.min(100, Math.round((value / max) * 100)) : 100;
 
   return (
-    <div className="h-2 w-full overflow-hidden rounded-full bg-line">
+    <div className="h-2.5 w-full overflow-hidden rounded-full bg-line">
       <div className={`h-full rounded-full transition-all duration-500 ${bar}`} style={{ width: `${percent}%` }} />
     </div>
   );
@@ -254,7 +254,7 @@ export function Meter({
 
 export function TrendChart({
   data,
-  height = 170,
+  height = 180,
   gradientId = "trend-fill",
   label,
 }: {
@@ -285,7 +285,7 @@ export function TrendChart({
     <figure>
       <svg
         viewBox={`0 0 ${width} ${height}`}
-        className="h-44 w-full"
+        className="h-48 w-full"
         preserveAspectRatio="none"
         role="img"
         aria-label={label}
@@ -314,13 +314,13 @@ export function TrendChart({
           d={line}
           fill="none"
           stroke="#4f6ef7"
-          strokeWidth="3"
+          strokeWidth="3.5"
           strokeLinecap="round"
           strokeLinejoin="round"
           vectorEffect="non-scaling-stroke"
         />
       </svg>
-      <figcaption className="mt-3 flex justify-between font-mono text-[9px] uppercase tracking-wider text-ink-muted">
+      <figcaption className="mt-4 flex justify-between font-sans text-xs font-semibold uppercase tracking-wider text-ink-soft">
         {data.map((p) => (
           <span key={p.label}>{p.label}</span>
         ))}
@@ -346,14 +346,14 @@ export function BarList({
   const track = "bg-primary-light";
 
   return (
-    <ul className="space-y-3.5">
+    <ul className="space-y-4">
       {items.map((item) => (
         <li key={item.label}>
-          <div className="flex items-center justify-between text-xs">
-            <span className="font-semibold text-ink">{item.label}</span>
-            <span className="font-mono text-ink-muted font-medium">{item.hint ?? item.value}</span>
+          <div className="flex items-center justify-between text-sm">
+            <span className="font-bold text-ink">{item.label}</span>
+            <span className="text-ink-soft font-semibold">{item.hint ?? item.value}</span>
           </div>
-          <div className={`mt-2 h-2 overflow-hidden rounded-full ${track}`}>
+          <div className={`mt-2 h-2.5 overflow-hidden rounded-full ${track}`}>
             <div
               className={`h-full rounded-full transition-all duration-500 ${bar}`}
               style={{ width: `${(item.value / max) * 100}%` }}
@@ -364,6 +364,7 @@ export function BarList({
     </ul>
   );
 }
+
 
 export function Sparkline({
   data,

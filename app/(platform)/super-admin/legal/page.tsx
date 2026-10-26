@@ -5,7 +5,7 @@ import { Card, PageHeader, Pill } from "@/components/platform/ui";
 export const metadata: Metadata = { title: "Legal, Privacy & Compliance" };
 
 const primaryButton =
-  "inline-flex h-9 items-center gap-2 rounded-full bg-ink px-4 text-xs font-medium text-paper transition-colors hover:bg-ink-soft";
+  "inline-flex h-11 items-center gap-2 rounded-xl bg-primary px-6 text-sm font-bold text-white shadow-xs transition-opacity hover:opacity-95";
 
 type DocumentStatus = "current" | "draft" | "review";
 
@@ -62,18 +62,18 @@ export default function LegalPage() {
         description="Terms of service, privacy policy, data retention rules and data-processing responsibilities."
         actions={
           <button type="button" className={primaryButton}>
-            <Save className="size-3.5" aria-hidden="true" />
+            <Save className="size-4" aria-hidden="true" />
             Save changes
           </button>
         }
       />
 
       {/* Disclaimer */}
-      <div className="mb-6 rounded-2xl border border-amber-500/20 bg-amber-500/5 p-4">
-        <div className="flex items-start gap-3">
-          <Scale className="mt-0.5 size-4 shrink-0 text-amber-700" aria-hidden="true" />
-          <p className="text-xs leading-6 text-ink-soft">
-            <span className="font-medium text-ink">Legal disclaimer — </span>
+      <div className="mb-6 rounded-2xl border border-amber-500/20 bg-amber-500/5 p-5 shadow-xs">
+        <div className="flex items-start gap-3.5">
+          <Scale className="mt-0.5 size-5 shrink-0 text-amber-700" aria-hidden="true" />
+          <p className="text-sm leading-relaxed text-ink-soft">
+            <span className="font-bold text-ink">Legal disclaimer — </span>
             This section provides operational records and internal reference only. The platform
             does not claim legal compliance without qualified professional review. Terms of
             service, privacy policies and DPAs must be reviewed by legal counsel for each
@@ -82,27 +82,27 @@ export default function LegalPage() {
         </div>
       </div>
 
-      <div className="grid gap-4 lg:grid-cols-[1.4fr_1fr]">
+      <div className="grid gap-6 lg:grid-cols-[1.4fr_1fr]">
         {/* Legal documents */}
         <Card title="Legal documents" description="Published and draft policy documents.">
           <ul className="divide-y divide-line">
             {documents.map((doc) => (
-              <li key={doc.name} className="flex flex-wrap items-start justify-between gap-3 py-4 first:pt-0 last:pb-0">
-                <div className="flex items-start gap-3">
-                  <FileText className="mt-0.5 size-4 shrink-0 text-ink-muted" aria-hidden="true" />
+              <li key={doc.name} className="flex flex-wrap items-start justify-between gap-4 py-4.5 first:pt-0 last:pb-0">
+                <div className="flex items-start gap-3.5">
+                  <FileText className="mt-0.5 size-5 shrink-0 text-primary" aria-hidden="true" />
                   <div>
-                    <p className="text-xs font-medium">{doc.name}</p>
-                    <p className="mt-0.5 text-[11px] leading-5 text-ink-muted">{doc.description}</p>
-                    <p className="mt-1 font-mono text-[10px] text-ink-muted">
+                    <p className="text-sm sm:text-base font-bold text-ink">{doc.name}</p>
+                    <p className="mt-1 text-xs sm:text-sm leading-relaxed text-ink-soft">{doc.description}</p>
+                    <p className="mt-1.5 font-mono text-xs font-semibold text-ink-soft">
                       {doc.version} · Effective {doc.effectiveDate}
                     </p>
                   </div>
                 </div>
-                <div className="flex items-center gap-2">
+                <div className="flex items-center gap-3">
                   <Pill tone={docStatusMeta[doc.status].tone}>{doc.status}</Pill>
                   <button
                     type="button"
-                    className="rounded-full border border-line bg-surface px-3 py-1 text-[11px] text-ink-soft transition-colors hover:text-ink"
+                    className="rounded-xl border border-line bg-surface px-4 py-1.5 text-xs font-bold text-ink-soft shadow-xs transition-colors hover:bg-surface-raised hover:text-ink"
                   >
                     Edit
                   </button>
@@ -114,15 +114,15 @@ export default function LegalPage() {
 
         {/* Compliance checklist */}
         <Card title="Compliance checklist" description="Pre-launch and ongoing obligations.">
-          <ul className="space-y-2.5">
+          <ul className="space-y-3.5">
             {complianceChecklist.map((item) => (
-              <li key={item.item} className="flex items-start gap-3 text-xs">
+              <li key={item.item} className="flex items-start gap-3 text-sm font-medium">
                 {item.done ? (
-                  <ShieldCheck className="mt-0.5 size-4 shrink-0 text-pine" aria-hidden="true" />
+                  <ShieldCheck className="mt-0.5 size-5 shrink-0 text-success" aria-hidden="true" />
                 ) : (
-                  <AlertTriangle className="mt-0.5 size-4 shrink-0 text-amber-600" aria-hidden="true" />
+                  <AlertTriangle className="mt-0.5 size-5 shrink-0 text-warning" aria-hidden="true" />
                 )}
-                <span className={item.done ? "text-ink-soft" : "text-ink"}>{item.item}</span>
+                <span className={item.done ? "text-ink-soft" : "text-ink font-bold"}>{item.item}</span>
               </li>
             ))}
           </ul>
@@ -130,23 +130,23 @@ export default function LegalPage() {
       </div>
 
       {/* Retention policies */}
-      <div className="mt-6">
+      <div className="mt-8">
         <Card title="Data retention policies" description="How long different data categories are kept before archival or deletion.">
-          <div className="overflow-x-auto">
-            <table className="w-full text-xs">
+          <div className="overflow-x-auto -mx-6 -mb-6">
+            <table className="w-full text-sm">
               <thead>
-                <tr className="border-b border-line">
+                <tr className="border-b border-line bg-surface-raised/60">
                   {["Category", "Retention period", "Regulatory"].map((h) => (
-                    <th key={h} className="pb-3 pr-4 text-left font-mono text-[9px] uppercase tracking-[0.15em] text-ink-muted last:pr-0">{h}</th>
+                    <th key={h} className="py-4 px-6 text-left font-sans text-xs font-bold uppercase tracking-wider text-slate-700">{h}</th>
                   ))}
                 </tr>
               </thead>
               <tbody className="divide-y divide-line">
                 {retentionPolicies.map((policy) => (
-                  <tr key={policy.category}>
-                    <td className="py-3 pr-4 font-medium">{policy.category}</td>
-                    <td className="py-3 pr-4 text-ink-soft">{policy.retention}</td>
-                    <td className="py-3">
+                  <tr key={policy.category} className="transition-colors hover:bg-surface-raised/40">
+                    <td className="py-4 px-6 font-bold text-ink text-sm sm:text-base">{policy.category}</td>
+                    <td className="py-4 px-6 text-sm font-medium text-ink-soft">{policy.retention}</td>
+                    <td className="py-4 px-6">
                       <Pill tone={policy.required ? "neutral" : "muted"}>
                         {policy.required ? "Required" : "Operational"}
                       </Pill>

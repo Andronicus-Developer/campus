@@ -182,24 +182,24 @@ function NavGroupSection({
   const [open, setOpen] = useState(defaultOpen || hasActive);
 
   return (
-    <div className="mb-1">
+    <div className="mb-1.5">
       <button
         type="button"
         onClick={() => setOpen((v) => !v)}
-        className="flex w-full items-center justify-between px-3 pb-1.5 pt-3.5 group cursor-pointer"
+        className="flex w-full items-center justify-between px-3.5 pb-1.5 pt-3.5 group cursor-pointer"
         aria-expanded={open}
       >
-        <span className="font-mono text-[10px] font-bold uppercase tracking-widest text-slate-400 group-hover:text-slate-300 transition-colors">
+        <span className="font-sans text-[11px] font-extrabold uppercase tracking-wider text-slate-400 group-hover:text-slate-200 transition-colors">
           {group.title}
         </span>
         <ChevronDown
-          className={`size-3 text-slate-500 transition-transform duration-200 group-hover:text-slate-400 ${open ? "rotate-180" : ""}`}
+          className={`size-3.5 text-slate-500 transition-transform duration-200 group-hover:text-slate-300 ${open ? "rotate-180" : ""}`}
           aria-hidden="true"
         />
       </button>
 
       {open && (
-        <ul className="mt-0.5 space-y-0.5">
+        <ul className="mt-1 space-y-0.5">
           {group.items.map((item) => {
             const isActive = active === item.href;
             return (
@@ -208,19 +208,19 @@ function NavGroupSection({
                   href={item.href}
                   onClick={onNavigate}
                   aria-current={isActive ? "page" : undefined}
-                  className={`flex items-center gap-3 rounded-xl px-3 py-2 text-xs font-semibold transition-all ${
+                  className={`flex items-center gap-3 rounded-xl px-3.5 py-2.5 text-[13px] font-semibold transition-all ${
                     isActive
-                      ? "bg-primary text-white shadow-md shadow-primary/25"
-                      : "text-slate-300 hover:bg-slate-800/70 hover:text-white"
+                      ? "bg-gradient-to-r from-primary to-accent text-white shadow-md shadow-primary/25 font-bold"
+                      : "text-slate-300 hover:bg-slate-800/80 hover:text-white"
                   }`}
                 >
                   <item.icon
-                    className={`size-4 shrink-0 ${isActive ? "text-white" : "text-slate-400"}`}
+                    className={`size-4.5 shrink-0 ${isActive ? "text-white" : "text-slate-400"}`}
                     aria-hidden="true"
                   />
                   <span className="flex-1 truncate">{item.label}</span>
                   {item.badge ? (
-                    <span className="shrink-0 rounded-full bg-danger px-1.5 py-0.5 font-mono text-[9px] font-bold leading-none text-white">
+                    <span className="shrink-0 rounded-full bg-danger px-2 py-0.5 font-sans text-[11px] font-bold leading-none text-white shadow-xs">
                       {item.badge}
                     </span>
                   ) : null}
@@ -252,24 +252,24 @@ function SidebarContent({
   return (
     <div className="flex h-full flex-col bg-slate-900 border-r border-slate-800 text-white">
       {/* Brand Header */}
-      <div className="px-5 pb-3 pt-5">
+      <div className="px-6 pb-4 pt-6">
         <Link href="/super-admin" onClick={onNavigate} className="inline-flex rounded-xl">
           <Logo tone="light" />
         </Link>
       </div>
 
       {/* Operator Status Pill */}
-      <div className="mx-3.5 mb-2 rounded-2xl border border-slate-800 bg-slate-800/60 p-3 flex items-center justify-between shadow-xs">
+      <div className="mx-4 mb-3 rounded-2xl border border-slate-800 bg-slate-800/70 p-3.5 flex items-center justify-between shadow-xs">
         <div>
-          <span className="font-mono text-[9px] font-bold uppercase tracking-widest text-slate-400 block">
+          <span className="font-sans text-[11px] font-extrabold uppercase tracking-wider text-slate-400 block">
             SUPER ADMIN ZONE
           </span>
-          <span className="text-xs font-semibold text-white flex items-center gap-1.5 mt-0.5">
-            <span className="size-2 rounded-full bg-emerald-400 animate-pulse" />
+          <span className="text-[13px] font-bold text-white flex items-center gap-2 mt-1">
+            <span className="size-2.5 rounded-full bg-emerald-400 animate-pulse" />
             Global Platform Console
           </span>
         </div>
-        <span className="rounded-md bg-primary-light/20 px-2 py-0.5 font-mono text-[10px] font-bold text-primary">
+        <span className="rounded-lg bg-primary/25 border border-primary/30 px-2.5 py-1 font-sans text-xs font-bold text-primary-light">
           Root
         </span>
       </div>
@@ -277,7 +277,7 @@ function SidebarContent({
       {/* Navigation */}
       <nav
         aria-label="Platform navigation"
-        className="mt-1 flex-1 overflow-y-auto px-3 pb-4 hide-scrollbar"
+        className="mt-1 flex-1 overflow-y-auto px-3.5 pb-4 hide-scrollbar"
       >
         {navGroups.map((group) => (
           <NavGroupSection
@@ -291,22 +291,22 @@ function SidebarContent({
       </nav>
 
       {/* Footer */}
-      <div className="border-t border-slate-800/80 px-4 py-3 bg-slate-950/40">
+      <div className="border-t border-slate-800/80 px-5 py-4 bg-slate-950/60">
         <div className="flex items-center justify-between">
           <Link
             href="/"
             onClick={onNavigate}
-            className="text-xs font-semibold text-slate-400 transition-colors hover:text-white"
+            className="text-[13px] font-semibold text-slate-300 transition-colors hover:text-white flex items-center gap-1.5"
           >
-            ← Back to campus360.app
+            <span>←</span> Back to campus360.app
           </Link>
           <Link
             href="/super-admin/profile"
             onClick={onNavigate}
             aria-label="Super admin profile"
-            className="inline-flex size-7 items-center justify-center rounded-lg text-slate-400 transition-colors hover:bg-slate-800 hover:text-white"
+            className="inline-flex size-8 items-center justify-center rounded-lg text-slate-400 transition-colors hover:bg-slate-800 hover:text-white"
           >
-            <LogOut className="size-3.5" aria-hidden="true" />
+            <LogOut className="size-4" aria-hidden="true" />
           </Link>
         </div>
       </div>
@@ -342,7 +342,7 @@ export function PlatformChrome({ children }: { children: ReactNode }) {
   return (
     <div className="min-h-screen bg-canvas lg:flex antialiased">
       {/* Desktop sidebar */}
-      <aside className="sticky top-0 hidden h-screen w-[17.5rem] shrink-0 overflow-hidden lg:block z-30">
+      <aside className="sticky top-0 hidden h-screen w-[19rem] shrink-0 overflow-hidden lg:block z-30">
         <SidebarContent pathname={pathname} />
       </aside>
 
@@ -355,7 +355,7 @@ export function PlatformChrome({ children }: { children: ReactNode }) {
             onClick={() => setOpen(false)}
             className="absolute inset-0 bg-ink/60 backdrop-blur-xs"
           />
-          <div className="absolute inset-y-0 left-0 w-[17.5rem] max-w-[88%] overflow-hidden shadow-2xl">
+          <div className="absolute inset-y-0 left-0 w-[19rem] max-w-[88%] overflow-hidden shadow-2xl">
             <button
               type="button"
               aria-label="Close menu"
@@ -374,43 +374,43 @@ export function PlatformChrome({ children }: { children: ReactNode }) {
       {/* Main content area */}
       <div className="flex min-h-screen min-w-0 flex-1 flex-col">
         {/* Top Operational Header */}
-        <header className="sticky top-0 z-20 border-b border-line bg-surface/90 shadow-xs backdrop-blur-md">
-          <div className="flex h-16 items-center gap-3 px-4 sm:px-6 lg:px-8">
+        <header className="sticky top-0 z-20 border-b border-line bg-surface/95 shadow-xs backdrop-blur-md">
+          <div className="flex h-18 items-center gap-4 px-5 sm:px-7 lg:px-9">
             {/* Mobile menu button */}
             <button
               type="button"
               onClick={() => setOpen(true)}
               aria-label="Open menu"
-              className="inline-flex size-9 shrink-0 items-center justify-center rounded-xl border border-line bg-surface text-ink-soft transition-colors hover:bg-primary-light hover:text-primary lg:hidden"
+              className="inline-flex size-10 shrink-0 items-center justify-center rounded-xl border border-line bg-surface text-ink-soft transition-colors hover:bg-primary-light hover:text-primary lg:hidden"
             >
-              <Menu className="size-4" aria-hidden="true" />
+              <Menu className="size-5" aria-hidden="true" />
             </button>
 
             {/* Page title */}
             <div className="min-w-0">
-              <p className="font-mono text-[9px] font-bold uppercase tracking-widest text-primary">
+              <p className="font-sans text-[11px] font-bold uppercase tracking-wider text-primary">
                 Super Admin Console
               </p>
-              <p className="truncate text-base font-extrabold leading-tight text-ink">
+              <h1 className="truncate text-lg sm:text-xl font-extrabold leading-tight text-ink">
                 {resolveTitle(pathname)}
-              </p>
+              </h1>
             </div>
 
             {/* Header actions */}
-            <div className="ml-auto flex items-center gap-2 sm:gap-3">
+            <div className="ml-auto flex items-center gap-3">
               {/* Live status badge */}
-              <div className="hidden sm:inline-flex items-center gap-1.5 rounded-full border border-success/30 bg-success-light px-3 py-1 font-mono text-[10px] font-bold text-success-deep">
-                <span className="size-2 rounded-full bg-success animate-pulse" />
+              <div className="hidden sm:inline-flex items-center gap-2 rounded-full border border-success/30 bg-success-light px-3.5 py-1.5 font-sans text-xs font-bold text-success-deep shadow-xs">
+                <span className="size-2.5 rounded-full bg-success animate-pulse" />
                 <span>48 Tenants Healthy</span>
               </div>
 
               {/* Global search */}
-              <label className="hidden h-9.5 items-center gap-2 rounded-xl border border-line bg-surface-raised px-3.5 transition-all focus-within:border-primary focus-within:ring-2 focus-within:ring-primary/20 md:flex">
-                <Search className="size-3.5 text-ink-muted" aria-hidden="true" />
+              <label className="hidden h-10 items-center gap-2.5 rounded-xl border border-line bg-surface-raised px-4 transition-all focus-within:border-primary focus-within:ring-2 focus-within:ring-primary/20 md:flex shadow-xs">
+                <Search className="size-4 text-ink-muted" aria-hidden="true" />
                 <input
                   type="search"
                   placeholder="Search schools, users, plans…"
-                  className="w-36 bg-transparent text-xs text-ink outline-none placeholder:text-ink-muted lg:w-56"
+                  className="w-44 bg-transparent text-sm font-medium text-ink outline-none placeholder:text-ink-muted lg:w-64"
                 />
               </label>
 
@@ -418,11 +418,11 @@ export function PlatformChrome({ children }: { children: ReactNode }) {
               <Link
                 href="/super-admin/notifications"
                 aria-label="Notifications"
-                className="relative inline-flex size-9 items-center justify-center rounded-xl border border-line bg-surface text-ink-soft transition-all hover:border-primary/40 hover:bg-primary-light hover:text-primary"
+                className="relative inline-flex size-10 items-center justify-center rounded-xl border border-line bg-surface text-ink-soft transition-all hover:border-primary/40 hover:bg-primary-light hover:text-primary shadow-xs"
               >
-                <Bell className="size-4" aria-hidden="true" />
+                <Bell className="size-4.5" aria-hidden="true" />
                 <span
-                  className="absolute right-1.5 top-1.5 size-2 rounded-full bg-danger ring-2 ring-surface"
+                  className="absolute right-2 top-2 size-2 rounded-full bg-danger ring-2 ring-surface"
                   aria-hidden="true"
                 />
               </Link>
@@ -430,13 +430,13 @@ export function PlatformChrome({ children }: { children: ReactNode }) {
               {/* Operator Avatar */}
               <Link
                 href="/super-admin/profile"
-                className="flex items-center gap-2 rounded-xl border border-line bg-surface py-1 pl-1 pr-3 transition-all hover:border-primary/40 hover:bg-primary-light"
+                className="flex items-center gap-2.5 rounded-xl border border-line bg-surface py-1.5 pl-1.5 pr-3.5 transition-all hover:border-primary/40 hover:bg-primary-light shadow-xs"
                 aria-label="My profile"
               >
-                <Avatar name="Platform Super Admin" className="size-7" />
+                <Avatar name="Platform Super Admin" className="size-8 text-xs font-bold" />
                 <div className="hidden sm:block text-left text-xs leading-tight">
-                  <span className="block font-bold text-ink">Super Admin</span>
-                  <span className="block font-mono text-[10px] text-primary font-semibold">Root Operator</span>
+                  <span className="block text-sm font-bold text-ink">Super Admin</span>
+                  <span className="block font-sans text-[11px] text-primary font-semibold">Root Operator</span>
                 </div>
               </Link>
             </div>
@@ -444,10 +444,11 @@ export function PlatformChrome({ children }: { children: ReactNode }) {
         </header>
 
         {/* Content Body */}
-        <main className="flex-1 px-4 py-6 sm:px-6 lg:px-8 max-w-[1400px] w-full mx-auto">
+        <main className="flex-1 px-5 py-7 sm:px-7 lg:px-9 max-w-[1480px] w-full mx-auto">
           {children}
         </main>
       </div>
     </div>
   );
 }
+

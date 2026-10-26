@@ -6,7 +6,7 @@ import { formatNumber } from "@/lib/platform";
 export const metadata: Metadata = { title: "Notifications" };
 
 const ghostButton =
-  "inline-flex h-9 items-center gap-2 rounded-full border border-line bg-surface px-4 text-xs font-medium text-ink-soft transition-colors hover:text-ink";
+  "inline-flex h-11 items-center gap-2 rounded-xl border border-line bg-surface px-5 text-sm font-bold text-ink hover:bg-surface-raised transition-all shadow-xs";
 
 type NotifStatus = "delivered" | "pending" | "failed" | "read";
 type NotifType   = "system" | "billing" | "security" | "support" | "announcement";
@@ -68,30 +68,30 @@ export default function NotificationsPage() {
         description="In-app notification feed, delivery status and platform-wide notification rules."
         actions={
           <button type="button" className={ghostButton}>
-            <Settings2 className="size-3.5" aria-hidden="true" />
+            <Settings2 className="size-4" aria-hidden="true" />
             Notification rules
           </button>
         }
       />
 
       <div className="grid gap-4 sm:grid-cols-3">
-        <KpiCard label="Delivered (7d)" value={formatNumber(deliveredCount)} hint="in-app + email" icon={<Bell className="size-3.5" aria-hidden="true" />} />
-        <KpiCard label="Unread" value={formatNumber(unreadCount)} hint="awaiting action" icon={<Bell className="size-3.5" aria-hidden="true" />} />
-        <KpiCard label="Failed" value={formatNumber(failedCount)} hint="delivery errors" icon={<Bell className="size-3.5" aria-hidden="true" />} />
+        <KpiCard label="Delivered (7d)" value={formatNumber(deliveredCount)} hint="in-app + email" icon={<Bell className="size-5" aria-hidden="true" />} />
+        <KpiCard label="Unread" value={formatNumber(unreadCount)} hint="awaiting action" icon={<Bell className="size-5" aria-hidden="true" />} />
+        <KpiCard label="Failed" value={formatNumber(failedCount)} hint="delivery errors" icon={<Bell className="size-5" aria-hidden="true" />} />
       </div>
 
-      <div className="mt-6 grid gap-4 lg:grid-cols-[1.6fr_1fr]">
+      <div className="mt-8 grid gap-6 lg:grid-cols-[1.6fr_1fr]">
         <Card title="Notification feed" description="Recent notifications for all platform operators.">
           <ul className="divide-y divide-line">
             {notifications.map((n) => (
-              <li key={n.id} className="flex flex-wrap items-start justify-between gap-3 py-3 first:pt-0 last:pb-0">
-                <div className="flex items-start gap-3">
-                  <Bell className="mt-0.5 size-4 shrink-0 text-ink-muted" aria-hidden="true" />
+              <li key={n.id} className="flex flex-wrap items-start justify-between gap-4 py-4 first:pt-0 last:pb-0">
+                <div className="flex items-start gap-3.5">
+                  <Bell className="mt-1 size-5 shrink-0 text-primary" aria-hidden="true" />
                   <div>
-                    <p className={`text-xs ${n.status === "read" ? "text-ink-muted" : "font-medium text-ink"}`}>
+                    <p className={`text-sm sm:text-base ${n.status === "read" ? "text-ink-muted font-medium" : "font-bold text-ink"}`}>
                       {n.title}
                     </p>
-                    <p className="mt-0.5 font-mono text-[10px] text-ink-muted">
+                    <p className="mt-1 font-mono text-xs font-semibold text-ink-muted">
                       {n.recipient} · {n.channel} · {n.createdAt}
                     </p>
                   </div>
@@ -103,9 +103,9 @@ export default function NotificationsPage() {
               </li>
             ))}
           </ul>
-          <div className="mt-4 border-t border-line pt-4">
+          <div className="mt-6 border-t border-line pt-4">
             <button type="button" className={ghostButton}>
-              <CheckCheck className="size-3.5" aria-hidden="true" />
+              <CheckCheck className="size-4" aria-hidden="true" />
               Mark all read
             </button>
           </div>
@@ -114,14 +114,14 @@ export default function NotificationsPage() {
         <Card title="Notification rules" description="Which events trigger notifications and to whom.">
           <ul className="divide-y divide-line">
             {notifRules.map((rule) => (
-              <li key={rule.event} className="py-3 first:pt-0 last:pb-0">
-                <p className="text-xs font-medium">{rule.event}</p>
-                <div className="mt-1.5 flex flex-wrap gap-1">
+              <li key={rule.event} className="py-4 first:pt-0 last:pb-0">
+                <p className="text-sm sm:text-base font-bold text-ink">{rule.event}</p>
+                <div className="mt-2 flex flex-wrap gap-1.5">
                   {rule.channels.map((ch) => (
                     <Pill key={ch} tone="muted">{ch}</Pill>
                   ))}
                 </div>
-                <p className="mt-1 text-[11px] text-ink-muted">→ {rule.recipients}</p>
+                <p className="mt-2 text-xs font-bold text-ink-soft">→ {rule.recipients}</p>
               </li>
             ))}
           </ul>
